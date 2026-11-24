@@ -154,7 +154,7 @@
       <tr><td>Análisis descriptivo</td><td>Tarea 2 + figura de cola larga</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Partición</td><td>Tarea 3</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 4 hallazgos</span></td></tr>
+      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 5 hallazgos</span></td></tr>
       <tr><td>Modelos de referencia y red neuronal</td><td>Tareas 4 y 5</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3</td><td><span class="pill no">Pendiente</span></td></tr>
@@ -206,7 +206,7 @@
   <p>Hay <strong>999 usuarios</strong>, de los cuales 858 tienen al menos una interacción, y <strong>1000 destinos</strong> (IDs), de los cuales 866 tienen al menos una. <em>Pero</em> esos 1000 IDs son en realidad <strong>5 lugares</strong> (Taj Mahal, Goa Beaches, Jaipur City, Kerala Backwaters y Leh Ladakh), cada uno repetido 200 veces. En total hay <strong>1998 interacciones</strong>: 999 reseñas y 999 visitas (Tabla 2).</p>
 
   <h4>Escala de las calificaciones</h4>
-  <p>Ambas tablas de interacciones califican con <strong>enteros de 1 a 5</strong>. Las cinco notas aparecen casi con la misma frecuencia (≈ 20 % cada una). Una prueba chi-cuadrado, que compara lo observado con lo que pasaría si todas las notas fueran igual de probables, no rechaza que la distribución sea uniforme (p = 0,66 en reseñas y p = 0,12 en historial). Esto es poco habitual en datos reales, donde suelen predominar las notas altas.</p>
+  <p>Ambas tablas de interacciones califican con <strong>enteros de 1 a 5</strong>. Las cinco notas aparecen casi con la misma frecuencia (≈ 20 % cada una). Una prueba chi-cuadrado, que compara lo observado con lo que pasaría si todas las notas fueran igual de probables, no rechaza que la distribución sea uniforme (p-valor = 0,66 en reseñas y p-valor = 0,12 en historial). Esto es poco habitual en datos reales, donde suelen predominar las notas altas.</p>
 
   <h4>Densidad de la matriz usuario–destino</h4>
   <p>Si se arma una tabla con un usuario por fila y un destino por columna, solo el <strong>0,20 %</strong> de las celdas tiene información: 1998 / (999 × 1000). Con una sola de las tablas de interacciones sería el 0,10 % (Tabla 2). Es una matriz extremadamente dispersa: casi todo lo que el modelo debe predecir es desconocido. Además, 252 usuarios tienen una sola interacción y 134 destinos no tienen ninguna.</p>
@@ -238,13 +238,13 @@
     <tbody>
       <tr><td>5 lugares clonados</td><td>El lugar de cada destino lo determina una fórmula, (ID − 1) mod 5; solo <code>Popularity</code> cambia entre copias.</td><td>I-2, I-3</td></tr>
       <tr><td>Ciclos exactos de 3</td><td>Preferencias, fecha de visita y texto de la reseña se repiten en ciclos exactos (por ejemplo, 333 visitas en cada una de solo 3 fechas).</td><td>I-2</td></tr>
-      <tr><td>Texto sin relación con el destino</td><td>«Loved the beaches!» aparece igual de seguido en el Taj Mahal que en las montañas (chi-cuadrado, p = 0,88).</td><td>I-7</td></tr>
-      <tr><td>Notas uniformes</td><td>≈ 20 % cada nota (p = 0,66 y 0,12); sin relación con <code>Popularity</code> (correlación 0,04 en reseñas y 0,03 en historial).</td><td>I-4, I-5</td></tr>
+      <tr><td>Texto sin relación con el destino</td><td>«Loved the beaches!» aparece igual de seguido en el Taj Mahal que en las montañas (chi-cuadrado, p-valor = 0,88).</td><td>I-7</td></tr>
+      <tr><td>Notas uniformes</td><td>≈ 20 % cada nota (p-valor = 0,66 y 0,12); sin relación con <code>Popularity</code> (correlación 0,04 en reseñas y 0,03 en historial).</td><td>I-4, I-5</td></tr>
       <tr><td>Tablas que no se cruzan</td><td>Ninguna persona reseñó un destino que aparezca en su historial de visitas.</td><td>I-8</td></tr>
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024).</p>
-  <p>Hay una relación débil entre lo que el usuario dice preferir y lo que visita: el 42,3 % de sus interacciones van a un tipo de destino preferido, frente al 40 % que se esperaría por azar (permutación, p = 0,019). Sin embargo, esa diferencia <strong>no se sostiene</strong> cuando se corrige por hacer varias pruebas a la vez (p corregido = 0,11; sección 3.4). Es, en el mejor de los casos, una señal débil e incierta.</p>
+  <p>Hay una relación débil entre lo que el usuario dice preferir y lo que visita: el 42,3 % de sus interacciones van a un tipo de destino preferido, frente al 40 % que se esperaría por azar (permutación, p-valor = 0,019). Sin embargo, esa diferencia <strong>no se sostiene</strong> cuando se corrige por hacer varias pruebas a la vez (p-valor corregido = 0,11; sección 3.4). Es, en el mejor de los casos, una señal débil e incierta.</p>
 
   <h3 id="implicaciones">1.4 ¿Qué implica para nuestras conclusiones?</h3>
   <ul>
@@ -332,7 +332,7 @@
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-1.</p>
 
-  <p>La Figura 1 muestra que la forma de ambas distribuciones es muy parecida a la del azar, y las pruebas de bondad de ajuste (chi-cuadrado) no permiten rechazar que provengan de una Poisson (p = 0,28 por usuario y p = 0,998 por destino). Es decir, no hay destinos más populares ni usuarios más activos de lo que produciría el azar, y por eso no hay cola larga. Esto no dice si cada usuario prefiere ciertos tipos de destino; esa relación se analiza aparte.</p>
+  <p>La Figura 1 muestra que la forma de ambas distribuciones es muy parecida a la del azar, y las pruebas de bondad de ajuste (chi-cuadrado) no permiten rechazar que provengan de una Poisson (p-valor = 0,28 por usuario y p-valor = 0,998 por destino). Es decir, no hay destinos más populares ni usuarios más activos de lo que produciría el azar, y por eso no hay cola larga. Esto no dice si cada usuario prefiere ciertos tipos de destino; esa relación se analiza aparte.</p>
   <figure>
     <figcaption>Figura 1. Interacciones por usuario y por destino frente a lo esperado por azar</figcaption>
     <img src="../figures/descriptivo_cola_larga.png" alt="Dos gráficos de barras. A la izquierda, el número de usuarios según cuántas interacciones tienen (0 a 7 o más); a la derecha, lo mismo para los destinos. En ambos, las barras observadas coinciden con la línea discontinua de lo esperado por azar (Poisson con media 2).">
@@ -341,23 +341,28 @@
   <p>En datos reales de turismo, unos pocos destinos famosos y unos pocos viajeros frecuentes concentran gran parte de la actividad, lo que produce una cola larga: muchos destinos y usuarios con muy poca actividad y unos pocos con muchísima.</p>
 
   <h3 id="concentracion">3.2 Concentración en los destinos populares</h3>
-  <p>La Figura 2 y la Tabla 8 muestran que <strong>no hay destinos «estrella»</strong>. Por ID, el 10 % de los destinos con más interacciones se lleva el 23,6 % de ellas, y al azar sería el 23,8 %. Por lugar real, los 5 lugares reciben entre el 18,8 % (Jaipur City) y el 21,1 % (Leh Ladakh), cuando al azar cada uno tendría ≈ 20 %.</p>
+  <p>La pregunta es si unos pocos destinos se llevan la mayoría de las interacciones. Se responde con tres medidas, y las tres se comparan con lo que daría el <strong>azar</strong>: repartir las mismas 1998 interacciones entre los 1000 destinos al azar, 2000 veces (simulación).</p>
+  <ul>
+    <li><strong>Curva de Lorenz</strong> (Figura 2, izquierda). Se ordenan los destinos de menos a más interacciones. Cada punto dice: «el <em>x</em> % de los destinos con menos interacciones acumula el <em>y</em> % de todas las interacciones». Si todos tuvieran lo mismo, la curva sería la diagonal punteada; cuanto más se hunde por debajo de ella, más concentrada está la actividad.</li>
+    <li><strong>Coeficiente de Gini.</strong> Resume la curva en un número: el doble del área entre la diagonal y la curva. Vale 0 si el reparto es perfectamente parejo y 1 si un solo destino se lo lleva todo.</li>
+    <li><strong>Participación del top 10 %.</strong> Qué porcentaje de las interacciones se llevan los 100 destinos con más interacciones. Es la medida más fácil de comunicar al negocio.</li>
+  </ul>
+  <p><strong>Cómo se obtiene el rango del azar.</strong> Se reparten las mismas 1998 interacciones entre los 1000 destinos como si cada una lanzara un dado de 1000 caras (distribución multinomial), se calcula el Gini de ese reparto y se repite 2000 veces. Se ordenan los 2000 valores y se quita el 2,5 % de cada extremo: lo que queda, de 0,369 a 0,402 (percentiles 2,5 y 97,5), es lo que la pura suerte produce. El p-valor sale de las mismas simulaciones: 1219 de 2000 tuvieron un Gini igual o mayor que el observado (1219/2000 = 0,61). Así, los valores <em>observados</em> (porcentaje de cada lugar, top 10 %, Gini, curva y barras azules) salen de contar los datos reales; solo la <em>referencia</em> (rango, banda gris, top 10 % del azar y p-valores) sale de la simulación. El 20 % por lugar es simplemente 1/5. Detalle paso a paso en la teoría, sección 22.9.</p>
   <figure>
     <figcaption>Figura 2. Concentración de las interacciones por destino y por lugar</figcaption>
     <img src="../figures/descriptivo_concentracion.png" alt="A la izquierda, la curva de Lorenz de las interacciones por destino, que coincide con la banda gris del azar. A la derecha, barras horizontales con el porcentaje de interacciones de cada lugar real, todas cerca de la línea del 20 %.">
   </figure>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-2. La banda gris es el 95 % de 2000 simulaciones de reparto aleatorio.</p>
-
   <p class="caption">Tabla 8. Concentración observada frente a la del azar</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nivel</th><th class="num">Gini observado</th><th class="num">Gini del azar (95 %)</th><th class="num">Top 10 % observado</th><th class="num">Top 10 % azar</th></tr></thead>
+    <thead><tr><th>Nivel</th><th class="num">Gini observado</th><th class="num">Gini del azar (95 %)</th><th class="num">p-valor</th><th class="num">Top 10 % observado</th><th class="num">Top 10 % azar</th></tr></thead>
     <tbody>
-      <tr><td>1000 IDs</td><td class="num">0,383</td><td class="num">0,369–0,402</td><td class="num">23,6 %</td><td class="num">23,8 %</td></tr>
-      <tr><td>5 lugares</td><td class="num">0,025</td><td class="num">0,009–0,040</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td>1000 IDs</td><td class="num">0,383</td><td class="num">0,369–0,402</td><td class="num">0,61</td><td class="num">23,6 %</td><td class="num">23,8 %</td></tr>
+      <tr><td>5 lugares</td><td class="num">0,025</td><td class="num">0,009–0,040</td><td class="num">0,37</td><td class="num">—</td><td class="num">—</td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-2. Gini: 0 = reparto parejo, 1 = todo en un destino.</p>
-  <p>Esto anticipa que la popularidad, como recomendador, tendrá poco que aprovechar, y es la base de la pregunta de negocio 2 (concentración de la demanda).</p>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-2. Gini: 0 = reparto parejo, 1 = todo en un destino. p-valor: proporción de las 2000 simulaciones al azar con un Gini igual o mayor que el observado. El top 10 % no aplica a 5 lugares (sería medio lugar).</p>
+  <p>La curva de Lorenz parece mostrar concentración: el 13,4 % de los destinos no tiene interacciones y el 10 % con más se lleva el 23,6 %. Pero la referencia correcta no es la diagonal, sino el azar, porque con 2 interacciones por destino en promedio la suerte ya deja destinos con 0 y otros con 7 (la Poisson de 3.1). La curva queda dentro de la banda del azar, y la Tabla 8 lo confirma: el Gini (0,383) cae en el rango del azar (0,369–0,402, p-valor = 0,61) y el top 10 % es casi idéntico (23,6 % frente a 23,8 %). Por lugar real ocurre lo mismo: los 5 lugares reciben entre el 18,8 % y el 21,1 %, cerca del 20 % parejo (p-valor = 0,37). En conclusión, no hay destinos «estrella»: la popularidad tendrá poco que aprovechar como recomendador, y esta es la base de la pregunta de negocio 2 (concentración de la demanda).</p>
 
   <h3 id="pocas">3.3 Usuarios con pocas interacciones</h3>
   <p>De los 999 usuarios, 141 (14,1 %) no tienen ninguna interacción, 252 (25,2 %) tienen exactamente una y, en total, el 67,4 % tiene 2 o menos. Solo 52 (5,2 %) tienen 5 o más; la mediana es 2 y el máximo, 7 (Tabla 9). Esto explica por qué el recomendador tiene tan poca información por usuario, y por qué conviene evaluar por separado a los usuarios con pocas y con muchas interacciones (tarea 6).</p>
@@ -375,28 +380,28 @@
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-3.</p>
 
   <h3 id="hipotesis">3.4 Hipótesis sobre qué explica las preferencias</h3>
-  <p>Planteamos seis hipótesis razonables sobre qué haría que un viajero prefiera un destino, y contrastamos cada una con una prueba estadística (Tabla 10).</p>
-  <p class="caption">Tabla 10. Hipótesis sobre las preferencias y su contraste</p>
+  <p>Planteamos seis hipótesis razonables sobre qué haría que un viajero prefiera un destino. Cada una se contrasta así: la <strong>hipótesis nula (H₀)</strong> dice que <em>no</em> hay relación, la <strong>alternativa (H₁)</strong> dice que sí la hay, y la prueba mide si los datos son lo bastante raros bajo H₀ como para rechazarla, con un nivel de significancia α = 0,05 (Tabla 10).</p>
+  <p class="caption">Tabla 10. Hipótesis sobre las preferencias, pruebas y decisión</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Hipótesis</th><th>Resultado</th><th class="num">p</th><th class="num">p corregido</th><th>¿Se sostiene?</th></tr></thead>
+    <thead><tr><th>Hipótesis</th><th>H₀ y H₁</th><th>Prueba y estadístico</th><th>Resultado</th><th class="num">p-valor</th><th class="num">p-valor corregido</th><th>Decisión (α = 0,05)</th></tr></thead>
     <tbody>
-      <tr><td>H1. Visitan los tipos de destino que dicen preferir</td><td>coinciden 42,3 % frente a ≈ 40 % del azar</td><td class="num">0,019</td><td class="num">0,113</td><td><span class="pill no">no</span></td></tr>
-      <tr><td>H2. Con niños eligen más playa y naturaleza</td><td>38,9 % con niños frente a 41,1 % sin niños</td><td class="num">0,190</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
-      <tr><td>H3. Viajar solo o con otro adulto cambia el destino</td><td>—</td><td class="num">0,159</td><td class="num">0,952</td><td><span class="pill no">no</span></td></tr>
-      <tr><td>H4. El género cambia el destino</td><td>—</td><td class="num">0,982</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
-      <tr><td>H5. Mayor <code>Popularity</code> atrae más interacciones</td><td>ρ = −0,011</td><td class="num">0,721</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
-      <tr><td>H6. Visitan en la mejor temporada del destino</td><td>73,0 % en temporada frente a 72,6 % del azar</td><td class="num">0,295</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
+      <tr><td>H1. Visitan los tipos de destino que dicen preferir</td><td><strong>H₀:</strong> el tipo visitado es independiente del perfil de preferencias<br><strong>H₁:</strong> el tipo visitado depende del perfil</td><td>Chi-cuadrado de independencia, perfil × tipo: χ² = 18,35; gl = 8</td><td>coinciden 42,3 % frente a ≈ 40 % del azar</td><td class="num">0,019</td><td class="num">0,113</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>H2. Con niños eligen más playa y naturaleza</td><td><strong>H₀:</strong> el tipo visitado es independiente de viajar con niños<br><strong>H₁:</strong> depende de viajar con niños</td><td>Chi-cuadrado de independencia, con/sin niños × tipo: χ² = 6,13; gl = 4</td><td>playa y naturaleza: 38,9 % con niños frente a 41,1 % sin niños</td><td class="num">0,190</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>H3. Viajar solo o con otro adulto cambia el destino</td><td><strong>H₀:</strong> el tipo visitado es independiente del número de adultos<br><strong>H₁:</strong> depende del número de adultos</td><td>Chi-cuadrado de independencia, adultos (1 o 2) × tipo: χ² = 6,60; gl = 4</td><td>—</td><td class="num">0,159</td><td class="num">0,952</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>H4. El género cambia el destino</td><td><strong>H₀:</strong> el tipo visitado es independiente del género<br><strong>H₁:</strong> depende del género</td><td>Chi-cuadrado de independencia, género × tipo: χ² = 0,40; gl = 4</td><td>—</td><td class="num">0,982</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>H5. Mayor <code>Popularity</code> atrae más interacciones</td><td><strong>H₀:</strong> ρ = 0 (no hay relación)<br><strong>H₁:</strong> ρ ≠ 0 (bilateral)</td><td>Correlación de Spearman entre <code>Popularity</code> e interacciones (1000 IDs)</td><td>ρ = −0,011</td><td class="num">0,721</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>H6. Visitan en la mejor temporada del destino</td><td><strong>H₀:</strong> el % de visitas en temporada es el del azar (72,6 %)<br><strong>H₁:</strong> es mayor que el del azar (unilateral)</td><td>Permutación, 2000 repeticiones (solo historial)</td><td>73,0 % en temporada</td><td class="num">0,295</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-4. Pruebas: chi-cuadrado de independencia (H1–H4), correlación de Spearman (H5) y permutación (H6). Corrección de Bonferroni con m = 6.</p>
-  <p><strong>Por qué se corrige el p-valor.</strong> Si se hacen muchas pruebas, alguna saldrá «significativa» por pura suerte: con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es ≈ 26 %. La corrección de Bonferroni multiplica cada p-valor por el número de pruebas (Bland y Altman, 1995). H1 tenía p = 0,019 y, al corregirlo, queda en 0,11: ya no es concluyente.</p>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-4. En las cuatro pruebas chi-cuadrado, la menor frecuencia esperada es 123, muy por encima del mínimo de 5 que exige la prueba. p-valor corregido = mín(1; 6 × p-valor), corrección de Bonferroni con m = 6.</p>
+  <p><strong>Qué es el p-valor corregido.</strong> Si se hacen muchas pruebas, alguna saldrá «significativa» por pura suerte: con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es 1 − 0,95<sup>6</sup> ≈ 26 %. La corrección de Bonferroni lo evita multiplicando cada p-valor por el número de pruebas, p-valor corregido = mín(1; 6 × p-valor) (Bland y Altman, 1995), y se rechaza H₀ solo si el p-valor corregido es menor que 0,05. Es lo mismo que exigir que el p-valor original sea menor que 0,05/6 ≈ 0,0083. Por ejemplo, H1 tiene p-valor = 0,019: sola parecería significativa, pero corregida queda en 6 × 0,019 = 0,113 &gt; 0,05.</p>
+  <p><strong>Decisión.</strong> En las seis hipótesis <strong>no hay evidencia suficiente para rechazar H₀</strong>: ningún p-valor corregido baja de 0,05. Esto no demuestra que la relación no exista; dice que estos datos no alcanzan para afirmarla.</p>
   <div class="callout ok"><p><strong>Conclusión de la tarea 2.</strong> Ninguna de las explicaciones razonables de las preferencias se sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo que es coherente con que el conjunto sea sintético. Para el modelado, esto significa que esperamos que ningún modelo supere con claridad al azar, y que cualquier diferencia pequeña debe confirmarse con las 30 semillas antes de afirmarse.</p></div>
 </section>
 
 <!-- ======================= 4. PARTICIÓN ======================= -->
 <section id="particion">
   <h2>4. Partición (tarea 3)</h2>
-  <p><strong>Para qué se parten los datos.</strong> Para saber si un recomendador funciona hay que preguntarle por algo que <strong>no vio</strong> al aprender, como en un examen. Dividimos las interacciones en tres grupos: <em>entrenamiento</em> (lo que el modelo estudia), <em>validación</em> (un examen de práctica para elegir la configuración del modelo) y <em>prueba</em> (el examen final, que se mira una sola vez). Ninguna interacción de prueba se usa para entrenar.</p>
   <p><strong>Cómo las partimos: «dejar uno fuera» por usuario.</strong> A cada usuario con al menos 2 interacciones le escondemos una, elegida al azar, para prueba. Si tiene al menos 3, le escondemos otra para validación. Todo lo demás va a entrenamiento. La Tabla 11 muestra tres usuarios reales. Por ejemplo, la usuaria 1 visitó Goa Beaches y el Taj Mahal: el modelo aprende de Goa, y al final comprobamos si entre sus 10 recomendaciones aparece el Taj Mahal que le escondimos.</p>
 
   <p class="caption">Tabla 11. Ejemplos reales de la partición</p>
@@ -457,9 +462,10 @@
       <tr><td>2</td><td>Correlación nota–popularidad reportada de forma incompleta</td><td>Datos del mundo real</td><td><span class="pill wip">Baja</span></td></tr>
       <tr><td>3</td><td>Propuesta de un «hallazgo» que no cumple la definición del enunciado</td><td>Ninguna de las categorías (interpretación del enunciado)</td><td><span class="pill wip">Media</span></td></tr>
       <tr><td>4</td><td>Propuso «escoger el dataset» cuando el enunciado ya lo fija</td><td>Datos del mundo real</td><td><span class="pill wip">Baja</span></td></tr>
+      <tr><td>5</td><td>Hipótesis enunciadas con dirección («más») contrastadas con pruebas sin dirección</td><td>Matemáticas (estadística)</td><td><span class="pill wip">Media</span></td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23-nov-2026.</p>
+  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23 y 24-nov-2026.</p>
 
   <div class="finding">
     <h4>Hallazgo 1. Conclusión estadística prematura sobre preferencias y visitas</h4>
@@ -468,11 +474,11 @@
       <dd><blockquote>Quiero que empezemos paso a paso, además, cabe recalcar que apenas estoy aprendiendo por lo que quiero que seas muy explícito con cada decisión y cosa que hagas pues nunca he trabajado en un sistema de recomendación, podemos subir a esa misma carpeta de modulo3_recomendacion una parte de teoría para  yo ir allí y leer todo lo referente a al fundamentación matemática, que se usa para un sistema de recomendación, como hacerlo y que se relacione con este trabajo. descargué el zip con los datos y está en modulo3_recomendacion/data/raw</blockquote></dd>
       <dt>Respuesta de la IA</dt>
       <dd><blockquote><strong>Las visitas no tienen relación con las preferencias.</strong> Solo el 41,7 % de las visitas coincide con lo que el usuario dice que le gusta, y por puro azar se esperaría un 40 %.</blockquote>
-      Más adelante, al rehacer el cálculo, la IA pasó al extremo opuesto y escribió que había «una relación débil pero real» y «estadísticamente significativa» (p = 0,019).</dd>
+      Más adelante, al rehacer el cálculo, la IA pasó al extremo opuesto y escribió que había «una relación débil pero real» y «estadísticamente significativa» (p-valor = 0,019).</dd>
       <dt>Cómo se sospechó</dt>
       <dd>Preguntamos de dónde salían las cifras («¿hiciste un análisis descriptivo y no me mostraste?»). La primera conclusión no tenía ninguna prueba estadística y no estaba guardada en ningún script. Al escribir el script reproducible apareció otro resultado.</dd>
       <dt>Evidencia</dt>
-      <dd>(a) La cifra del 41,7 % salía solo del historial; con la unión de tablas, que es la que usa el modelo, la coincidencia es del 42,3 %, con p = 0,019 en las pruebas binomial, de permutación y chi-cuadrado (I-6). (b) Dentro del conjunto de seis hipótesis de la tarea 2, la corrección de Bonferroni lleva ese p a 0,11 (D-4; Bland y Altman, 1995). Ninguna de las dos afirmaciones de la IA era correcta tal como se dijo.</dd>
+      <dd>(a) La cifra del 41,7 % salía solo del historial; con la unión de tablas, que es la que usa el modelo, la coincidencia es del 42,3 %, con p-valor = 0,019 en las pruebas binomial, de permutación y chi-cuadrado (I-6). (b) Dentro del conjunto de seis hipótesis de la tarea 2, la corrección de Bonferroni lleva ese p a 0,11 (D-4; Bland y Altman, 1995). Ninguna de las dos afirmaciones de la IA era correcta tal como se dijo.</dd>
       <dt>Corrección</dt>
       <dd>«Hay una diferencia pequeña (42,3 % frente a 40 %) que no resiste la corrección por pruebas múltiples.» Se corrigieron <code>DECISIONES.md</code> y el borrador, y la corrección quedó señalada con ⚠️.</dd>
       <dt>Lección</dt>
@@ -490,7 +496,7 @@
       <dt>Cómo se sospechó</dt>
       <dd>Preguntamos «¿dónde se vio su correlación con popularity?». Al pedir la tabla completa aparecieron dos correlaciones, no una.</dd>
       <dt>Evidencia</dt>
-      <dd>I-5: Pearson 0,044 en reseñas (p = 0,17) y 0,026 en historial (p = 0,41). La IA solo había reportado la del historial, sin p-valor ni tamaño de muestra, y esa cifra pasó a nuestra redacción de las decisiones.</dd>
+      <dd>I-5: Pearson 0,044 en reseñas (p-valor = 0,17) y 0,026 en historial (p-valor = 0,41). La IA solo había reportado la del historial, sin p-valor ni tamaño de muestra, y esa cifra pasó a nuestra redacción de las decisiones.</dd>
       <dt>Corrección</dt>
       <dd>«Correlación de 0,03 a 0,04, no significativa en ninguna de las dos tablas.» La conclusión no cambia, pero la cifra quedó completa.</dd>
       <dt>Lección</dt>
@@ -534,11 +540,29 @@
     </dl>
   </div>
 
+  <div class="finding">
+    <h4>Hallazgo 5. Hipótesis que no coincidían con la prueba usada</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>sigamos con el análisi descriptivo</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd>Planteó seis hipótesis y las resumió en una tabla con la columna «¿Se sostiene?», sin escribir H₀ ni H₁:<blockquote>H2. Con niños eligen más playa y naturaleza — no (de hecho, un poco menos)<br>H5. Mayor <code>Popularity</code> atrae más interacciones — no (ρ = −0,01)</blockquote></dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Al revisar el borrador pedimos mostrar de forma explícita la hipótesis nula, la alternativa y la prueba de cada fila («no se muestra explícitamente las hipótesis nula y alternativa ni que prueba se usa»). Al escribirlas, la hipótesis enunciada y lo que la prueba contrasta no coincidían.</dd>
+      <dt>Evidencia</dt>
+      <dd>(a) H2 afirma una dirección («<strong>más</strong> playa y naturaleza»), pero se contrastó con un chi-cuadrado de independencia con/sin niños × tipo (χ² = 6,13; gl = 4), que detecta cualquier diferencia en el reparto de los 5 tipos y no distingue si es «más» o «menos». (b) H5 afirma «mayor <code>Popularity</code> → <strong>más</strong> interacciones», pero la correlación de Spearman se calculó bilateral (H₁: ρ ≠ 0). (c) La tabla no mostraba H₀ ni H₁, así que el desajuste no se veía. Código: <code>src/descriptivo.py</code>, función <code>s4_hipotesis</code>; resultados en D-4.</dd>
+      <dt>Corrección</dt>
+      <dd>La Tabla 10 ahora escribe H₀ y H₁ tal como las contrasta cada prueba (por ejemplo, H2: «el tipo visitado es independiente de viajar con niños» frente a «depende»), junto con el estadístico, el p-valor, el p-valor corregido y la decisión. Las conclusiones no cambian: en las seis no hay evidencia suficiente para rechazar H₀, y en H2 el dato va incluso en la dirección contraria (38,9 % con niños frente a 41,1 % sin niños).</dd>
+      <dt>Lección</dt>
+      <dd>Escribir H₀ y H₁ <em>antes</em> de elegir la prueba, y comprobar que la prueba contraste exactamente esa alternativa (con dirección o sin ella). Una tabla de «¿se sostiene?» sin hipótesis explícitas esconde este tipo de error.</dd>
+    </dl>
+  </div>
+
   <h3>Verificaciones hechas que no encontraron error</h3>
   <p>El enunciado pide documentar también las verificaciones. Estas confirmaron lo que había dicho la IA:</p>
   <ul>
     <li>El «40 % esperado por azar» de H1: recalculado con la distribución real de tipos y con 5000 permutaciones, da 40,1 % (I-6).</li>
-    <li>La forma de Poisson como referencia del azar: el ajuste por destino da p = 0,998 (D-1).</li>
+    <li>La forma de Poisson como referencia del azar: el ajuste por destino da p-valor = 0,998 (D-1).</li>
     <li>La partición: las verificaciones automáticas de <code>src/preprocesar.py</code> no encontraron fugas.</li>
   </ul>
   <div class="callout warn"><p><strong>Pendiente de verificar (categoría «Bibliografía»).</strong> Las referencias del documento de teoría del módulo las propuso la IA y todavía no se han contrastado con su fuente primaria (DOI, volumen, páginas). Hay que hacerlo antes de entregar; si alguna falla, es un hallazgo nuevo.</p></div>

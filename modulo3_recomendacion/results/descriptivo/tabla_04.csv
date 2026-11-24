@@ -1,7 +1,7 @@
-hipótesis,enunciado,prueba,p,p_bonferroni,"¿se sostiene? (α = 0,05 tras corregir)",detalle
-H1,Las personas visitan los tipos de destino que dicen preferir,chi-cuadrado perfil × tipo,0.019,0.113,no,coinciden 42.3 % (azar ≈ 40 %)
-H2,Quienes viajan con niños eligen más playa y naturaleza,chi-cuadrado con/sin niños × tipo,0.19,1.0,no,"playa+naturaleza: con niños 38.9 %, sin niños 41.1 %"
-H3,Viajar solo o con otro adulto cambia el tipo de destino,chi-cuadrado adultos × tipo,0.159,0.952,no,
-H4,El género cambia el tipo de destino,chi-cuadrado género × tipo,0.982,1.0,no,
-H5,Los destinos con mayor `Popularity` reciben más interacciones,correlación de Spearman (1000 IDs),0.721,1.0,no,ρ = -0.011
-H6,Las visitas ocurren en la mejor temporada del destino,permutación (solo historial),0.295,1.0,no,en temporada 73.0 % (azar 72.6 %)
+hipótesis,enunciado,H0,H1,prueba,estadístico,p_valor,p_valor_corregido,"decisión (α = 0,05)",detalle
+H1,Las personas visitan los tipos de destino que dicen preferir,el tipo visitado es independiente del perfil de preferencias,el tipo visitado depende del perfil,chi-cuadrado de independencia perfil × tipo,"χ² = 18.35, gl = 8 (tabla 3×5; mínimo esperado 123 ≥ 5)",0.019,0.113,no se rechaza H0: no hay evidencia suficiente,coinciden 42.3 % (azar ≈ 40 %)
+H2,Quienes viajan con niños eligen más playa y naturaleza,el tipo visitado es independiente de viajar con niños,el tipo visitado depende de viajar con niños,chi-cuadrado de independencia con/sin niños × tipo,"χ² = 6.13, gl = 4 (tabla 2×5; mínimo esperado 129 ≥ 5)",0.19,1.0,no se rechaza H0: no hay evidencia suficiente,"playa+naturaleza: con niños 38.9 %, sin niños 41.1 %"
+H3,Viajar solo o con otro adulto cambia el tipo de destino,el tipo visitado es independiente del número de adultos,el tipo visitado depende del número de adultos,chi-cuadrado de independencia adultos (1 o 2) × tipo,"χ² = 6.60, gl = 4 (tabla 2×5; mínimo esperado 180 ≥ 5)",0.159,0.952,no se rechaza H0: no hay evidencia suficiente,
+H4,El género cambia el tipo de destino,el tipo visitado es independiente del género,el tipo visitado depende del género,chi-cuadrado de independencia género × tipo,"χ² = 0.40, gl = 4 (tabla 2×5; mínimo esperado 186 ≥ 5)",0.982,1.0,no se rechaza H0: no hay evidencia suficiente,
+H5,Los destinos con mayor `Popularity` reciben más interacciones,ρ = 0 (no hay relación monótona),ρ ≠ 0 (bilateral),correlación de Spearman (1000 IDs),ρ = -0.011,0.721,1.0,no se rechaza H0: no hay evidencia suficiente,
+H6,Las visitas ocurren en la mejor temporada del destino,el % de visitas en temporada es el del azar (72.6 %),el % en temporada es mayor que el del azar (unilateral),"permutación, 2000 repeticiones (solo historial)",en temporada 73.0 %,0.295,1.0,no se rechaza H0: no hay evidencia suficiente,en temporada 73.0 % (azar 72.6 %)

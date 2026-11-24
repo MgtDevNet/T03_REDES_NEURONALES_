@@ -175,6 +175,19 @@ def s2_concentracion(inter, destinos):
         "intervalo del azar, la concentración que vemos es la que el azar produce por sí solo.\n\n"
         f"- Interacciones por lugar: {lugares_txt}. Al azar, cada lugar tendría ≈ 20 %."
     )
+    # Evidencia de cómo se construye el intervalo del azar (se cita en teoría 22.9 y en el informe).
+    g_id = np.array([gini(s) for s in sim_id])
+    g_obs = gini(por_id)
+    explicacion += (
+        "\n\n**Cómo se construye el intervalo del azar (por ID):**\n"
+        f"- Simulación 1, interacciones de los IDs 1 a 10: {sim_id[0][:10].tolist()}.\n"
+        f"- Gini de las simulaciones 1 a 5: {', '.join(f'{g:.3f}' for g in g_id[:5])}.\n"
+        f"- Mínimo y máximo de los {N_SIMULACIONES} Gini: {g_id.min():.3f} y {g_id.max():.3f}.\n"
+        f"- Ordenados, posición 50 y 1950 (percentiles 2,5 y 97,5): "
+        f"{np.sort(g_id)[49]:.3f} y {np.sort(g_id)[1949]:.3f}.\n"
+        f"- Simulaciones con Gini ≥ observado ({g_obs:.3f}): {int((g_id >= g_obs).sum())} de "
+        f"{N_SIMULACIONES} → p-valor = {(g_id >= g_obs).mean():.2f}."
+    )
     datos_fig = (por_id, sim_id)
     return ("2. Concentración en los destinos populares", explicacion, tabla), datos_fig, por_lugar
 
@@ -234,39 +247,47 @@ def s3_pocas_interacciones(inter, n_usuarios):
 
 
 def s4_hipotesis(inter, usuarios, destinos, historial):
-    """Hipótesis sobre qué explica las preferencias, cada una con su prueba."""
+    """Hipótesis sobre qué explica las preferencias, cada una con H0, H1, su prueba y su decisión."""
     m = inter.merge(usuarios, on="UserID").merge(destinos[["DestinationID", "Type", "Popularity", "BestTimeToVisit", "Name"]], on="DestinationID")
     pruebas = []
 
+    def chi2(fila, h_id, txt, h0, h1, nombre, det=""):
+        """Chi-cuadrado de independencia variable × tipo de destino; registra estadístico y validez."""
+        tabla_c = pd.crosstab(fila, m.Type)
+        t = stats.chi2_contingency(tabla_c)
+        est = (f"χ² = {t.statistic:.2f}, gl = {t.dof} (tabla {tabla_c.shape[0]}×{tabla_c.shape[1]}; "
+               f"mínimo esperado {t.expected_freq.min():.0f} ≥ 5)")
+        pruebas.append((h_id, txt, h0, h1, f"chi-cuadrado de independencia {nombre} × tipo", est, t.pvalue, det))
+
     # H1: las preferencias declaradas explican el tipo de destino.
-    t = stats.chi2_contingency(pd.crosstab(m.Preferences, m.Type))
     prefs = m.Preferences.str.split(", ").apply(lambda xs: {PREFERENCIA_A_TIPO[x] for x in xs})
     coincide = np.mean([ti in p for ti, p in zip(m.Type, prefs)])
-    pruebas.append(("H1", "Las personas visitan los tipos de destino que dicen preferir",
-                    "chi-cuadrado perfil × tipo", t.pvalue, f"coinciden {100 * coincide:.1f} % (azar ≈ 40 %)"))
+    chi2(m.Preferences, "H1", "Las personas visitan los tipos de destino que dicen preferir",
+         "el tipo visitado es independiente del perfil de preferencias", "el tipo visitado depende del perfil",
+         "perfil", f"coinciden {100 * coincide:.1f} % (azar ≈ 40 %)")
 
     # H2: quienes viajan con niños prefieren otros tipos (p. ej. playa/naturaleza).
-    t = stats.chi2_contingency(pd.crosstab(m.NumberOfChildren > 0, m.Type))
     con = m[m.NumberOfChildren > 0].Type.isin(["Beach", "Nature"]).mean()
     sin = m[m.NumberOfChildren == 0].Type.isin(["Beach", "Nature"]).mean()
-    pruebas.append(("H2", "Quienes viajan con niños eligen más playa y naturaleza",
-                    "chi-cuadrado con/sin niños × tipo", t.pvalue,
-                    f"playa+naturaleza: con niños {100 * con:.1f} %, sin niños {100 * sin:.1f} %"))
+    chi2(m.NumberOfChildren > 0, "H2", "Quienes viajan con niños eligen más playa y naturaleza",
+         "el tipo visitado es independiente de viajar con niños", "el tipo visitado depende de viajar con niños",
+         "con/sin niños", f"playa+naturaleza: con niños {100 * con:.1f} %, sin niños {100 * sin:.1f} %")
 
     # H3: viajar en pareja (2 adultos) frente a solo cambia el tipo de destino.
-    t = stats.chi2_contingency(pd.crosstab(m.NumberOfAdults, m.Type))
-    pruebas.append(("H3", "Viajar solo o con otro adulto cambia el tipo de destino",
-                    "chi-cuadrado adultos × tipo", t.pvalue, ""))
+    chi2(m.NumberOfAdults, "H3", "Viajar solo o con otro adulto cambia el tipo de destino",
+         "el tipo visitado es independiente del número de adultos", "el tipo visitado depende del número de adultos",
+         "adultos (1 o 2)")
 
     # H4: el género cambia el tipo de destino.
-    t = stats.chi2_contingency(pd.crosstab(m.Gender, m.Type))
-    pruebas.append(("H4", "El género cambia el tipo de destino", "chi-cuadrado género × tipo", t.pvalue, ""))
+    chi2(m.Gender, "H4", "El género cambia el tipo de destino",
+         "el tipo visitado es independiente del género", "el tipo visitado depende del género", "género")
 
     # H5: los destinos con mayor Popularity reciben más interacciones.
     por_id = inter.groupby("DestinationID").size().reindex(destinos.DestinationID, fill_value=0)
     rho, p = stats.spearmanr(destinos.Popularity, por_id.values)
     pruebas.append(("H5", "Los destinos con mayor `Popularity` reciben más interacciones",
-                    "correlación de Spearman (1000 IDs)", p, f"ρ = {rho:.3f}"))
+                    "ρ = 0 (no hay relación monótona)", "ρ ≠ 0 (bilateral)",
+                    "correlación de Spearman (1000 IDs)", f"ρ = {rho:.3f}", p, ""))
 
     # H6: las visitas ocurren en la mejor temporada del destino (solo historial: tiene fecha).
     meses = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
@@ -283,21 +304,25 @@ def s4_hipotesis(inter, usuarios, destinos, historial):
     sims = np.array([np.mean([en_temporada(r, mm) for r, mm in zip(rng.permutation(temporada), mes)]) for _ in range(N_SIMULACIONES)])
     p = float(np.mean(sims >= obs))
     pruebas.append(("H6", "Las visitas ocurren en la mejor temporada del destino",
-                    "permutación (solo historial)", p, f"en temporada {100 * obs:.1f} % (azar {100 * sims.mean():.1f} %)"))
+                    f"el % de visitas en temporada es el del azar ({100 * sims.mean():.1f} %)",
+                    "el % en temporada es mayor que el del azar (unilateral)",
+                    f"permutación, {N_SIMULACIONES} repeticiones (solo historial)",
+                    f"en temporada {100 * obs:.1f} %", p, f"en temporada {100 * obs:.1f} % (azar {100 * sims.mean():.1f} %)"))
 
     m_pruebas = len(pruebas)
     tabla = pd.DataFrame([{
-        "hipótesis": h_id, "enunciado": txt, "prueba": prueba, "p": round(p, 3),
-        "p_bonferroni": round(bonferroni(p, m_pruebas), 3),
-        "¿se sostiene? (α = 0,05 tras corregir)": "sí" if bonferroni(p, m_pruebas) < 0.05 else "no",
+        "hipótesis": h_id, "enunciado": txt, "H0": h0, "H1": h1, "prueba": prueba, "estadístico": est,
+        "p_valor": round(p, 3), "p_valor_corregido": round(bonferroni(p, m_pruebas), 3),
+        "decisión (α = 0,05)": ("se rechaza H0" if bonferroni(p, m_pruebas) < 0.05
+                                else "no se rechaza H0: no hay evidencia suficiente"),
         "detalle": det,
-    } for h_id, txt, prueba, p, det in pruebas])
+    } for h_id, txt, h0, h1, prueba, est, p, det in pruebas])
     explicacion = (
-        "Hipótesis razonables sobre qué haría que un viajero prefiera un destino, cada una contrastada con "
-        "una prueba. Como se hacen **varias pruebas a la vez**, aumenta la probabilidad de encontrar un "
-        "«resultado significativo» por casualidad; por eso se aplica la **corrección de Bonferroni** "
-        f"(multiplicar cada p por el número de pruebas, {m_pruebas}). Una hipótesis se sostiene solo si su p "
-        "corregido es menor que 0,05."
+        "Hipótesis razonables sobre qué haría que un viajero prefiera un destino. Para cada una: hipótesis nula "
+        "(H0, «no hay relación»), alternativa (H1), prueba y estadístico. Como se hacen **varias pruebas a la vez**, "
+        "aumenta la probabilidad de encontrar un «resultado significativo» por casualidad; por eso se aplica la "
+        f"**corrección de Bonferroni**: p-valor corregido = mín(1, {m_pruebas} × p-valor). Se rechaza H0 solo si el "
+        f"p-valor corregido es menor que 0,05 (equivale a p-valor < 0,05/{m_pruebas} = {0.05 / m_pruebas:.4f})."
     )
     return "4. Hipótesis sobre qué explica las preferencias", explicacion, tabla
 

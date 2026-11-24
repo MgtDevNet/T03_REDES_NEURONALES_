@@ -806,10 +806,10 @@ $O_j$ = observados, $E_j$ = esperados. Bajo $H_0$, $\chi^2$ sigue aproximadament
 chi-cuadrado con $k-1-q$ grados de libertad, donde $q$ es el número de parámetros estimados de los
 datos. Requiere $E_j \ge 5$ aproximadamente; por eso las categorías raras se agrupan.
 
-> **En nuestro trabajo.** (a) Notas de 1 a 5 frente a uniforme ($E_j \approx 200$): p = 0,66
+> **En nuestro trabajo.** (a) Notas de 1 a 5 frente a uniforme ($E_j \approx 200$): p-valor = 0,66
 > (reseñas) y 0,12 (historial) → compatibles con notas sorteadas al azar (inventario, tabla 4).
 > (b) Interacciones por usuario y por destino frente a Poisson (se estima la media, $q=1$):
-> p = 0,28 y 0,998 → la «cola larga» es la del azar (descriptivo, tabla 1).
+> p-valor = 0,28 y 0,998 → la «cola larga» es la del azar (descriptivo, tabla 1).
 
 ### 22.3 Chi-cuadrado de independencia (tablas cruzadas)
 
@@ -823,9 +823,9 @@ E_{ab} = \frac{(\text{total de la fila } a)\,(\text{total de la columna } b)}{\t
 
 Se usa el mismo $\chi^2$, con $(f-1)(c-1)$ grados de libertad.
 
-> **En nuestro trabajo.** Texto de la reseña × tipo de destino: p = 0,88 (el texto no tiene
-> relación con el destino). Perfil × tipo: p = 0,019 (ver 22.7). Con/sin niños, adultos y
-> género × tipo: p = 0,19, 0,16 y 0,98.
+> **En nuestro trabajo.** Texto de la reseña × tipo de destino: p-valor = 0,88 (el texto no tiene
+> relación con el destino). Perfil × tipo: p-valor = 0,019 (ver 22.7). Con/sin niños, adultos y
+> género × tipo: p-valor = 0,19, 0,16 y 0,98.
 
 ### 22.4 Correlación de Pearson y de Spearman
 
@@ -837,7 +837,7 @@ Se usa el mismo $\chi^2$, con $(f-1)(c-1)$ grados de libertad.
 Ambas van de −1 a 1. $H_0$: la correlación es 0.
 
 > **En nuestro trabajo.** Nota frente a `Popularity`: $r$ = 0,04 y 0,03, no significativas
-> (inventario, tabla 5). `Popularity` frente a número de interacciones: $\rho$ = −0,01, p = 0,72
+> (inventario, tabla 5). `Popularity` frente a número de interacciones: $\rho$ = −0,01, p-valor = 0,72
 > (H5).
 
 ### 22.5 Prueba binomial
@@ -846,7 +846,7 @@ Ambas van de −1 a 1. $H_0$: la correlación es 0.
 plausible haber visto $k$ éxitos? Se usa la distribución binomial $B(n, p_0)$.
 
 > **En nuestro trabajo.** De 1998 interacciones, 846 coinciden con las preferencias declaradas;
-> bajo $H_0$, $p_0 = 0{,}40$. Prueba unilateral ($k$ mayor de lo esperado): p = 0,017.
+> bajo $H_0$, $p_0 = 0{,}40$. Prueba unilateral ($k$ mayor de lo esperado): p-valor = 0,017.
 
 ### 22.6 Pruebas de permutación y simulación (el «azar» construido a mano)
 
@@ -867,8 +867,8 @@ azar.
 **Ventaja:** casi no hace supuestos, y se entiende sin fórmulas («¿qué tan raro es lo que vimos
 comparado con el azar?»).
 
-> **En nuestro trabajo.** Preferencias frente a tipo: p = 0,019 (5000 permutaciones). Temporada:
-> p = 0,30. Gini por ID: el observado (0,383) cae dentro del 95 % del azar (0,369–0,402).
+> **En nuestro trabajo.** Preferencias frente a tipo: p-valor = 0,019 (5000 permutaciones). Temporada:
+> p-valor = 0,30. Gini por ID: el observado (0,383) cae dentro del 95 % del azar (0,369–0,402).
 
 ### 22.7 El problema de las pruebas múltiples y la corrección de Bonferroni
 
@@ -906,7 +906,7 @@ alternativas menos estrictas (Holm, Benjamini–Hochberg), aunque con 6 pruebas 
 pequeña.
 
 > **En nuestro trabajo.** En la tarea 2 se contrastaron 6 hipótesis sobre qué explica las
-> preferencias. H1 (preferencias → tipo visitado) tenía p = 0,019; corregido, $6 \times 0{,}019
+> preferencias. H1 (preferencias → tipo visitado) tenía p-valor = 0,019; corregido, $6 \times 0{,}019
 > = 0{,}11 > 0{,}05$, así que **ya no es concluyente**. Las demás tampoco se sostienen. La
 > conclusión honesta es «una diferencia pequeña que no resiste la corrección por pruebas
 > múltiples», no «hay una relación significativa».
@@ -932,3 +932,49 @@ produce el azar, y no con 0.
 > **En nuestro trabajo.** Gini por ID = 0,383, prácticamente igual al del azar (0,386 de media):
 > la desigualdad que se ve en la figura de Lorenz es solo la del azar.
 
+### 22.9 El intervalo del azar paso a paso (ejemplo con el Gini)
+
+En la sección 3.2 del informe se dice que el Gini observado (0,383) «cae dentro del rango del azar
+(0,369–0,402)». Ese rango **no sale de una fórmula**: se obtiene con una simulación (22.6). Así se
+construye (`src/descriptivo.py`, función `s2_concentracion`, semilla 0):
+
+1. **Simular un reparto al azar.** Se toman las mismas 1998 interacciones y cada una se asigna a
+   uno de los 1000 destinos con probabilidad 1/1000, como lanzar 1998 veces un dado de 1000 caras.
+   Eso es una distribución **multinomial**:
+   `rng.multinomial(1998, np.full(1000, 1/1000))`. En la simulación 1, los IDs 1 a 10 recibieron
+   `[2, 1, 0, 0, 3, 4, 2, 3, 2, 4]`: nadie prefiere ningún destino, y aun así unos quedan con 0 y
+   otros con 4.
+2. **Calcular el Gini de ese reparto** y **repetir 2000 veces**. Los primeros cinco Gini fueron
+   0,374; 0,403; 0,381; 0,386; 0,397. Entre los 2000, el mínimo fue 0,356 y el máximo 0,410.
+3. **Quedarse con el 95 % central.** Se ordenan los 2000 valores y se quita el 2,5 % de cada
+   extremo (50 abajo y 50 arriba). Quedan los valores en las posiciones 50 y 1950, que son los
+   **percentiles 2,5 y 97,5**: **0,369 y 0,402**. Ese es el «intervalo del azar».
+4. **Comparar.** Si el valor observado cae dentro, una concentración como la real aparece al azar
+   con frecuencia. El **p-valor** sale de las mismas simulaciones: 1219 de las 2000 tuvieron un
+   Gini igual o mayor que 0,383, así que p-valor = 1219/2000 = 0,61.
+
+La **banda gris** de la curva de Lorenz se hace igual: en cada punto del eje x se toma el 95 %
+central de las 2000 curvas simuladas. Para los 5 lugares se repite todo con probabilidad 1/5 por
+lugar (rango 0,009–0,040; p-valor = 0,37).
+
+**Qué sale de los datos y qué sale de la simulación.** Es fácil confundirlos:
+
+| Sale de **contar los datos reales** (lo que pasó) | Sale de **la simulación** (qué daría el azar) |
+|---|---|
+| % de cada lugar (Leh Ladakh 422/1998 = 21,1 % … Jaipur City 18,8 %) | Intervalo del Gini: 0,369–0,402 (ID) y 0,009–0,040 (lugar) |
+| 134 destinos (13,4 %) sin interacciones | Top 10 % del azar: 23,8 % (promedio de las 2000) |
+| Top 10 % observado: 23,6 % | p-valores 0,61 y 0,37 |
+| Gini observado: 0,383 (ID) y 0,025 (lugar) | Banda gris de la curva de Lorenz |
+| Curva azul de Lorenz y barras azules | |
+
+El **20 % por lugar** no necesita simulación: si los 5 lugares son igual de probables, a cada uno
+le toca 1/5. Lo que aporta la simulación es **cuánto se puede alejar** un lugar del 20 % por pura
+suerte.
+
+**¿Por qué simular y no usar una fórmula?** El Gini no tiene una distribución sencilla conocida
+bajo el azar. La simulación es exacta para nuestro caso (1998 interacciones, 1000 destinos) y se
+explica sin fórmulas. Con 2000 repeticiones los extremos del intervalo son estables al tercer
+decimal; con más repeticiones apenas cambiarían.
+
+> **En resumen:** los datos dicen *qué pasó*; la simulación dice *qué tan raro sería eso si todo
+> fuera al azar*.

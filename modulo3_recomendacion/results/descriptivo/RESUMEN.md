@@ -38,6 +38,13 @@ El **coeficiente de Gini** resume la concentración (0 = todos los destinos reci
 
 - Interacciones por lugar: Leh Ladakh: 422 (21.1 %), Kerala Backwaters: 412 (20.6 %), Taj Mahal: 408 (20.4 %), Goa Beaches: 380 (19.0 %), Jaipur City: 376 (18.8 %). Al azar, cada lugar tendría ≈ 20 %.
 
+**Cómo se construye el intervalo del azar (por ID):**
+- Simulación 1, interacciones de los IDs 1 a 10: [2, 1, 0, 0, 3, 4, 2, 3, 2, 4].
+- Gini de las simulaciones 1 a 5: 0.374, 0.403, 0.381, 0.386, 0.397.
+- Mínimo y máximo de los 2000 Gini: 0.356 y 0.410.
+- Ordenados, posición 50 y 1950 (percentiles 2,5 y 97,5): 0.369 y 0.402.
+- Simulaciones con Gini ≥ observado (0.383): 1219 de 2000 → p-valor = 0.61.
+
 | nivel | gini_observado | gini_azar_media | gini_azar_int95 | p_(azar≥observado) | top10%_observado_% | top10%_azar_% |
 |---|---|---|---|---|---|---|
 | 1000 IDs | 0.383 | 0.386 | 0.369–0.402 | 0.61 | 23.6 | 23.8 |
@@ -62,15 +69,15 @@ _CSV: `results/descriptivo/tabla_03.csv`_
 
 ## 4. Hipótesis sobre qué explica las preferencias
 
-Hipótesis razonables sobre qué haría que un viajero prefiera un destino, cada una contrastada con una prueba. Como se hacen **varias pruebas a la vez**, aumenta la probabilidad de encontrar un «resultado significativo» por casualidad; por eso se aplica la **corrección de Bonferroni** (multiplicar cada p por el número de pruebas, 6). Una hipótesis se sostiene solo si su p corregido es menor que 0,05.
+Hipótesis razonables sobre qué haría que un viajero prefiera un destino. Para cada una: hipótesis nula (H0, «no hay relación»), alternativa (H1), prueba y estadístico. Como se hacen **varias pruebas a la vez**, aumenta la probabilidad de encontrar un «resultado significativo» por casualidad; por eso se aplica la **corrección de Bonferroni**: p-valor corregido = mín(1, 6 × p-valor). Se rechaza H0 solo si el p-valor corregido es menor que 0,05 (equivale a p-valor < 0,05/6 = 0.0083).
 
-| hipótesis | enunciado | prueba | p | p_bonferroni | ¿se sostiene? (α = 0,05 tras corregir) | detalle |
-|---|---|---|---|---|---|---|
-| H1 | Las personas visitan los tipos de destino que dicen preferir | chi-cuadrado perfil × tipo | 0.019 | 0.113 | no | coinciden 42.3 % (azar ≈ 40 %) |
-| H2 | Quienes viajan con niños eligen más playa y naturaleza | chi-cuadrado con/sin niños × tipo | 0.19 | 1.0 | no | playa+naturaleza: con niños 38.9 %, sin niños 41.1 % |
-| H3 | Viajar solo o con otro adulto cambia el tipo de destino | chi-cuadrado adultos × tipo | 0.159 | 0.952 | no |  |
-| H4 | El género cambia el tipo de destino | chi-cuadrado género × tipo | 0.982 | 1.0 | no |  |
-| H5 | Los destinos con mayor `Popularity` reciben más interacciones | correlación de Spearman (1000 IDs) | 0.721 | 1.0 | no | ρ = -0.011 |
-| H6 | Las visitas ocurren en la mejor temporada del destino | permutación (solo historial) | 0.295 | 1.0 | no | en temporada 73.0 % (azar 72.6 %) |
+| hipótesis | enunciado | H0 | H1 | prueba | estadístico | p_valor | p_valor_corregido | decisión (α = 0,05) | detalle |
+|---|---|---|---|---|---|---|---|---|---|
+| H1 | Las personas visitan los tipos de destino que dicen preferir | el tipo visitado es independiente del perfil de preferencias | el tipo visitado depende del perfil | chi-cuadrado de independencia perfil × tipo | χ² = 18.35, gl = 8 (tabla 3×5; mínimo esperado 123 ≥ 5) | 0.019 | 0.113 | no se rechaza H0: no hay evidencia suficiente | coinciden 42.3 % (azar ≈ 40 %) |
+| H2 | Quienes viajan con niños eligen más playa y naturaleza | el tipo visitado es independiente de viajar con niños | el tipo visitado depende de viajar con niños | chi-cuadrado de independencia con/sin niños × tipo | χ² = 6.13, gl = 4 (tabla 2×5; mínimo esperado 129 ≥ 5) | 0.19 | 1.0 | no se rechaza H0: no hay evidencia suficiente | playa+naturaleza: con niños 38.9 %, sin niños 41.1 % |
+| H3 | Viajar solo o con otro adulto cambia el tipo de destino | el tipo visitado es independiente del número de adultos | el tipo visitado depende del número de adultos | chi-cuadrado de independencia adultos (1 o 2) × tipo | χ² = 6.60, gl = 4 (tabla 2×5; mínimo esperado 180 ≥ 5) | 0.159 | 0.952 | no se rechaza H0: no hay evidencia suficiente |  |
+| H4 | El género cambia el tipo de destino | el tipo visitado es independiente del género | el tipo visitado depende del género | chi-cuadrado de independencia género × tipo | χ² = 0.40, gl = 4 (tabla 2×5; mínimo esperado 186 ≥ 5) | 0.982 | 1.0 | no se rechaza H0: no hay evidencia suficiente |  |
+| H5 | Los destinos con mayor `Popularity` reciben más interacciones | ρ = 0 (no hay relación monótona) | ρ ≠ 0 (bilateral) | correlación de Spearman (1000 IDs) | ρ = -0.011 | 0.721 | 1.0 | no se rechaza H0: no hay evidencia suficiente |  |
+| H6 | Las visitas ocurren en la mejor temporada del destino | el % de visitas en temporada es el del azar (72.6 %) | el % en temporada es mayor que el del azar (unilateral) | permutación, 2000 repeticiones (solo historial) | en temporada 73.0 % | 0.295 | 1.0 | no se rechaza H0: no hay evidencia suficiente | en temporada 73.0 % (azar 72.6 %) |
 
 _CSV: `results/descriptivo/tabla_04.csv`_
