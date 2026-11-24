@@ -93,7 +93,9 @@ variable categórica con 5 niveles** (el lugar) más una numérica (`Popularity`
 
    Lo que **sí** aparece es una relación débil entre lo que el usuario dice preferir y lo que
    visita: el 42,3 % de sus interacciones van a un tipo de destino preferido, frente al 40 % que se
-   esperaría por azar (permutación p = 0,019) [tabla 6].
+   esperaría por azar (permutación p = 0,019) [tabla 6]. Sin embargo, esta diferencia **no se
+   sostiene** cuando se corrige por hacer varias pruebas a la vez (p corregido = 0,11; ver
+   análisis descriptivo, sección 3.4): es una señal, en el mejor de los casos, débil e incierta.
 
 ### 1.4 ¿Qué implica para nuestras conclusiones?
 
@@ -104,9 +106,10 @@ variable categórica con 5 niveles** (el lugar) más una numérica (`Popularity`
   puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso
   incluiremos un recomendador **aleatorio** como piso y compararemos con 30 semillas antes de
   afirmar que un modelo es mejor que otro.
-- **Si la red supera a la popularidad, ya sabemos dónde buscar la causa:** la única señal
-  detectada es la débil relación entre preferencias y tipo de destino, que solo un modelo con
-  variables de contenido puede aprovechar.
+- **Si la red supera a la popularidad, ya sabemos dónde buscar la causa:** la única pista de
+  señal es la débil relación entre preferencias y tipo de destino (que además no sobrevive a la
+  corrección por pruebas múltiples), y solo un modelo con variables de contenido podría
+  aprovecharla. Lo más probable es que ningún modelo supere claramente al azar.
 - **El catálogo real tiene 5 lugares.** Esto obliga a la decisión de modelado de la sección
   siguiente (1000 IDs para el modelo, 5 lugares para el cliente).
 
@@ -122,9 +125,14 @@ variable categórica con 5 niveles** (el lugar) más una numérica (`Popularity`
 
 > Borrador en lenguaje sencillo. Evidencia: tablas 9 y 14 del inventario.
 
-**Dónde y cuándo.** La recomendación aparece en la página de inicio de la app o la web de la
-empresa, en una sección «Destinos para ti», cada vez que el cliente inicia sesión. Si el cliente
-es nuevo, aparece justo después de registrarse, cuando acaba de indicar sus preferencias de viaje.
+**Dónde y cuándo (en el negocio).** La recomendación aparecería en la página de inicio de la app
+o la web de la empresa, en una sección «Destinos para ti», cuando el cliente entra a su cuenta.
+Para un cliente sin historial, se mostraría en cuanto indique sus preferencias de viaje.
+
+**En nuestro prototipo.** La aplicación web simula ese momento sin registro ni base de datos. Se
+elige un usuario existente del conjunto de datos (el equivalente a «iniciar sesión») o se llena un
+formulario de preferencias para un cliente nuevo. Las recomendaciones se calculan al instante con
+el modelo guardado, y el perfil nuevo no se almacena.
 
 **Cuántos destinos.** Al cliente se le muestran **3 lugares**. Una lista corta se lee como una
 recomendación y no como un catálogo. Como el catálogo real tiene solo 5 lugares, 3 ya es el
@@ -144,17 +152,88 @@ menos de 3 lugares para mostrar.
 - Cliente nuevo: solo lo que indicó en el formulario (preferencias y tamaño del grupo). Ese caso
   se trata en la pregunta de negocio 1.
 
-## 3. Análisis descriptivo (tarea 2)
-- ✅ Usuarios por número de interacciones (unión): 1 → 252, 2 → 280, 3 → 195, 4 → 79, 5 → 31,
-  6 → 17, 7 → 4.
-- ✅ 134 destinos sin interacciones y 271 con una sola. El más popular tiene solo 7.
-- ⏳ Figura de cola larga (por usuario y por destino).
-- 💡 Hipótesis sobre las preferencias: el enunciado pide formularlas. Hay que plantearlas
-  (familia → destinos de playa, etc.) **y contrastarlas con datos**. El cruce preferencias ×
-  tipo visitado muestra una relación **débil pero significativa** (tabla 6 del inventario):
-  Nature/Adventure coincide el 45,4 %, Beaches/Historical el 43,0 % y City/Historical el 38,6 %
-  (este último, por debajo del azar). 💡 Es una buena historia para el informe: la primera
-  impresión fue «no hay relación», y la prueba formal mostró que sí la hay, aunque pequeña.
+## 3. Análisis descriptivo (tarea 2) — ✅ BORRADOR LISTO
+
+> Borrador en lenguaje sencillo. Evidencia: `results/descriptivo/RESUMEN.md` (tablas 1–4) y las
+> figuras `figures/descriptivo_cola_larga.png` y `figures/descriptivo_concentracion.png`.
+> Se usan las 1998 interacciones (describe el dataset; la partición no interviene).
+
+**Idea que guía el análisis.** Para saber si un patrón dice algo sobre las preferencias de los
+viajeros, lo comparamos con lo que produciría **el puro azar**: las mismas 1998 interacciones
+repartidas sin ninguna preferencia. Si los datos se parecen al azar, el patrón no revela nada.
+
+### 3.1 Interacciones por usuario y por destino (figura: cola larga)
+Contando los 999 usuarios (incluidos los 141 sin interacciones), cada usuario tiene en promedio 2 interacciones, y cada destino (ID) también 2. Para saber si esa distribución dice algo, la comparamos con la que produciría el azar. Si las interacciones se hubieran sorteado al azar, cada una de las $N = 1998$ caería en cualquiera de los 1000 destinos con la misma probabilidad, $p = 1/1000 = 0{,}001$. Así, el número de interacciones de un destino concreto es el número de «aciertos» en 1998 intentos independientes con probabilidad 0,001: una variable binomial, $B(N = 1998,\ p = 0{,}001)$.
+
+Cuando $N$ es grande y $p$ es pequeño, la binomial se aproxima muy bien por una distribución de Poisson con media $\lambda = N \cdot p$, cuya fórmula es más simple:
+
+$$P(k) = \frac{e^{-\lambda}\,\lambda^k}{k!}, \qquad \lambda = 1998 \times 0{,}001 = 1{,}998 \approx 2.$$
+
+Con los usuarios pasa lo mismo: cada interacción pertenece a cualquiera de los 999 usuarios con $p = 1/999$, así que $\lambda = 1998/999 = 2$. Multiplicando $P(k)$ por el número de destinos (1000) o de usuarios (999) se obtienen los valores esperados de la Tabla 7. Por ejemplo, se esperarían $1000 \times e^{-1{,}998} \times 1{,}998 \approx 270{,}9$ destinos con una sola interacción, y hay 271.
+
+| k | Usuarios esperados (λ = 2) | Usuarios observados | Destinos esperados (λ = 1,998) | Destinos observados |
+|---|---|---|---|---|
+| 0 | 135,2 | 141 | 135,6 | 134 |
+| 1 | 270,4 | 252 | 270,9 | 271 |
+| 2 | 270,4 | 280 | 270,7 | 270 |
+| 3 | 180,3 | 195 | 180,3 | 184 |
+| 4 | 90,1 | 79 | 90,0 | 89 |
+| 5 | 36,1 | 31 | 36,0 | 37 |
+| 6 | 12,0 | 17 | 12,0 | 11 |
+| ≥ 7 | 4,5 | 4 | 4,5 | 4 |
+
+La Figura 1 muestra que la forma de ambas distribuciones es muy parecida a la del azar, y las pruebas de bondad de ajuste (chi-cuadrado) no permiten rechazar que provengan de una Poisson (p = 0,28 por usuario y p = 0,998 por destino). Es decir, no hay destinos más populares ni usuarios más activos de lo que produciría el azar, y por eso no hay cola larga. Esto no dice si cada usuario prefiere ciertos tipos de destino; esa relación se analiza aparte. [tabla 1]
+💡 En datos reales de turismo, unos pocos destinos famosos y unos pocos viajeros frecuentes
+concentran gran parte de la actividad, lo que produce una cola larga: muchos destinos y usuarios con
+muy poca actividad y unos pocos con muchísima.
+
+### 3.2 Concentración en los destinos populares (figura: concentración)
+- **Por ID:** el 10 % de los destinos con más interacciones se lleva el 23,6 % de ellas; al azar
+  sería el 23,8 %. El coeficiente de Gini (0 = reparto parejo, 1 = todo en un destino) es 0,383,
+  dentro del rango del azar (0,369–0,402) [tabla 2].
+- **Por lugar real:** los 5 lugares reciben entre el 18,8 % (Jaipur City) y el 21,1 % (Leh Ladakh);
+  al azar, cada uno tendría ≈ 20 %. Tampoco hay concentración (Gini 0,025, rango del azar
+  0,009–0,040).
+- 💡 Conclusión: **no hay destinos «estrella»**. Esto anticipa que la popularidad, como
+  recomendador, tendrá poco que aprovechar, y es la base de la pregunta de negocio 2
+  (concentración de la demanda).
+
+### 3.3 Usuarios con pocas interacciones
+De los 999 usuarios, 141 (14,1 %) no tienen ninguna interacción, 252 (25,2 %) tienen exactamente
+una y, en total, el 67,4 % tiene 2 o menos. Solo 52 (5,2 %) tienen 5 o más. La mediana es 2 y el
+máximo, 7 [tabla 3]. 💡 Esto explica por qué el recomendador tiene tan poca información por
+usuario, y por qué conviene evaluar por separado a los usuarios con pocas y muchas interacciones
+(tarea 6).
+
+### 3.4 Hipótesis sobre qué explica las preferencias
+Planteamos seis hipótesis razonables sobre qué haría que un viajero prefiera un destino, y
+contrastamos cada una con una prueba estadística [tabla 4]:
+
+| Hipótesis | Resultado | ¿Se sostiene? |
+|---|---|---|
+| H1. Las personas visitan los tipos de destino que dicen preferir | coinciden 42,3 % frente a ≈ 40 % del azar; p = 0,019 (corregido 0,11) | no |
+| H2. Quienes viajan con niños eligen más playa y naturaleza | 38,9 % con niños frente a 41,1 % sin niños; p = 0,19 | no |
+| H3. Viajar solo o con otro adulto cambia el tipo de destino | p = 0,16 | no |
+| H4. El género cambia el tipo de destino | p = 0,98 | no |
+| H5. Los destinos con mayor `Popularity` reciben más interacciones | ρ = −0,01; p = 0,72 | no |
+| H6. Las visitas ocurren en la mejor temporada del destino | 73,0 % en temporada frente a 72,6 % del azar; p = 0,30 | no |
+
+**Por qué se corrige el p-valor.** Si se hacen muchas pruebas, alguna saldrá «significativa» por
+pura suerte (con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es ≈ 26 %).
+La corrección de Bonferroni multiplica cada p por el número de pruebas. H1 tenía p = 0,019 y, al
+corregirlo, queda en 0,11: **ya no es concluyente**.
+
+💡 **Conclusión de la tarea 2:** ninguna de las explicaciones razonables de las preferencias se
+sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo
+que es coherente con que el dataset sea sintético. Para el modelado, esto significa que
+**esperamos que ningún modelo supere con claridad al azar**, y que cualquier diferencia pequeña
+debe confirmarse con las 30 semillas antes de afirmarse.
+
+💡 *Historia para el informe (también para la «Cacería de la alucinación»):* el análisis de H1 se
+hizo en tres momentos: (1) mirando solo el historial, «no hay relación» (p = 0,14); (2) con la
+unión de tablas, «hay una relación débil pero significativa» (p = 0,019); (3) dentro de un
+conjunto de seis hipótesis, «no es concluyente» (p corregido = 0,11). La lección es que la
+conclusión depende de cómo se plantea la prueba, y por eso hay que reportar todo el proceso.
 
 ## 4. Partición (tarea 3) — ✅ BORRADOR LISTO
 
@@ -222,12 +301,50 @@ modelos y las 30 repeticiones con semillas distintas usan exactamente la misma p
   sin ID.
 - ⏳ P2 (concentración), P3 (campaña).
 
-## Cacería de la alucinación
-- 💡 **Candidato fuerte:** el título y la descripción del dataset («India Travel Recommender
-  System», reseñas «generadas por usuarios», un historial de viajes) sugieren datos de
-  comportamiento real con una señal aprovechable, pero el análisis muestra 5 destinos clonados e
-  interacciones sin relación con las preferencias. Se puede contar como: «qué dice la fuente →
-  qué asumiría un análisis apresurado → qué muestran los datos → cómo lo detectamos».
+## Cacería de la alucinación — ✅ BORRADOR (4 hallazgos del módulo 3)
+
+> ⚠️ **Definición correcta (enunciado, pp. 9–10):** errores que generó **una IA** durante el
+> trabajo, no errores de los datos. Cada hallazgo debe incluir: prompt literal, respuesta de la IA,
+> cómo se sospechó, evidencia (derivación, experimento o fuente primaria), corrección y lección.
+> Se exigen ≥ 5 en todo el trabajo, ≥ 1 por módulo, cubriendo ≥ 3 categorías (Matemáticas,
+> Código, Datos del mundo real, Bibliografía, Conceptos). **Un hallazgo inventado se penaliza más
+> que uno faltante.**
+>
+> La propuesta anterior de este archivo («la descripción de Kaggle no coincide con los datos») **no
+> cumplía la definición** y se retiró; ese malentendido de la IA es ahora el hallazgo 3.
+
+Redacción completa, con los prompts literales, en `informe/index.html`, sección 6.
+
+1. **Conclusión estadística prematura (Datos, gravedad alta):** la IA afirmó «las visitas no
+   tienen relación con las preferencias» (solo con el historial, sin prueba) y luego «relación
+   significativa» (p = 0,019). La evidencia es la tabla I-6 y la corrección de Bonferroni en D-4
+   (p corregido = 0,11).
+2. **Correlación incompleta (Datos, baja):** reportó «0,03», omitiendo la de reseñas (0,044) y
+   los p-valores (I-5).
+3. **Hallazgo mal definido (interpretación del enunciado, media):** propuso como «candidato
+   fuerte» un error de los datos y no de una IA.
+4. **Dataset «por escoger» (Datos, baja):** propuso escoger el dataset cuando el enunciado (p. 5)
+   ya lo fija.
+
+- ✅ Verificaciones sin error: el 40 % esperado (recalculado: 40,1 %), Poisson como referencia,
+  partición sin fugas.
+- ⏳ **Pendiente (Bibliografía):** verificar en la fuente primaria las referencias que propuso la
+  IA en `teoria/` (DOI, volumen, páginas). Si alguna falla, es un hallazgo de esa categoría.
+- 💡 Hasta ahora el módulo 3 cubre sobre todo la categoría «Datos». Conviene buscar activamente
+  errores de **Código** y **Matemáticas** cuando se programen los modelos y las métricas (por
+  ejemplo, revisar a mano el cálculo de NDCG y la derivación de BPR o BCE).
+
+## Ética (aporte del módulo 3 a la sección común)
+- 💡 **Privacidad por diseño en la app:** no hay registro ni base de datos. Los perfiles nuevos
+  existen solo durante la sesión del navegador y no se guardan, así que la app **no almacena datos
+  personales**. Esto también evita la tentación de reutilizarlos sin consentimiento.
+- 💡 En el preprocesamiento se eliminaron `Name` y `Email` (aunque sean ficticios): el modelo no
+  necesita identificadores personales, solo un ID anónimo y variables de preferencia.
+- 💡 Sesgos: los datos son sintéticos (3 perfiles de preferencias, género binario, 5 lugares), así
+  que el modelo no representa a la población real; si se implementara, habría que reentrenar con
+  datos reales y auditar los sesgos (por ejemplo, la concentración en pocos destinos, P2).
+- 💡 Riesgo si se implementara: recomendar siempre los mismos destinos podría saturar rutas
+  (conexión con el módulo 1) y reducir la diversidad de lo que ven los clientes.
 
 ## Fundamentación matemática
 - ✅ Borrador en `teoria/01_fundamentos_sistemas_recomendacion.md` (factorización de matrices,

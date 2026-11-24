@@ -1,0 +1,3 @@
+nivel,gini_observado,gini_azar_media,gini_azar_int95,p_(azar≥observado),top10%_observado_%,top10%_azar_%
+1000 IDs,0.383,0.386,0.369–0.402,0.61,23.6,23.8
+5 lugares,0.025,0.023,0.009–0.040,0.374,—,—

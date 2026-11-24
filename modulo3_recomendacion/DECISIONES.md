@@ -338,3 +338,63 @@ interacción.
 727 usuarios tienen 1 interacción, 79 tienen 2, 31 tienen 3, 17 tienen 4, 4 tienen 5 y 141 no
 tienen ninguna (usuarios sin actividad). Habrá que fijar el umbral de «pocas» frente a «muchas»
 con esta distribución.
+
+---
+
+## Paso 6 — Tarea 2: análisis descriptivo, `src/descriptivo.py` (2026-11-23) ✅ hecho
+
+**Qué hace:** compara cada patrón de los datos con lo que produciría **el azar** (las mismas 1998
+interacciones repartidas sin preferencias), y genera las dos figuras mínimas del módulo sobre la
+cola larga y la concentración, más cuatro tablas en `results/descriptivo/`.
+
+**Decisiones de método:**
+- **Se usan las 1998 interacciones**, no solo las de entrenamiento: es una descripción del
+  dataset, no una evaluación de modelos, así que no hay riesgo de fuga.
+- **Referencia de azar:** Poisson para las distribuciones por usuario y por destino (es la
+  distribución que resulta de repartir interacciones al azar); 2000 simulaciones multinomiales
+  para la concentración (Gini y participación del top 10 %); permutaciones para la temporada.
+- **Corrección de Bonferroni** para las 6 hipótesis, porque se prueban juntas.
+
+**Resultados:**
+- Las distribuciones por usuario y por destino no se distinguen de Poisson (p = 0,28 y 0,998).
+- La concentración es la del azar (Gini por ID 0,383, rango del azar 0,369–0,402; por lugar,
+  18,8–21,1 % cada uno).
+- El 39,3 % de los usuarios tiene 0 o 1 interacción.
+- **Ninguna de las 6 hipótesis se sostiene tras la corrección.**
+
+> ⚠️ **Matiz sobre H1 (preferencias → tipo visitado).** En el paso 1 se reportó como «débil pero
+> significativa» (p = 0,019). Como prueba aislada lo es; pero dentro de un conjunto de seis
+> hipótesis, el p corregido es 0,11 y deja de ser concluyente. La redacción del informe debe
+> decir «una diferencia pequeña (42,3 % frente a 40 %) que no resiste la corrección por pruebas
+> múltiples». Se actualizaron las secciones 1.3 y 1.4 del borrador en `IDEAS_INFORME.md`.
+
+**Detalle gráfico:** las figuras siguen la guía de visualización (un color para lo observado,
+gris discontinuo para la referencia del azar, paneles separados en lugar de dos ejes, etiquetas
+directas) y se revisaron visualmente para que no haya etiquetas superpuestas.
+
+---
+
+## Requisito de la app — sin registro ni base de datos (2026-11-24) ✅ decidido
+
+**Qué se decidió:** la app del módulo 3 **no tiene registro ni base de datos**.
+- «Usuario existente» = un selector con los IDs de `data/processed/usuarios.csv` (simula «iniciar
+  sesión») que muestra su historial y sus recomendaciones.
+- «Perfil nuevo» = un formulario (preferencias, adultos, niños, género) con las opciones de
+  `data/processed/preferencias.json`. Las recomendaciones se calculan al instante con el modelo
+  guardado y el perfil **vive solo en la sesión**: no se escribe en ningún archivo.
+
+**Por qué:**
+1. El enunciado no lo pide: exige «elegir un usuario existente o crear un perfil nuevo y ver sus K
+   destinos recomendados», usando «los modelos guardados, sin reentrenar».
+2. Guardar perfiles no aportaría nada al modelo: sin reentrenar, un usuario nuevo siempre se
+   recomienda solo con su perfil (arranque en frío, pregunta 1).
+3. Menos piezas que puedan fallar: la app debe levantarse «con un solo comando» en un clon limpio.
+4. Privacidad: la app no almacena datos personales (argumento para la sección de ética).
+
+**Consecuencia para el caso de uso:** el texto distingue dos niveles: el escenario de negocio
+(la empresa mostraría «Destinos para ti» al entrar a la cuenta) y el prototipo (la app lo simula
+sin registro). Se corrigieron `IDEAS_INFORME.md` (sección 2) e `informe/index.html`.
+
+**Consecuencia para el código (paso 11):** `predict.py` debe ofrecer
+`recomendar_perfil_nuevo(preferencias: dict, k)` que funcione **sin ID de usuario**. Esto favorece
+una red cuya torre de usuario pueda funcionar solo con variables de contenido (dos torres).

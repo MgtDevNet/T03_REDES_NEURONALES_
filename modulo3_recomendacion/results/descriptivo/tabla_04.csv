@@ -1,0 +1,7 @@
+hipótesis,enunciado,prueba,p,p_bonferroni,"¿se sostiene? (α = 0,05 tras corregir)",detalle
+H1,Las personas visitan los tipos de destino que dicen preferir,chi-cuadrado perfil × tipo,0.019,0.113,no,coinciden 42.3 % (azar ≈ 40 %)
+H2,Quienes viajan con niños eligen más playa y naturaleza,chi-cuadrado con/sin niños × tipo,0.19,1.0,no,"playa+naturaleza: con niños 38.9 %, sin niños 41.1 %"
+H3,Viajar solo o con otro adulto cambia el tipo de destino,chi-cuadrado adultos × tipo,0.159,0.952,no,
+H4,El género cambia el tipo de destino,chi-cuadrado género × tipo,0.982,1.0,no,
+H5,Los destinos con mayor `Popularity` reciben más interacciones,correlación de Spearman (1000 IDs),0.721,1.0,no,ρ = -0.011
+H6,Las visitas ocurren en la mejor temporada del destino,permutación (solo historial),0.295,1.0,no,en temporada 73.0 % (azar 72.6 %)

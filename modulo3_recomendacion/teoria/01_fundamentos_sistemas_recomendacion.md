@@ -30,6 +30,7 @@
 19. [Mapa: del enunciado a la teoría](#19-mapa-del-enunciado-a-la-teoría)
 20. [Glosario](#20-glosario)
 21. [Referencias](#21-referencias)
+22. [Apéndice: las pruebas estadísticas del análisis de datos](#22-apéndice-las-pruebas-estadísticas-del-análisis-de-datos)
 
 ---
 
@@ -723,6 +724,7 @@ Lo que el enunciado exige para todos los módulos, aplicado aquí:
 | Fundamentación: definición de las métricas | 15 |
 | Figura de embeddings 2D | 17 |
 | Regla de comparación justa | 18 |
+| Pruebas del análisis descriptivo e hipótesis (tarea 2) | 22 |
 
 ---
 
@@ -756,7 +758,177 @@ Lo que el enunciado exige para todos los módulos, aplicado aquí:
   candidatos.)
 - Järvelin, K., & Kekäläinen, J. (2002). *Cumulated Gain-Based Evaluation of IR Techniques.* ACM
   TOIS. (Define DCG/NDCG.)
+- Bland, J. M., & Altman, D. G. (1995). *Multiple significance tests: the Bonferroni method.*
+  BMJ, 310, 170. (Explicación breve de Bonferroni.)
 - Salakhutdinov, R., & Mnih, A. (2008). *Probabilistic Matrix Factorization.* NeurIPS.
   (Interpretación probabilística de la factorización de matrices.)
 - Ricci, F., Rokach, L., & Shapira, B. (eds.) (2022). *Recommender Systems Handbook*, 3.ª ed.
   Springer. (Libro de referencia general.)
+
+---
+
+## 22. Apéndice: las pruebas estadísticas del análisis de datos
+
+Este apéndice explica las pruebas usadas en `src/inventario.py` y `src/descriptivo.py`. No son
+propias de los recomendadores: son estadística general, y sirven para decidir **si un patrón en
+los datos es real o pudo salir por casualidad**.
+
+### 22.1 La lógica común: hipótesis nula y p-valor
+
+Todas las pruebas siguen la misma receta:
+
+1. Se plantea una **hipótesis nula** $H_0$, la versión «aburrida» del mundo: no hay relación, todo
+   es al azar. Por ejemplo, «las 5 notas son igual de probables».
+2. Se calcula un **estadístico**, un número que mide cuánto se alejan los datos de lo que
+   predice $H_0$.
+3. El **p-valor** es la probabilidad de ver un alejamiento **igual o mayor** que el observado
+   **si $H_0$ fuera cierta**.
+4. Si $p < \alpha$ (habitualmente $\alpha = 0{,}05$), se **rechaza** $H_0$: los datos son difíciles de
+   explicar solo por azar.
+
+**Errores comunes al leer un p-valor:**
+- $p > 0{,}05$ **no prueba** que $H_0$ sea cierta; solo dice que no hay evidencia suficiente
+  contra ella.
+- $p$ pequeño **no significa** efecto grande. Con muchos datos, una diferencia diminuta (42,3 %
+  frente a 40 %) puede dar $p$ pequeño. Siempre hay que mirar también **el tamaño del efecto**.
+- $p$ **no es** la probabilidad de que $H_0$ sea cierta.
+
+### 22.2 Chi-cuadrado de bondad de ajuste
+
+**Pregunta:** ¿los conteos observados en $k$ categorías coinciden con los esperados según un
+modelo?
+
+```math
+\chi^2 = \sum_{j=1}^{k}\frac{(O_j - E_j)^2}{E_j}
+```
+
+$O_j$ = observados, $E_j$ = esperados. Bajo $H_0$, $\chi^2$ sigue aproximadamente una distribución
+chi-cuadrado con $k-1-q$ grados de libertad, donde $q$ es el número de parámetros estimados de los
+datos. Requiere $E_j \ge 5$ aproximadamente; por eso las categorías raras se agrupan.
+
+> **En nuestro trabajo.** (a) Notas de 1 a 5 frente a uniforme ($E_j \approx 200$): p = 0,66
+> (reseñas) y 0,12 (historial) → compatibles con notas sorteadas al azar (inventario, tabla 4).
+> (b) Interacciones por usuario y por destino frente a Poisson (se estima la media, $q=1$):
+> p = 0,28 y 0,998 → la «cola larga» es la del azar (descriptivo, tabla 1).
+
+### 22.3 Chi-cuadrado de independencia (tablas cruzadas)
+
+**Pregunta:** ¿dos variables categóricas están relacionadas? Se arma la tabla cruzada (por
+ejemplo, perfil × tipo de destino) y, bajo $H_0$ (independencia), el conteo esperado en la celda
+$(a,b)$ es
+
+```math
+E_{ab} = \frac{(\text{total de la fila } a)\,(\text{total de la columna } b)}{\text{total general}}
+```
+
+Se usa el mismo $\chi^2$, con $(f-1)(c-1)$ grados de libertad.
+
+> **En nuestro trabajo.** Texto de la reseña × tipo de destino: p = 0,88 (el texto no tiene
+> relación con el destino). Perfil × tipo: p = 0,019 (ver 22.7). Con/sin niños, adultos y
+> género × tipo: p = 0,19, 0,16 y 0,98.
+
+### 22.4 Correlación de Pearson y de Spearman
+
+- **Pearson** ($r$): mide relación **lineal** entre dos variables numéricas.
+- **Spearman** ($\rho$): es Pearson aplicado a los **rangos** (posiciones ordenadas). Mide si
+  «a más de una, más de la otra», aunque no sea en línea recta, y es menos sensible a valores
+  extremos.
+
+Ambas van de −1 a 1. $H_0$: la correlación es 0.
+
+> **En nuestro trabajo.** Nota frente a `Popularity`: $r$ = 0,04 y 0,03, no significativas
+> (inventario, tabla 5). `Popularity` frente a número de interacciones: $\rho$ = −0,01, p = 0,72
+> (H5).
+
+### 22.5 Prueba binomial
+
+**Pregunta:** si cada uno de $n$ ensayos es un «éxito» con probabilidad $p_0$ bajo $H_0$, ¿es
+plausible haber visto $k$ éxitos? Se usa la distribución binomial $B(n, p_0)$.
+
+> **En nuestro trabajo.** De 1998 interacciones, 846 coinciden con las preferencias declaradas;
+> bajo $H_0$, $p_0 = 0{,}40$. Prueba unilateral ($k$ mayor de lo esperado): p = 0,017.
+
+### 22.6 Pruebas de permutación y simulación (el «azar» construido a mano)
+
+A veces no hay fórmula para la distribución bajo $H_0$, o depende de supuestos dudosos. La
+alternativa es **construir el azar**:
+
+1. Se rompe a propósito la relación que se quiere probar; por ejemplo, se **barajan** los tipos
+   de destino entre las interacciones, de modo que el perfil del usuario ya no tiene nada que ver
+   con el destino.
+2. Se calcula el estadístico en esos datos barajados.
+3. Se repite miles de veces. El p-valor es la fracción de repeticiones con un estadístico igual o
+   más extremo que el observado.
+
+Una **simulación** es la misma idea cuando el azar se genera desde cero; por ejemplo, repartir
+1998 interacciones uniformemente entre 1000 destinos, 2000 veces, para ver qué Gini produce el
+azar.
+
+**Ventaja:** casi no hace supuestos, y se entiende sin fórmulas («¿qué tan raro es lo que vimos
+comparado con el azar?»).
+
+> **En nuestro trabajo.** Preferencias frente a tipo: p = 0,019 (5000 permutaciones). Temporada:
+> p = 0,30. Gini por ID: el observado (0,383) cae dentro del 95 % del azar (0,369–0,402).
+
+### 22.7 El problema de las pruebas múltiples y la corrección de Bonferroni
+
+**El problema.** Con $\alpha = 0{,}05$, cada prueba tiene un 5 % de probabilidad de dar un falso
+positivo (rechazar $H_0$ siendo cierta). Si se hacen $m$ pruebas independientes, la probabilidad
+de **al menos un** falso positivo es
+
+```math
+P(\text{al menos un falso positivo}) = 1-(1-\alpha)^m
+```
+
+| Pruebas ($m$) | Probabilidad de al menos un falso positivo |
+|---|---|
+| 1 | 5 % |
+| 6 | 26 % |
+| 20 | 64 % |
+
+Es decir: **si se buscan suficientes patrones, siempre aparece alguno «significativo»**, aunque
+los datos sean puro azar. Esto se conoce como *p-hacking* o «la falacia del francotirador de
+Texas»: disparar a la pared y después pintar la diana alrededor del agujero.
+
+**La corrección de Bonferroni.** Para que la probabilidad de **al menos un** falso positivo en
+todo el conjunto (la *tasa de error por familia*) sea como mucho $\alpha$, se exige a cada prueba
+$p < \alpha/m$. Equivalentemente, se multiplica cada p-valor por $m$:
+
+```math
+p_{\text{corregido}} = \min(1,\; m \cdot p)
+```
+
+La justificación es la desigualdad de Boole: $P(\bigcup_j A_j) \le \sum_j P(A_j) = m\cdot\frac{\alpha}{m} = \alpha$.
+
+**Ventajas y desventajas.** Bonferroni es simple y válido aunque las pruebas no sean
+independientes, pero es **conservador**: con muchas pruebas puede ocultar efectos reales. Hay
+alternativas menos estrictas (Holm, Benjamini–Hochberg), aunque con 6 pruebas la diferencia es
+pequeña.
+
+> **En nuestro trabajo.** En la tarea 2 se contrastaron 6 hipótesis sobre qué explica las
+> preferencias. H1 (preferencias → tipo visitado) tenía p = 0,019; corregido, $6 \times 0{,}019
+> = 0{,}11 > 0{,}05$, así que **ya no es concluyente**. Las demás tampoco se sostienen. La
+> conclusión honesta es «una diferencia pequeña que no resiste la corrección por pruebas
+> múltiples», no «hay una relación significativa».
+>
+> **¿Por qué no se corrigieron las pruebas del inventario?** Esas pruebas (notas uniformes,
+> texto frente a destino, etc.) buscaban confirmar que los datos se parecen al azar, y todas
+> dieron p alto. Corregir solo sube los p-valores, así que esas conclusiones no cambian.
+
+### 22.8 Coeficiente de Gini y curva de Lorenz
+
+Miden la **concentración** de un recurso (aquí, interacciones) entre entidades (destinos).
+
+- **Curva de Lorenz:** se ordenan los destinos de menos a más interacciones y se grafica la
+  fracción acumulada de destinos (eje x) frente a la fracción acumulada de interacciones (eje y).
+  Si todos tuvieran lo mismo, sería la diagonal.
+- **Gini:** el doble del área entre la diagonal y la curva. Va de 0 (reparto parejo) a 1 (un
+  solo destino se lleva todo). Fórmula de la sección 16.
+
+**Ojo:** incluso repartiendo **al azar**, el Gini no es 0, porque el azar produce desigualdad (unos
+destinos reciben 0 interacciones y otros 5). Por eso siempre hay que compararlo con el Gini que
+produce el azar, y no con 0.
+
+> **En nuestro trabajo.** Gini por ID = 0,383, prácticamente igual al del azar (0,386 de media):
+> la desigualdad que se ve en la figura de Lorenz es solo la del azar.
+

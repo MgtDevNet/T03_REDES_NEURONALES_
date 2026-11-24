@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Módulo 3 · Borrador</title>
+<meta name="description" content="Borrador del informe del módulo 3 (recomendación de destinos de viaje) del Trabajo 3 de Redes Neuronales: datos, caso de uso, análisis descriptivo, partición y cacería de la alucinación.">
+<style>
+  :root {
+    --bg: #fcfcfb; --surface: #ffffff; --surface-2: #f3f2ef;
+    --text: #1a1a19; --text-2: #52514e; --muted: #7a7974;
+    --border: #e4e3df; --accent: #2a78d6; --accent-soft: #e8f1fc;
+    --ok: #0b7a3e; --ok-soft: #e6f4ec; --warn: #9a6200; --warn-soft: #fdf3e1;
+    --bad: #b42318; --bad-soft: #fdecea;
+    --code-bg: #f3f2ef;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --surface: #1c1c1b; --surface-2: #242423;
+      --text: #f0efec; --text-2: #c3c2b7; --muted: #9a998f;
+      --border: #34332f; --accent: #5a9ff0; --accent-soft: #1b2a3d;
+      --ok: #4cc38a; --ok-soft: #15291f; --warn: #e0a640; --warn-soft: #2e2413;
+      --bad: #f07a6e; --bad-soft: #33191a; --code-bg: #242423;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141413; --surface: #1c1c1b; --surface-2: #242423;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #9a998f;
+    --border: #34332f; --accent: #5a9ff0; --accent-soft: #1b2a3d;
+    --ok: #4cc38a; --ok-soft: #15291f; --warn: #e0a640; --warn-soft: #2e2413;
+    --bad: #f07a6e; --bad-soft: #33191a; --code-bg: #242423;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; }
+  nav.toc {
+    position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+    padding: 28px 18px; border-right: 1px solid var(--border); font-size: 14px;
+  }
+  nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  nav.toc .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 18px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc a { color: var(--text-2); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+  nav.toc a:hover { background: var(--surface-2); color: var(--text); }
+  nav.toc ol ol { padding-left: 12px; font-size: 13px; }
+  main { padding: 36px 44px 80px; min-width: 0; }
+  header.doc { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 8px; }
+  .eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 6px 0 10px; }
+  h2 { font-size: 23px; margin: 48px 0 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h3 { font-size: 18px; margin: 30px 0 8px; }
+  h4 { font-size: 15.5px; margin: 22px 0 6px; }
+  p, li { color: var(--text); }
+  .lead { color: var(--text-2); font-size: 17px; margin: 0; }
+  .meta { color: var(--muted); font-size: 13.5px; margin-top: 10px; }
+  a { color: var(--accent); }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+  .table-wrap { overflow-x: auto; margin: 14px 0 6px; border: 1px solid var(--border); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--surface); }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--surface-2); font-weight: 600; color: var(--text); white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .caption { font-size: 14px; color: var(--text); margin: 18px 0 0; font-weight: 600; }
+  .source { font-size: 12.5px; color: var(--muted); margin: 4px 0 18px; }
+  figure { margin: 20px 0; }
+  figure img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 10px; background: #fcfcfb; }
+  figcaption { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+  .callout.ok { border-color: var(--ok); background: var(--ok-soft); }
+  .callout p { margin: 4px 0; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill.ok { color: var(--ok); background: var(--ok-soft); }
+  .pill.wip { color: var(--warn); background: var(--warn-soft); }
+  .pill.no { color: var(--bad); background: var(--bad-soft); }
+  .finding { border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px 16px; margin: 22px 0; background: var(--surface); }
+  .finding h4 { margin-top: 16px; }
+  .finding dl { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 8px 16px; margin: 10px 0 0; }
+  .finding dt { font-weight: 600; color: var(--text-2); font-size: 14px; }
+  .finding dd { margin: 0; }
+  blockquote { margin: 6px 0; padding: 8px 14px; background: var(--surface-2); border-radius: 8px; color: var(--text-2); font-size: 14.5px; }
+  .math-block { overflow-x: auto; margin: 10px 0 14px; }
+  .refs p { padding-left: 2em; text-indent: -2em; margin: 8px 0; }
+  .theme-toggle { position: fixed; top: 14px; right: 16px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 8px; padding: 5px 10px; font-size: 13px; cursor: pointer; }
+  @media (max-width: 900px) {
+    .layout { display: block; }
+    nav.toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 16px; }
+    main { padding: 24px 16px 60px; }
+    .finding dl { grid-template-columns: 1fr; gap: 2px; }
+    .finding dt { margin-top: 8px; }
+    h1 { font-size: 25px; }
+  }
+</style>
+<script>
+  window.MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] }, chtml: { displayAlign: 'center' } };
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<button class="theme-toggle" type="button" id="tema" aria-label="Cambiar tema claro u oscuro">◐ Tema</button>
+<div class="layout">
+<nav class="toc" aria-label="Contenido">
+  <div class="brand">Módulo 3 · Recomendación</div>
+  <div class="sub">Borrador del informe · 23-nov-2026</div>
+  <ol>
+    <li><a href="#estado">Estado del borrador</a></li>
+    <li><a href="#datos">1. Datos</a>
+      <ol>
+        <li><a href="#fuente">1.1 Fuente y archivos</a></li>
+        <li><a href="#cifras">1.2 Cifras que pide el enunciado</a></li>
+        <li><a href="#sinteticos">1.3 ¿Reales o sintéticos?</a></li>
+        <li><a href="#implicaciones">1.4 Implicaciones</a></li>
+        <li><a href="#decisiones-datos">1.5 Decisiones sobre los datos</a></li>
+      </ol>
+    </li>
+    <li><a href="#caso-uso">2. Caso de uso (tarea 1)</a></li>
+    <li><a href="#descriptivo">3. Análisis descriptivo (tarea 2)</a>
+      <ol>
+        <li><a href="#cola-larga">3.1 Cola larga</a></li>
+        <li><a href="#concentracion">3.2 Concentración</a></li>
+        <li><a href="#pocas">3.3 Pocas interacciones</a></li>
+        <li><a href="#hipotesis">3.4 Hipótesis</a></li>
+      </ol>
+    </li>
+    <li><a href="#particion">4. Partición (tarea 3)</a></li>
+    <li><a href="#preprocesamiento">5. Preprocesamiento</a></li>
+    <li><a href="#caceria">6. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">7. Lo que falta</a></li>
+    <li><a href="#referencias">Referencias</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="doc">
+  <div class="eyebrow">Trabajo 3 · Redes neuronales · UNAL 2026-02</div>
+  <h1>Módulo 3: Recomendación de destinos de viaje</h1>
+  <p class="lead">Borrador de las secciones del informe escritas hasta ahora. Cada cifra sale de un script del repositorio y se puede regenerar.</p>
+  <p class="meta">Fuentes de evidencia: <code>results/inventario/RESUMEN.md</code> (tablas I-1 a I-15), <code>results/descriptivo/RESUMEN.md</code> (tablas D-1 a D-4) y la bitácora <code>DECISIONES.md</code>. En las notas de fuente, «I-n» y «D-n» indican de qué tabla generada sale cada dato.</p>
+</header>
+
+<section id="estado">
+  <h2>Estado del borrador</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sección del informe</th><th>Punto del enunciado</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Datos</td><td>Descripción de los datos</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Caso de uso</td><td>Tarea 1</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Análisis descriptivo</td><td>Tarea 2 + figura de cola larga</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Partición</td><td>Tarea 3</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 4 hallazgos</span></td></tr>
+      <tr><td>Modelos de referencia y red neuronal</td><td>Tareas 4 y 5</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Preguntas de negocio</td><td>P1, P2, P3</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill wip">Teoría escrita; falta adaptarla</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ======================= 1. DATOS ======================= -->
+<section id="datos">
+  <h2>1. Datos</h2>
+
+  <h3 id="fuente">1.1 Fuente y archivos</h3>
+  <p>Usamos el <em>Travel Recommendation Dataset</em> («India Travel Recommender System Dataset»), publicado en Kaggle por Mehra (2024), en una única versión del 23 de enero de 2024. Son cuatro archivos CSV, descritos en la Tabla 1.</p>
+
+  <p class="caption">Tabla 1. Archivos del conjunto de datos</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Archivo</th><th>Qué contiene</th><th class="num">Filas</th></tr></thead>
+    <tbody>
+      <tr><td><code>Expanded_Destinations.csv</code></td><td>El <strong>catálogo de destinos</strong>: un ID, el nombre del lugar, el estado de India, el tipo de destino (playa, histórico, ciudad, naturaleza o aventura), una puntuación de popularidad y la mejor época para visitarlo.</td><td class="num">1000</td></tr>
+      <tr><td><code>Final_Updated_Expanded_Users.csv</code></td><td>Los <strong>usuarios</strong>: un ID, nombre y correo (ficticios), las preferencias de viaje que declararon, el género y cuántos adultos y niños viajan.</td><td class="num">999</td></tr>
+      <tr><td><code>Final_Updated_Expanded_Reviews.csv</code></td><td>Las <strong>reseñas</strong>: qué usuario reseñó qué destino, con una calificación de 1 a 5 y un texto corto.</td><td class="num">999</td></tr>
+      <tr><td><code>Final_Updated_Expanded_UserHistory.csv</code></td><td>El <strong>historial de visitas</strong>: qué usuario visitó qué destino, en qué fecha y con qué calificación de la experiencia (1 a 5).</td><td class="num">999</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-1.</p>
+
+  <p>Los dos primeros archivos describen <strong>quién</strong> es cada usuario y <strong>qué</strong> es cada destino. Los dos últimos registran <strong>interacciones</strong>, es decir, momentos en que un usuario tuvo contacto con un destino; son la materia prima del recomendador. Ninguna tabla tiene datos faltantes, IDs repetidos ni interacciones que apunten a usuarios o destinos inexistentes.</p>
+
+  <h3 id="cifras">1.2 Lo que pide el enunciado, punto por punto</h3>
+  <p>La Tabla 2 reúne las cifras que pide el enunciado.</p>
+
+  <p class="caption">Tabla 2. Cifras clave del conjunto de datos</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Medida</th><th class="num">Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Usuarios en el catálogo (con ≥ 1 interacción)</td><td class="num">999 (858)</td></tr>
+      <tr><td>Destinos (IDs) en el catálogo (con ≥ 1 interacción)</td><td class="num">1000 (866)</td></tr>
+      <tr><td>Lugares reales distintos</td><td class="num">5</td></tr>
+      <tr><td>Interacciones: reseñas + historial</td><td class="num">999 + 999 = 1998</td></tr>
+      <tr><td>Escala de las calificaciones</td><td class="num">enteros de 1 a 5</td></tr>
+      <tr><td>Densidad de la matriz usuario–destino (una tabla / unión)</td><td class="num">0,10 % / 0,20 %</td></tr>
+      <tr><td>Interacciones por usuario activo (media)</td><td class="num">2,33</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-3, I-11, I-12.</p>
+
+  <h4>Número de usuarios, destinos e interacciones</h4>
+  <p>Hay <strong>999 usuarios</strong>, de los cuales 858 tienen al menos una interacción, y <strong>1000 destinos</strong> (IDs), de los cuales 866 tienen al menos una. <em>Pero</em> esos 1000 IDs son en realidad <strong>5 lugares</strong> (Taj Mahal, Goa Beaches, Jaipur City, Kerala Backwaters y Leh Ladakh), cada uno repetido 200 veces. En total hay <strong>1998 interacciones</strong>: 999 reseñas y 999 visitas (Tabla 2).</p>
+
+  <h4>Escala de las calificaciones</h4>
+  <p>Ambas tablas de interacciones califican con <strong>enteros de 1 a 5</strong>. Las cinco notas aparecen casi con la misma frecuencia (≈ 20 % cada una). Una prueba chi-cuadrado, que compara lo observado con lo que pasaría si todas las notas fueran igual de probables, no rechaza que la distribución sea uniforme (p = 0,66 en reseñas y p = 0,12 en historial). Esto es poco habitual en datos reales, donde suelen predominar las notas altas.</p>
+
+  <h4>Densidad de la matriz usuario–destino</h4>
+  <p>Si se arma una tabla con un usuario por fila y un destino por columna, solo el <strong>0,20 %</strong> de las celdas tiene información: 1998 / (999 × 1000). Con una sola de las tablas de interacciones sería el 0,10 % (Tabla 2). Es una matriz extremadamente dispersa: casi todo lo que el modelo debe predecir es desconocido. Además, 252 usuarios tienen una sola interacción y 134 destinos no tienen ninguna.</p>
+
+  <h4>Variables disponibles de usuarios y destinos</h4>
+  <p>La Tabla 3 lista las variables de cada entidad.</p>
+  <p class="caption">Tabla 3. Variables de destinos y usuarios</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>De los destinos</th><th>Valores</th><th>De los usuarios</th><th>Valores</th></tr></thead>
+    <tbody>
+      <tr><td><code>Type</code></td><td>Beach, Historical, City, Nature, Adventure</td><td><code>Preferences</code></td><td>3 perfiles: «Beaches, Historical», «City, Historical», «Nature, Adventure»</td></tr>
+      <tr><td><code>State</code></td><td>5 estados de India</td><td><code>Gender</code></td><td>Female 496, Male 503</td></tr>
+      <tr><td><code>Popularity</code></td><td>continua, de 7,5 a 9,5</td><td><code>NumberOfAdults</code></td><td>1 o 2</td></tr>
+      <tr><td><code>BestTimeToVisit</code></td><td>5 temporadas</td><td><code>NumberOfChildren</code></td><td>0, 1 o 2</td></tr>
+      <tr><td><code>Name</code></td><td>5 nombres de lugar</td><td><code>Name</code>, <code>Email</code></td><td>ficticios (20 nombres repetidos); no se usan</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-13.</p>
+  <p>En el destino, <code>Type</code>, <code>State</code>, <code>BestTimeToVisit</code> y <code>Name</code> dicen <strong>lo mismo</strong>: cada lugar tiene un único tipo, estado y temporada. En la práctica, el destino tiene una sola variable categórica con 5 niveles (el lugar) más una numérica (<code>Popularity</code>).</p>
+
+  <h3 id="sinteticos">1.3 ¿Reales o sintéticos?</h3>
+  <p><strong>Son sintéticos.</strong> Lo sostienen dos tipos de evidencia.</p>
+  <p><strong>Lo que dice la fuente.</strong> El autor escribe que el conjunto «was generated for educational and research purposes» (fue <em>generado</em> con fines educativos) y que los perfiles se «enriquecieron» con diversidad de género (Mehra, 2024). No describe de dónde salieron los datos ni cómo se recolectaron.</p>
+  <p><strong>Lo que muestran los datos.</strong> La Tabla 4 resume patrones que un registro real de turistas no tendría.</p>
+
+  <p class="caption">Tabla 4. Evidencia interna de que los datos son sintéticos</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Patrón</th><th>Detalle</th><th>Evidencia</th></tr></thead>
+    <tbody>
+      <tr><td>5 lugares clonados</td><td>El lugar de cada destino lo determina una fórmula, (ID − 1) mod 5; solo <code>Popularity</code> cambia entre copias.</td><td>I-2, I-3</td></tr>
+      <tr><td>Ciclos exactos de 3</td><td>Preferencias, fecha de visita y texto de la reseña se repiten en ciclos exactos (por ejemplo, 333 visitas en cada una de solo 3 fechas).</td><td>I-2</td></tr>
+      <tr><td>Texto sin relación con el destino</td><td>«Loved the beaches!» aparece igual de seguido en el Taj Mahal que en las montañas (chi-cuadrado, p = 0,88).</td><td>I-7</td></tr>
+      <tr><td>Notas uniformes</td><td>≈ 20 % cada nota (p = 0,66 y 0,12); sin relación con <code>Popularity</code> (correlación 0,04 en reseñas y 0,03 en historial).</td><td>I-4, I-5</td></tr>
+      <tr><td>Tablas que no se cruzan</td><td>Ninguna persona reseñó un destino que aparezca en su historial de visitas.</td><td>I-8</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024).</p>
+  <p>Hay una relación débil entre lo que el usuario dice preferir y lo que visita: el 42,3 % de sus interacciones van a un tipo de destino preferido, frente al 40 % que se esperaría por azar (permutación, p = 0,019). Sin embargo, esa diferencia <strong>no se sostiene</strong> cuando se corrige por hacer varias pruebas a la vez (p corregido = 0,11; sección 3.4). Es, en el mejor de los casos, una señal débil e incierta.</p>
+
+  <h3 id="implicaciones">1.4 ¿Qué implica para nuestras conclusiones?</h3>
+  <ul>
+    <li><strong>No hablamos de turistas reales.</strong> Ningún resultado se puede usar para afirmar algo sobre los viajeros de India ni sobre los clientes de la empresa. El módulo demuestra el <strong>método</strong> (cómo se construye, evalúa y compara un recomendador), no un hallazgo de negocio.</li>
+    <li><strong>Hay muy poca señal que aprender.</strong> Si las interacciones son casi aleatorias, ningún modelo puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso incluiremos un recomendador <strong>aleatorio</strong> como piso, y compararemos con 30 semillas antes de afirmar que un modelo es mejor que otro.</li>
+    <li><strong>Si la red supera a la popularidad, ya sabemos dónde buscar la causa.</strong> La única pista de señal es la débil relación entre preferencias y tipo de destino, y solo un modelo con variables de contenido podría aprovecharla. Lo más probable es que ningún modelo supere claramente al azar.</li>
+    <li><strong>El catálogo real tiene 5 lugares.</strong> Esto obliga a la decisión de modelado que sigue.</li>
+  </ul>
+
+  <h3 id="decisiones-datos">1.5 Decisiones sobre los datos</h3>
+  <p>Cada decisión se cuenta como <em>qué hicimos → por qué → qué descartamos → qué costo tiene</em>. La Tabla 5 resume las cifras que las respaldan.</p>
+
+  <h4>Decisión 1. Destinos: 1000 IDs para el modelo, 5 lugares para el cliente</h4>
+  <p>Aunque el conjunto trae 1000 <code>DestinationID</code>, en realidad son solo 5 lugares. Si trabajáramos con los 5 lugares, casi todo lo que pide el enunciado dejaría de tener sentido: un top-K solo podría tener K entre 1 y 4, la cobertura saldría siempre en 100 %, no habría cola larga y la proyección de embeddings tendría apenas 5 puntos. Por eso el modelo y las métricas tratan cada ID como un ítem distinto: así hay 1000 candidatos y se puede medir de verdad si un modelo ordena mejor que el azar. Como para el negocio lo que importa es el lugar, al cliente se le muestran lugares (tomando el mejor puntaje de cada uno), y la concentración se analiza también por lugar.</p>
+
+  <h4>Decisión 2. Interacciones: unir las reseñas y el historial de visitas</h4>
+  <p>Para evaluar a un usuario necesitamos al menos 2 interacciones suyas: una para que el modelo lo conozca y otra que se esconde para ver si el modelo la adivina. Con una sola tabla, solo unos 260 usuarios cumplen esa condición; al unirlas son 606. La unión no genera duplicados, porque ningún par usuario–destino aparece en ambas tablas. El costo es mezclar dos tipos de evento (reseñar y visitar); guardamos una columna <code>fuente</code> por si después queremos separarlos.</p>
+
+  <h4>Decisión 3. Calificaciones: toda interacción cuenta como positiva</h4>
+  <p>La alternativa era quedarse solo con las notas 4 y 5 («le gustó»), pero eso solo tiene sentido si la nota contiene información. Aquí las notas son uniformes y no se relacionan con nada, así que filtrar eliminaría interacciones al azar sin dejar datos más limpios, y los usuarios evaluables bajarían de 606 a 181. Cada interacción se interpreta como «el usuario mostró interés en ese destino». La limitación es que el modelo no distingue una visita que gustó de una que no.</p>
+
+  <p class="caption">Tabla 5. Cifras que respaldan las decisiones sobre los datos</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Definición</th><th class="num">Interacciones</th><th class="num">Usuarios evaluables (≥ 2)</th><th>Comentario</th></tr></thead>
+    <tbody>
+      <tr><td>Solo reseñas</td><td class="num">999</td><td class="num">269</td><td></td></tr>
+      <tr><td>Solo historial</td><td class="num">999</td><td class="num">258</td><td></td></tr>
+      <tr><td><strong>Unión (elegida)</strong></td><td class="num"><strong>1998</strong></td><td class="num"><strong>606</strong></td><td>sin duplicados</td></tr>
+      <tr><td>Unión, solo nota ≥ 3</td><td class="num">1167</td><td class="num">324</td><td></td></tr>
+      <tr><td>Unión, solo nota ≥ 4</td><td class="num">781</td><td class="num">181</td><td></td></tr>
+      <tr><td>Si se agrupara en 5 lugares</td><td class="num">1998</td><td class="num">—</td><td>K ≤ 4; HitRate@5 del azar = 100 % (trivial)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-8, I-9, I-10.</p>
+</section>
+
+<!-- ======================= 2. CASO DE USO ======================= -->
+<section id="caso-uso">
+  <h2>2. Caso de uso (tarea 1)</h2>
+  <p><strong>Dónde y cuándo (en el negocio).</strong> La recomendación aparecería en la página de inicio de la app o la web de la empresa, en una sección «Destinos para ti», cuando el cliente entra a su cuenta. Para un cliente sin historial, se mostraría en cuanto indique sus preferencias de viaje.</p>
+  <p><strong>En nuestro prototipo.</strong> La aplicación web simula ese momento sin registro ni base de datos. Se elige un usuario existente del conjunto de datos (el equivalente a «iniciar sesión») o se llena un formulario de preferencias para un cliente nuevo. Las recomendaciones se calculan al instante con el modelo guardado, y el perfil nuevo no se almacena.</p>
+  <p><strong>Cuántos destinos.</strong> Al cliente se le muestran <strong>3 lugares</strong>: una lista corta se lee como una recomendación y no como un catálogo. Como el catálogo real tiene solo 5 lugares, 3 ya es el 60 % de la oferta, una limitación del conjunto de datos. Para medir la calidad del modelo usamos una lista de <strong>10 destinos (K = 10)</strong> sobre los 1000 IDs. Es el valor habitual en la literatura de recomendadores; He et al. (2017), por ejemplo, reportan sus resultados con listas de 10. Además permite distinguir un buen modelo del azar, que acertaría ≈ 1 % de las veces.</p>
+  <p><strong>¿Se recomiendan lugares ya visitados?</strong> Sí, marcados como «Ya lo visitaste, ¿vuelves?». La Tabla 6 muestra por qué: uno de cada tres «próximos viajes» (33,8 %) es un regreso a un lugar conocido, y excluirlos dejaría además al 23 % de los usuarios con menos de 3 lugares para mostrar.</p>
+
+  <p class="caption">Tabla 6. Lugares nuevos disponibles si se excluyeran los ya visitados</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="num">Lugares nuevos disponibles</th><th class="num">Usuarios</th></tr></thead>
+    <tbody>
+      <tr><td class="num">4</td><td class="num">322</td></tr>
+      <tr><td class="num">3</td><td class="num">339</td></tr>
+      <tr><td class="num">2</td><td class="num">148</td></tr>
+      <tr><td class="num">1</td><td class="num">45</td></tr>
+      <tr><td class="num">0</td><td class="num">4</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-14. El 33,8 % sale de una partición exploratoria (1 interacción escondida al azar por usuario con ≥ 2; 606 usuarios).</p>
+
+  <p><strong>Qué sabemos del usuario en ese momento.</strong> De un cliente con historial conocemos sus preferencias declaradas, su género, cuántos adultos y niños viajan, y qué destinos reseñó o visitó antes. De un cliente nuevo solo sabemos lo que indicó en el formulario (preferencias y tamaño del grupo); ese caso se trata en la pregunta de negocio 1.</p>
+</section>
+
+<!-- ======================= 3. DESCRIPTIVO ======================= -->
+<section id="descriptivo">
+  <h2>3. Análisis descriptivo (tarea 2)</h2>
+  <div class="callout"><p><strong>Idea que guía el análisis.</strong> Para saber si un patrón dice algo sobre las preferencias de los viajeros, lo comparamos con lo que produciría <strong>el puro azar</strong>: las mismas 1998 interacciones repartidas sin ninguna preferencia. Si los datos se parecen al azar, el patrón no revela nada. Aquí se usan todas las interacciones, porque se describe el conjunto de datos y no se evalúan modelos.</p></div>
+
+  <h3 id="cola-larga">3.1 Interacciones por usuario y por destino</h3>
+  <p>Contando los 999 usuarios (incluidos los 141 sin interacciones), cada usuario tiene en promedio 2 interacciones, y cada destino (ID) también 2. Para saber si esa distribución dice algo, la comparamos con la que produciría el azar. Si las interacciones se hubieran sorteado al azar, cada una de las $N = 1998$ caería en cualquiera de los 1000 destinos con la misma probabilidad, $p = 1/1000 = 0{,}001$. Así, el número de interacciones de un destino concreto es el número de «aciertos» en 1998 intentos independientes con probabilidad 0,001: una variable binomial, $B(N = 1998,\ p = 0{,}001)$.</p>
+  <p>Cuando $N$ es grande y $p$ es pequeño, la binomial se aproxima muy bien por una distribución de Poisson con media $\lambda = N \cdot p$, cuya fórmula es más simple:</p>
+  <div class="math-block">$$P(k) = \frac{e^{-\lambda}\,\lambda^k}{k!}, \qquad \lambda = 1998 \times 0{,}001 = 1{,}998 \approx 2.$$</div>
+  <p>Con los usuarios pasa lo mismo: cada interacción pertenece a cualquiera de los 999 usuarios con $p = 1/999$, así que $\lambda = 1998/999 = 2$. Multiplicando $P(k)$ por el número de destinos (1000) o de usuarios (999) se obtienen los valores esperados de la Tabla 7. Por ejemplo, se esperarían $1000 \times e^{-1{,}998} \times 1{,}998 \approx 270{,}9$ destinos con una sola interacción, y hay 271.</p>
+
+  <p class="caption">Tabla 7. Valores esperados por azar (Poisson) frente a los observados</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="num">Interacciones (<em>k</em>)</th><th class="num">Usuarios esperados (λ = 2)</th><th class="num">Usuarios observados</th><th class="num">Destinos esperados (λ = 1,998)</th><th class="num">Destinos observados</th></tr></thead>
+    <tbody>
+      <tr><td class="num">0</td><td class="num">135,2</td><td class="num">141</td><td class="num">135,6</td><td class="num">134</td></tr>
+      <tr><td class="num">1</td><td class="num">270,4</td><td class="num">252</td><td class="num">270,9</td><td class="num">271</td></tr>
+      <tr><td class="num">2</td><td class="num">270,4</td><td class="num">280</td><td class="num">270,7</td><td class="num">270</td></tr>
+      <tr><td class="num">3</td><td class="num">180,3</td><td class="num">195</td><td class="num">180,3</td><td class="num">184</td></tr>
+      <tr><td class="num">4</td><td class="num">90,1</td><td class="num">79</td><td class="num">90,0</td><td class="num">89</td></tr>
+      <tr><td class="num">5</td><td class="num">36,1</td><td class="num">31</td><td class="num">36,0</td><td class="num">37</td></tr>
+      <tr><td class="num">6</td><td class="num">12,0</td><td class="num">17</td><td class="num">12,0</td><td class="num">11</td></tr>
+      <tr><td class="num">≥ 7</td><td class="num">4,5</td><td class="num">4</td><td class="num">4,5</td><td class="num">4</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-1.</p>
+
+  <p>La Figura 1 muestra que la forma de ambas distribuciones es muy parecida a la del azar, y las pruebas de bondad de ajuste (chi-cuadrado) no permiten rechazar que provengan de una Poisson (p = 0,28 por usuario y p = 0,998 por destino). Es decir, no hay destinos más populares ni usuarios más activos de lo que produciría el azar, y por eso no hay cola larga. Esto no dice si cada usuario prefiere ciertos tipos de destino; esa relación se analiza aparte.</p>
+  <figure>
+    <figcaption>Figura 1. Interacciones por usuario y por destino frente a lo esperado por azar</figcaption>
+    <img src="../figures/descriptivo_cola_larga.png" alt="Dos gráficos de barras. A la izquierda, el número de usuarios según cuántas interacciones tienen (0 a 7 o más); a la derecha, lo mismo para los destinos. En ambos, las barras observadas coinciden con la línea discontinua de lo esperado por azar (Poisson con media 2).">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-1. Regenerable con <code>src/descriptivo.py</code>.</p>
+  <p>En datos reales de turismo, unos pocos destinos famosos y unos pocos viajeros frecuentes concentran gran parte de la actividad, lo que produce una cola larga: muchos destinos y usuarios con muy poca actividad y unos pocos con muchísima.</p>
+
+  <h3 id="concentracion">3.2 Concentración en los destinos populares</h3>
+  <p>La Figura 2 y la Tabla 8 muestran que <strong>no hay destinos «estrella»</strong>. Por ID, el 10 % de los destinos con más interacciones se lleva el 23,6 % de ellas, y al azar sería el 23,8 %. Por lugar real, los 5 lugares reciben entre el 18,8 % (Jaipur City) y el 21,1 % (Leh Ladakh), cuando al azar cada uno tendría ≈ 20 %.</p>
+  <figure>
+    <figcaption>Figura 2. Concentración de las interacciones por destino y por lugar</figcaption>
+    <img src="../figures/descriptivo_concentracion.png" alt="A la izquierda, la curva de Lorenz de las interacciones por destino, que coincide con la banda gris del azar. A la derecha, barras horizontales con el porcentaje de interacciones de cada lugar real, todas cerca de la línea del 20 %.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-2. La banda gris es el 95 % de 2000 simulaciones de reparto aleatorio.</p>
+
+  <p class="caption">Tabla 8. Concentración observada frente a la del azar</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Nivel</th><th class="num">Gini observado</th><th class="num">Gini del azar (95 %)</th><th class="num">Top 10 % observado</th><th class="num">Top 10 % azar</th></tr></thead>
+    <tbody>
+      <tr><td>1000 IDs</td><td class="num">0,383</td><td class="num">0,369–0,402</td><td class="num">23,6 %</td><td class="num">23,8 %</td></tr>
+      <tr><td>5 lugares</td><td class="num">0,025</td><td class="num">0,009–0,040</td><td class="num">—</td><td class="num">—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-2. Gini: 0 = reparto parejo, 1 = todo en un destino.</p>
+  <p>Esto anticipa que la popularidad, como recomendador, tendrá poco que aprovechar, y es la base de la pregunta de negocio 2 (concentración de la demanda).</p>
+
+  <h3 id="pocas">3.3 Usuarios con pocas interacciones</h3>
+  <p>De los 999 usuarios, 141 (14,1 %) no tienen ninguna interacción, 252 (25,2 %) tienen exactamente una y, en total, el 67,4 % tiene 2 o menos. Solo 52 (5,2 %) tienen 5 o más; la mediana es 2 y el máximo, 7 (Tabla 9). Esto explica por qué el recomendador tiene tan poca información por usuario, y por qué conviene evaluar por separado a los usuarios con pocas y con muchas interacciones (tarea 6).</p>
+  <p class="caption">Tabla 9. Usuarios según su número de interacciones</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Usuarios con…</th><th class="num">Usuarios</th><th class="num">% del total</th></tr></thead>
+    <tbody>
+      <tr><td>0 interacciones</td><td class="num">141</td><td class="num">14,1 %</td></tr>
+      <tr><td>exactamente 1</td><td class="num">252</td><td class="num">25,2 %</td></tr>
+      <tr><td>2 o menos</td><td class="num">673</td><td class="num">67,4 %</td></tr>
+      <tr><td>3 o más</td><td class="num">326</td><td class="num">32,6 %</td></tr>
+      <tr><td>5 o más</td><td class="num">52</td><td class="num">5,2 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-3.</p>
+
+  <h3 id="hipotesis">3.4 Hipótesis sobre qué explica las preferencias</h3>
+  <p>Planteamos seis hipótesis razonables sobre qué haría que un viajero prefiera un destino, y contrastamos cada una con una prueba estadística (Tabla 10).</p>
+  <p class="caption">Tabla 10. Hipótesis sobre las preferencias y su contraste</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Hipótesis</th><th>Resultado</th><th class="num">p</th><th class="num">p corregido</th><th>¿Se sostiene?</th></tr></thead>
+    <tbody>
+      <tr><td>H1. Visitan los tipos de destino que dicen preferir</td><td>coinciden 42,3 % frente a ≈ 40 % del azar</td><td class="num">0,019</td><td class="num">0,113</td><td><span class="pill no">no</span></td></tr>
+      <tr><td>H2. Con niños eligen más playa y naturaleza</td><td>38,9 % con niños frente a 41,1 % sin niños</td><td class="num">0,190</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
+      <tr><td>H3. Viajar solo o con otro adulto cambia el destino</td><td>—</td><td class="num">0,159</td><td class="num">0,952</td><td><span class="pill no">no</span></td></tr>
+      <tr><td>H4. El género cambia el destino</td><td>—</td><td class="num">0,982</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
+      <tr><td>H5. Mayor <code>Popularity</code> atrae más interacciones</td><td>ρ = −0,011</td><td class="num">0,721</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
+      <tr><td>H6. Visitan en la mejor temporada del destino</td><td>73,0 % en temporada frente a 72,6 % del azar</td><td class="num">0,295</td><td class="num">1,000</td><td><span class="pill no">no</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-4. Pruebas: chi-cuadrado de independencia (H1–H4), correlación de Spearman (H5) y permutación (H6). Corrección de Bonferroni con m = 6.</p>
+  <p><strong>Por qué se corrige el p-valor.</strong> Si se hacen muchas pruebas, alguna saldrá «significativa» por pura suerte: con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es ≈ 26 %. La corrección de Bonferroni multiplica cada p-valor por el número de pruebas (Bland y Altman, 1995). H1 tenía p = 0,019 y, al corregirlo, queda en 0,11: ya no es concluyente.</p>
+  <div class="callout ok"><p><strong>Conclusión de la tarea 2.</strong> Ninguna de las explicaciones razonables de las preferencias se sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo que es coherente con que el conjunto sea sintético. Para el modelado, esto significa que esperamos que ningún modelo supere con claridad al azar, y que cualquier diferencia pequeña debe confirmarse con las 30 semillas antes de afirmarse.</p></div>
+</section>
+
+<!-- ======================= 4. PARTICIÓN ======================= -->
+<section id="particion">
+  <h2>4. Partición (tarea 3)</h2>
+  <p><strong>Para qué se parten los datos.</strong> Para saber si un recomendador funciona hay que preguntarle por algo que <strong>no vio</strong> al aprender, como en un examen. Dividimos las interacciones en tres grupos: <em>entrenamiento</em> (lo que el modelo estudia), <em>validación</em> (un examen de práctica para elegir la configuración del modelo) y <em>prueba</em> (el examen final, que se mira una sola vez). Ninguna interacción de prueba se usa para entrenar.</p>
+  <p><strong>Cómo las partimos: «dejar uno fuera» por usuario.</strong> A cada usuario con al menos 2 interacciones le escondemos una, elegida al azar, para prueba. Si tiene al menos 3, le escondemos otra para validación. Todo lo demás va a entrenamiento. La Tabla 11 muestra tres usuarios reales. Por ejemplo, la usuaria 1 visitó Goa Beaches y el Taj Mahal: el modelo aprende de Goa, y al final comprobamos si entre sus 10 recomendaciones aparece el Taj Mahal que le escondimos.</p>
+
+  <p class="caption">Tabla 11. Ejemplos reales de la partición</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="num">Usuario</th><th class="num">Interacciones</th><th>Entrenamiento</th><th>Validación</th><th>Prueba</th></tr></thead>
+    <tbody>
+      <tr><td class="num">6</td><td class="num">1</td><td>Jaipur City (963)</td><td>—</td><td>—</td></tr>
+      <tr><td class="num">1</td><td class="num">2</td><td>Goa Beaches (467)</td><td>—</td><td>Taj Mahal (941)</td></tr>
+      <tr><td class="num">16</td><td class="num">4</td><td>Leh Ladakh (970), Taj Mahal (176)</td><td>Leh Ladakh (40)</td><td>Jaipur City (113)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>data/processed/interacciones.csv</code> (semilla 0). Entre paréntesis, el ID del destino.</p>
+
+  <p><strong>Qué pasa con los usuarios que tienen una sola interacción.</strong> Son 252. Su interacción se usa para entrenar, porque le enseña al modelo sobre ese destino. Para algunos destinos es la única información disponible: el destino 963 solo aparece en entrenamiento por el usuario 6. Lo que no se puede es evaluarlos, porque no queda nada que esconderles.</p>
+
+  <p><strong>Por qué esta forma y no otra.</strong> La Tabla 12 compara las alternativas.</p>
+  <p class="caption">Tabla 12. Comparación de estrategias de partición</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Estrategia</th><th class="num">Entrenamiento / validación / prueba</th><th class="num">Usuarios de prueba</th><th class="num">Usuarios de prueba sin entrenamiento</th><th class="num">IDs de prueba no vistos</th></tr></thead>
+    <tbody>
+      <tr><td>Temporal</td><td colspan="4">No viable: el historial tiene solo 3 fechas, repetidas en ciclo, y las reseñas no tienen fecha.</td></tr>
+      <tr><td>Aleatoria 80/10/10</td><td class="num">1586 / 213 / 199</td><td class="num">181</td><td class="num">18,8 %</td><td class="num">21,1 %</td></tr>
+      <tr><td><strong>Dejar uno fuera (elegida)</strong></td><td class="num"><strong>1066 / 326 / 606</strong></td><td class="num"><strong>606</strong></td><td class="num"><strong>0 %</strong></td><td class="num">33,7 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-15 (semilla 0).</p>
+  <p>La partición aleatoria dejaría a casi uno de cada cinco usuarios de prueba sin nada en entrenamiento, y solo evaluaría 181 usuarios. Dejar uno fuera garantiza que todo usuario evaluado tiene historial, que es la situación del caso de uso (un cliente que inicia sesión y ya ha viajado). También es el esquema que usan He et al. (2017).</p>
+
+  <div class="callout warn"><p><strong>Un hallazgo que sale de la partición.</strong> Uno de cada tres destinos de prueba (33,7 %) es un ID que nadie tocó en entrenamiento (Tabla 12). Un modelo que solo conoce IDs, como la popularidad o la factorización de matrices, no puede recomendar algo que nunca vio, así que su tasa de aciertos tiene un techo cercano al 66 %. Un modelo que conoce el contenido («este ID es un Taj Mahal») no tiene ese techo. Es una razón concreta para usar variables de contenido en la red.</p></div>
+
+  <p><strong>Cómo se usan los conjuntos.</strong> Elegimos la configuración de cada modelo entrenando con el conjunto de entrenamiento y midiendo en validación. Con la configuración ganadora volvemos a entrenar con entrenamiento + validación (1392 interacciones) y medimos una sola vez en prueba. Todos los modelos y las 30 repeticiones con semillas distintas usan exactamente la misma partición.</p>
+</section>
+
+<!-- ======================= 5. PREPROCESAMIENTO ======================= -->
+<section id="preprocesamiento">
+  <h2>5. Preprocesamiento</h2>
+  <p>El script <code>src/preprocesar.py</code> aplica las decisiones anteriores y genera los archivos que leen <strong>todos</strong> los modelos y la app. Usar los mismos archivos es lo que garantiza la comparación justa. Las transformaciones son:</p>
+  <ul>
+    <li>Se unen reseñas e historial, y cada interacción queda marcada con su conjunto (entrenamiento, validación o prueba).</li>
+    <li>Se eliminan el nombre y el correo de los usuarios: son ficticios (20 valores repetidos) y no aportan nada.</li>
+    <li>Las preferencias pasan de texto («Beaches, Historical») a <strong>cinco casillas</strong>, una por tipo de destino, marcadas o no. Así el modelo acepta cualquier combinación, incluida una que un cliente nuevo marque en la app aunque no exista en los datos.</li>
+    <li>Los IDs de usuarios (1–999) y de destinos (1–1000) son consecutivos, así que se usan directamente como posición.</li>
+  </ul>
+  <p>El script <strong>verifica automáticamente</strong> que ningún par de validación o prueba aparezca en entrenamiento, que todo usuario evaluado tenga historial, que haya una sola interacción por usuario en validación y en prueba, y que no se pierda ni se duplique ninguna interacción. Si una verificación falla, se detiene.</p>
+  <div class="callout warn"><p><strong>Limitación.</strong> En los datos solo hay 3 combinaciones de preferencias. Un perfil nuevo con otra combinación (por ejemplo, Beach + Nature) obliga al modelo a extrapolar.</p></div>
+</section>
+
+<!-- ======================= 6. CACERÍA ======================= -->
+<section id="caceria">
+  <h2>6. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 13 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+
+  <p class="caption">Tabla 13. Resumen de los hallazgos del módulo 3</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>«Las preferencias no tienen relación con las visitas», y luego «la relación es significativa»</td><td>Datos del mundo real (características del conjunto)</td><td><span class="pill no">Alta</span></td></tr>
+      <tr><td>2</td><td>Correlación nota–popularidad reportada de forma incompleta</td><td>Datos del mundo real</td><td><span class="pill wip">Baja</span></td></tr>
+      <tr><td>3</td><td>Propuesta de un «hallazgo» que no cumple la definición del enunciado</td><td>Ninguna de las categorías (interpretación del enunciado)</td><td><span class="pill wip">Media</span></td></tr>
+      <tr><td>4</td><td>Propuso «escoger el dataset» cuando el enunciado ya lo fija</td><td>Datos del mundo real</td><td><span class="pill wip">Baja</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23-nov-2026.</p>
+
+  <div class="finding">
+    <h4>Hallazgo 1. Conclusión estadística prematura sobre preferencias y visitas</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>Quiero que empezemos paso a paso, además, cabe recalcar que apenas estoy aprendiendo por lo que quiero que seas muy explícito con cada decisión y cosa que hagas pues nunca he trabajado en un sistema de recomendación, podemos subir a esa misma carpeta de modulo3_recomendacion una parte de teoría para  yo ir allí y leer todo lo referente a al fundamentación matemática, que se usa para un sistema de recomendación, como hacerlo y que se relacione con este trabajo. descargué el zip con los datos y está en modulo3_recomendacion/data/raw</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd><blockquote><strong>Las visitas no tienen relación con las preferencias.</strong> Solo el 41,7 % de las visitas coincide con lo que el usuario dice que le gusta, y por puro azar se esperaría un 40 %.</blockquote>
+      Más adelante, al rehacer el cálculo, la IA pasó al extremo opuesto y escribió que había «una relación débil pero real» y «estadísticamente significativa» (p = 0,019).</dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Preguntamos de dónde salían las cifras («¿hiciste un análisis descriptivo y no me mostraste?»). La primera conclusión no tenía ninguna prueba estadística y no estaba guardada en ningún script. Al escribir el script reproducible apareció otro resultado.</dd>
+      <dt>Evidencia</dt>
+      <dd>(a) La cifra del 41,7 % salía solo del historial; con la unión de tablas, que es la que usa el modelo, la coincidencia es del 42,3 %, con p = 0,019 en las pruebas binomial, de permutación y chi-cuadrado (I-6). (b) Dentro del conjunto de seis hipótesis de la tarea 2, la corrección de Bonferroni lleva ese p a 0,11 (D-4; Bland y Altman, 1995). Ninguna de las dos afirmaciones de la IA era correcta tal como se dijo.</dd>
+      <dt>Corrección</dt>
+      <dd>«Hay una diferencia pequeña (42,3 % frente a 40 %) que no resiste la corrección por pruebas múltiples.» Se corrigieron <code>DECISIONES.md</code> y el borrador, y la corrección quedó señalada con ⚠️.</dd>
+      <dt>Lección</dt>
+      <dd>Toda afirmación sobre los datos debe salir de un script versionado que se pueda revisar, usar el mismo subconjunto de datos que usará el modelo y corregirse por pruebas múltiples cuando se contrastan varias hipótesis.</dd>
+    </dl>
+  </div>
+
+  <div class="finding">
+    <h4>Hallazgo 2. Cifra de correlación incompleta</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>por último, es importante que vayas teniendo en cuenta ideas para escribir todo lo que se necesite para este módulo 3 del informe por tanto. Una pregunta ¿Cómo sabes que son sintéticos los datos?</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd><blockquote>La popularidad del destino no tiene relación con la calificación: la correlación es 0,03.</blockquote></dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Preguntamos «¿dónde se vio su correlación con popularity?». Al pedir la tabla completa aparecieron dos correlaciones, no una.</dd>
+      <dt>Evidencia</dt>
+      <dd>I-5: Pearson 0,044 en reseñas (p = 0,17) y 0,026 en historial (p = 0,41). La IA solo había reportado la del historial, sin p-valor ni tamaño de muestra, y esa cifra pasó a nuestra redacción de las decisiones.</dd>
+      <dt>Corrección</dt>
+      <dd>«Correlación de 0,03 a 0,04, no significativa en ninguna de las dos tablas.» La conclusión no cambia, pero la cifra quedó completa.</dd>
+      <dt>Lección</dt>
+      <dd>Pedir siempre la tabla completa (todas las fuentes, con p y n) antes de copiar una cifra resumida al informe.</dd>
+    </dl>
+  </div>
+
+  <div class="finding">
+    <h4>Hallazgo 3. Un «hallazgo» que no cumplía la definición del enunciado</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>por último, es importante que vayas teniendo en cuenta ideas para escribir todo lo que se necesite para este módulo 3 del informe por tanto. Una pregunta ¿Cómo sabes que son sintéticos los datos?</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd>En el archivo de ideas del informe escribió:<blockquote><strong>Candidato fuerte:</strong> el título y la descripción del dataset («India Travel Recommender System», reseñas «generadas por usuarios», un historial de viajes) sugieren datos de comportamiento real con una señal aprovechable, pero el análisis muestra 5 destinos clonados […]</blockquote></dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Al preparar este borrador se leyó la sección común del enunciado (pp. 9–10), que hasta entonces no se había consultado.</dd>
+      <dt>Evidencia</dt>
+      <dd>El enunciado pide documentar «hallazgos en los que <strong>una IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo». Una descripción engañosa de un conjunto de datos en Kaggle no es un error de una IA.</dd>
+      <dt>Corrección</dt>
+      <dd>Se retiró como hallazgo. El hecho (la descripción de Kaggle no coincide con los datos) sigue en la sección «Datos» como evidencia de que el conjunto es sintético.</dd>
+      <dt>Lección</dt>
+      <dd>Leer la definición exacta de cada entregable en la fuente primaria (el enunciado) antes de aceptar una propuesta de la IA sobre cómo cumplirlo.</dd>
+    </dl>
+  </div>
+
+  <div class="finding">
+    <h4>Hallazgo 4. Propuso escoger un dataset que ya estaba fijado</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>Hola, recuerdas donde nos quedamos?</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd><blockquote>Arrancar el <strong>módulo 3 (recomendación)</strong>: revisar el enunciado en <code>docs/instrucciones_trabajo_3.pdf</code>, escoger el dataset y montar el modelo de referencia.</blockquote></dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>La propia IA lo notó en el turno siguiente, al leer el README del módulo y el enunciado.</dd>
+      <dt>Evidencia</dt>
+      <dd>El enunciado (p. 5) dice «Usarán el conjunto <em>Travel Recommendation Dataset</em> […] publicado en Kaggle por Aman Mehra», y el README del módulo, escrito en la sesión anterior, ya lo citaba.</dd>
+      <dt>Corrección</dt>
+      <dd>«El dataset no hay que escogerlo: el enunciado fija el <em>Travel Recommendation Dataset</em>.»</dd>
+      <dt>Lección</dt>
+      <dd>Antes de proponer próximos pasos, verificar qué está ya decidido en el repositorio y en el enunciado.</dd>
+    </dl>
+  </div>
+
+  <h3>Verificaciones hechas que no encontraron error</h3>
+  <p>El enunciado pide documentar también las verificaciones. Estas confirmaron lo que había dicho la IA:</p>
+  <ul>
+    <li>El «40 % esperado por azar» de H1: recalculado con la distribución real de tipos y con 5000 permutaciones, da 40,1 % (I-6).</li>
+    <li>La forma de Poisson como referencia del azar: el ajuste por destino da p = 0,998 (D-1).</li>
+    <li>La partición: las verificaciones automáticas de <code>src/preprocesar.py</code> no encontraron fugas.</li>
+  </ul>
+  <div class="callout warn"><p><strong>Pendiente de verificar (categoría «Bibliografía»).</strong> Las referencias del documento de teoría del módulo las propuso la IA y todavía no se han contrastado con su fuente primaria (DOI, volumen, páginas). Hay que hacerlo antes de entregar; si alguna falla, es un hallazgo nuevo.</p></div>
+</section>
+
+<!-- ======================= 7. PENDIENTE ======================= -->
+<section id="pendiente">
+  <h2>7. Lo que falta</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
+    <tbody>
+      <tr><td>Tarea 4 · Modelos de referencia</td><td>Recomendador aleatorio (piso), popularidad y factorización de matrices.</td></tr>
+      <tr><td>Tarea 5 · Red neuronal</td><td>Modelo de dos torres o NCF con variables de contenido; justificar la dimensión de los embeddings, los negativos y la pérdida.</td></tr>
+      <tr><td>Tarea 6 · Evaluación</td><td>Precision, Recall y NDCG@K; cobertura; grupos de pocas y muchas interacciones; 30 semillas; 5 usuarios de ejemplo; t-SNE.</td></tr>
+      <tr><td>P1 · Usuarios nuevos</td><td>Simular el arranque en frío con los 606 usuarios de prueba; comparar ≥ 2 estrategias.</td></tr>
+      <tr><td>P2 · Concentración</td><td>Gini de las recomendaciones (por ID y por lugar) y efecto en la capacidad de las rutas.</td></tr>
+      <tr><td>P3 · Campaña</td><td>Grupo objetivo y conversiones esperadas, con los supuestos explícitos.</td></tr>
+      <tr><td>Fundamentación matemática</td><td>Adaptar la teoría (factorización de matrices, BCE/BPR, métricas) al modelo final.</td></tr>
+      <tr><td>Figuras comunes</td><td>Arquitectura, curvas de aprendizaje, búsqueda de hiperparámetros, diagramas de caja de las 30 semillas.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ======================= REFERENCIAS ======================= -->
+<section id="referencias" class="refs">
+  <h2>Referencias</h2>
+  <p>Bland, J. M., &amp; Altman, D. G. (1995). Multiple significance tests: The Bonferroni method. <em>BMJ, 310</em>(6973), 170. https://doi.org/10.1136/bmj.310.6973.170</p>
+  <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
+  <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
+  <div class="callout warn"><p>Las dos primeras referencias (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 6.</p></div>
+</section>
+</main>
+</div>
+<script>
+  (function () {
+    var btn = document.getElementById('tema');
+    try { var t = localStorage.getItem('tema-m3'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    btn.addEventListener('click', function () {
+      var actual = document.documentElement.getAttribute('data-theme');
+      var oscuro = actual ? actual === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var nuevo = oscuro ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nuevo);
+      try { localStorage.setItem('tema-m3', nuevo); } catch (e) {}
+    });
+  })();
+</script>
+</body>
+</html>

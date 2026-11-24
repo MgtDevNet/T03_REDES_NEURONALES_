@@ -1,0 +1,17 @@
+por,n_interacciones,observado,esperado_azar_poisson
+usuario,0,141,135.2
+usuario,1,252,270.4
+usuario,2,280,270.4
+usuario,3,195,180.3
+usuario,4,79,90.1
+usuario,5,31,36.1
+usuario,6,17,12.0
+usuario,≥7,4,4.5
+destino,0,134,135.6
+destino,1,271,270.9
+destino,2,270,270.7
+destino,3,184,180.3
+destino,4,89,90.0
+destino,5,37,36.0
+destino,6,11,12.0
+destino,≥7,4,4.5
