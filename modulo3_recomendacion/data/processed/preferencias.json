@@ -1,0 +1,34 @@
+{
+  "tipos_de_destino": [
+    "Beach",
+    "Historical",
+    "City",
+    "Nature",
+    "Adventure"
+  ],
+  "etiquetas_en_datos": [
+    "Beaches",
+    "Historical",
+    "City",
+    "Nature",
+    "Adventure"
+  ],
+  "perfiles_presentes_en_datos": [
+    "Beaches, Historical",
+    "City, Historical",
+    "Nature, Adventure"
+  ],
+  "generos": [
+    "Female",
+    "Male"
+  ],
+  "adultos": [
+    1,
+    2
+  ],
+  "ninos": [
+    0,
+    1,
+    2
+  ]
+}

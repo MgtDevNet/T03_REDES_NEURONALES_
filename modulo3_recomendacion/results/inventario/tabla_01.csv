@@ -1,0 +1,5 @@
+tabla,filas,columnas,celdas_nulas,ids_repetidos,pares_usuario_destino_repetidos,usuarios_inexistentes,destinos_inexistentes
+Destinos,1000,6,0,0,,,
+Usuarios,999,7,0,0,,,
+Reseñas,999,5,0,0,0.0,0.0,0.0
+Historial,999,5,0,0,0.0,0.0,0.0

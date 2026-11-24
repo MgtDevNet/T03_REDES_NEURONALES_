@@ -1,0 +1,10 @@
+aspecto,A_1000_IDs,B_5_lugares
+ítems en el catálogo,1000,5
+ítems sin ninguna interacción,134,0
+ítems con 1 sola interacción,271,0
+interacciones del ítem más popular,7,422
+interacciones del ítem menos popular (con ≥1),1,376
+usuarios que repetirían ítem al agrupar,0,266
+K máximo con sentido,10 o más,≤ 4
+HitRate@10 de un recomendador al azar,≈ 1 %,100 % con K = 5 (trivial)
+% de ítems de prueba vistos en entrenamiento,73 %,100 %

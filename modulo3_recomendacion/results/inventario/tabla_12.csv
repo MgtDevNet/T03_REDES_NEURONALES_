@@ -1,0 +1,14 @@
+medida,valor
+usuarios en el catálogo,999
+usuarios con ≥ 1 interacción,858
+destinos (IDs) en el catálogo,1000
+lugares reales distintos,5
+destinos (IDs) con ≥ 1 interacción,866
+interacciones: reseñas,999
+interacciones: historial,999
+interacciones: unión,1998
+escala de las calificaciones,1–5 (enteros)
+densidad (solo reseñas),0.10 %
+densidad (solo historial),0.10 %
+densidad (unión),0.20 %
+"interacciones por usuario (media, unión)",2.33

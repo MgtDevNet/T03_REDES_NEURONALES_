@@ -1,0 +1,24 @@
+tabla,variable,papel,valores
+Destinos,DestinationID,ID del ítem,"identificador, 1000 valores distintos"
+Destinos,Name,contenido (nombre),Goa Beaches: 200; Jaipur City: 200; Kerala Backwaters: 200; Leh Ladakh: 200; Taj Mahal: 200
+Destinos,State,contenido del destino,Goa: 200; Jammu and Kashmir: 200; Kerala: 200; Rajasthan: 200; Uttar Pradesh: 200
+Destinos,Type,contenido del destino,Adventure: 200; Beach: 200; City: 200; Historical: 200; Nature: 200
+Destinos,Popularity,contenido del destino,"continua, 7.50–9.50 (media 8.51)"
+Destinos,BestTimeToVisit,contenido del destino,Apr-Jun: 200; Nov-Feb: 200; Nov-Mar: 200; Oct-Mar: 200; Sep-Mar: 200
+Usuarios,UserID,ID del usuario,"identificador, 999 valores distintos"
+Usuarios,Name,dato personal falso — no se usa,Aanya: 64; Aarav: 55; Aditya: 51; Anika: 54; Arjun: 48; Dhruv: 52; Diya: 38; Hitesh: 54; Isha: 47; Ishaan: 51; Karan: 46; Kavya: 47; Meera: 56; Pooja: 45; Ritvik: 48; Riya: 59; Rohan: 48; Saanvi: 43; Tanvi: 43; Vivaan: 50
+Usuarios,Email,dato personal falso — no se usa,aanya@example.com: 64; aarav@example.com: 55; aditya@example.com: 51; anika@example.com: 54; arjun@example.com: 48; dhruv@example.com: 52; diya@example.com: 38; hitesh@example.com: 54; isha@example.com: 47; ishaan@example.com: 51; karan@example.com: 46; kavya@example.com: 47; meera@example.com: 56; pooja@example.com: 45; ritvik@example.com: 48; riya@example.com: 59; rohan@example.com: 48; saanvi@example.com: 43; tanvi@example.com: 43; vivaan@example.com: 50
+Usuarios,Preferences,contenido del usuario,"Beaches, Historical: 333; City, Historical: 333; Nature, Adventure: 333"
+Usuarios,Gender,contenido del usuario,Female: 496; Male: 503
+Usuarios,NumberOfAdults,contenido del usuario,1: 495; 2: 504
+Usuarios,NumberOfChildren,contenido del usuario,0: 338; 1: 341; 2: 320
+Reseñas,ReviewID,ID de fila,"identificador, 999 valores distintos"
+Reseñas,DestinationID,ID del ítem,"identificador, 651 valores distintos"
+Reseñas,UserID,ID del usuario,"identificador, 624 valores distintos"
+Reseñas,Rating,calificación de la interacción,1: 198; 2: 199; 3: 185; 4: 216; 5: 201
+Reseñas,ReviewText,texto de la interacción,A historical wonder: 333; Incredible monument!: 333; Loved the beaches!: 333
+Historial,HistoryID,ID de fila,"identificador, 999 valores distintos"
+Historial,UserID,ID del usuario,"identificador, 642 valores distintos"
+Historial,DestinationID,ID del ítem,"identificador, 638 valores distintos"
+Historial,VisitDate,fecha de la interacción,2024-01-01: 333; 2024-02-15: 333; 2024-03-20: 333
+Historial,ExperienceRating,calificación de la interacción,1: 206; 2: 228; 3: 201; 4: 183; 5: 181

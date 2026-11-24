@@ -1,0 +1,11 @@
+tabla,columna,valores_distintos,id,k,determinada_por_(id-1)_mod_k
+Destinos,Name,5,DestinationID,5,True
+Destinos,Type,5,DestinationID,5,True
+Destinos,State,5,DestinationID,5,True
+Destinos,BestTimeToVisit,5,DestinationID,5,True
+Destinos,Popularity,1000,DestinationID,5,False
+Usuarios,Preferences,3,UserID,3,True
+Usuarios,Name,20,UserID,20,False
+Usuarios,Email,20,UserID,20,False
+Reseñas,ReviewText,3,ReviewID,3,True
+Historial,VisitDate,3,HistoryID,3,True

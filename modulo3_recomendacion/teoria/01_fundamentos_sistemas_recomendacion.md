@@ -530,6 +530,28 @@ Estrategias para comparar (la **pregunta de negocio 1** pide al menos dos):
 entrenamiento (como si fueran nuevos) y se mide qué tan bien cada estrategia predice los destinos
 que en realidad visitaron.
 
+**Analogía.** Un bibliotecario recomienda bien a un lector habitual: sabe qué ha leído y qué
+leen lectores parecidos. Cuando entra alguien que nunca ha venido, no tiene historial con qué
+compararlo, y solo puede preguntarle qué le gusta (contenido) o darle lo más leído (popularidad).
+
+**Hay dos arranques en frío:**
+- **Usuario frío:** un cliente sin historial. El filtrado colaborativo no tiene vector $\mathbf p_u$
+  para él.
+- **Ítem frío:** un destino sin interacciones en entrenamiento. No tiene vector $\mathbf q_i$, así
+  que un modelo que solo usa IDs **nunca** lo recomienda. Un modelo con contenido sí puede, porque
+  conoce sus atributos (tipo, lugar).
+
+> **En nuestro trabajo — ejemplo.** La usuaria 1 (prefiere «Beaches, Historical», viaja sola)
+> tiene dos interacciones: Goa Beaches (ID 467, entrenamiento) y Taj Mahal (ID 941, prueba). Para
+> simularla como **cliente nuevo**, se oculta su visita a Goa y cada estrategia recibe solo el
+> perfil; luego se mira si el destino 941 aparece en el top-10. Repetido con los 606 usuarios de
+> prueba, esto da el desempeño de cada estrategia para clientes nuevos (pregunta de negocio 1),
+> **sin necesidad de otra partición**.
+>
+> **Ítems fríos en nuestros datos:** con la partición elegida (sección 14), el 33,7 % de los IDs
+> de prueba no tiene ninguna interacción en entrenamiento. La popularidad y la factorización de
+> matrices no pueden acertarlos (techo de HitRate ≈ 66 %); la red con contenido sí puede.
+
 ---
 
 ## 14. Partición de los datos sin fugas
@@ -552,6 +574,31 @@ explícita qué hacer con ellos.
 
 **Otras fugas que hay que evitar:** calcular la popularidad, los escaladores o los codificadores
 con datos de prueba. Todo se **ajusta solo con entrenamiento**.
+
+**Para qué sirve cada conjunto (analogía del examen):**
+- **Entrenamiento** = lo que el estudiante estudia.
+- **Validación** = el examen de práctica: sirve para decidir *cómo* estudiar (los
+  hiperparámetros) y se puede repetir.
+- **Prueba** = el examen final: se presenta **una sola vez**, al final. Si se mira antes y se
+  ajusta el modelo según su resultado, la nota deja de ser honesta.
+
+**Flujo habitual:** (1) buscar hiperparámetros entrenando con *entrenamiento* y midiendo en
+*validación*; (2) reentrenar la configuración ganadora con *entrenamiento + validación*; (3) medir
+una vez en *prueba*.
+
+> **En nuestro trabajo — dejar uno fuera por usuario.** A cada usuario con ≥ 2 interacciones se le
+> esconde 1 (al azar, con semilla fija) para **prueba**; a los que tienen ≥ 3, otra para
+> **validación**; el resto va a **entrenamiento**. Ejemplos reales:
+>
+> | Usuario | Interacciones | Entrenamiento | Validación | Prueba |
+> |---|---|---|---|---|
+> | 6 | 1 | Jaipur City (963) | — | — |
+> | 1 | 2 | Goa Beaches (467) | — | Taj Mahal (941) |
+> | 16 | 4 | Leh Ladakh (970), Taj Mahal (176) | Leh Ladakh (40) | Jaipur City (113) |
+>
+> El usuario 6 **sí entrena** (es la única interacción que tiene el destino 963 en
+> entrenamiento), pero **no se evalúa**: no queda nada que esconder. Los usuarios con una sola
+> interacción aportan 252 de las 1066 interacciones de entrenamiento.
 
 ---
 

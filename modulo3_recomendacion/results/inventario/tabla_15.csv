@@ -1,0 +1,5 @@
+estrategia,conjunto,interacciones_entrenamiento,interacciones_conjunto,usuarios_evaluados,%_usuarios_sin_entrenamiento,%_IDs_no_vistos_en_entrenamiento,%_lugares_no_vistos_en_entrenamiento
+Dejar-uno-fuera por usuario,validación,1066,326,326,0.0,34.4,0.0
+Dejar-uno-fuera por usuario,prueba,1066,606,606,0.0,33.7,0.0
+Aleatoria 80/10/10,validación,1586,213,194,18.0,21.6,0.0
+Aleatoria 80/10/10,prueba,1586,199,181,18.8,21.1,0.0
