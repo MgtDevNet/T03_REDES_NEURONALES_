@@ -1,0 +1,21 @@
+modelo,K,Precision,Recall,NDCG
+Azar,1,0.099,0.099,0.099
+Azar,3,0.095,0.286,0.206
+Azar,5,0.094,0.468,0.281
+Azar,10,0.091,0.913,0.422
+Azar,20,0.099,1.98,0.687
+Factorización (BPR),1,0.083,0.083,0.083
+Factorización (BPR),3,0.099,0.297,0.204
+Factorización (BPR),5,0.097,0.484,0.28
+Factorización (BPR),10,0.094,0.941,0.427
+Factorización (BPR),20,0.103,2.057,0.705
+Popularidad,1,0.011,0.011,0.011
+Popularidad,3,0.086,0.259,0.148
+Popularidad,5,0.102,0.512,0.252
+Popularidad,10,0.116,1.155,0.459
+Popularidad,20,0.114,2.277,0.74
+Red de dos torres,1,0.11,0.11,0.11
+Red de dos torres,3,0.143,0.429,0.293
+Red de dos torres,5,0.109,0.545,0.34
+Red de dos torres,10,0.111,1.111,0.52
+Red de dos torres,20,0.118,2.354,0.83

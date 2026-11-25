@@ -696,3 +696,29 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
   = 25,8 % (IC 95 %: 21,8–30,3 %), por encima del 20 %.
 - Goa a «Beaches, Historical»: 20,8 % en entrenamiento, pero 16,9 % en prueba (12,4–22,6 %): no
   se confirma.
+
+---
+
+## Paso 11 — Funciones para la app (`src/predict.py`, 2026-11-25) ✅ hecho
+- `recomendar_usuario`, `recomendar_perfil_nuevo` e `historial` con la red guardada; solo leen
+  `data/processed/` y `models/` (funcionan en un clon limpio). Probadas con `src/probar_predict.py`,
+  importando desde la raíz del repo como lo hará la app (2,4 s con la carga del modelo).
+- **Cambio de contrato:** `k` pasa de 10 a **3 por defecto** y cuenta **lugares** (1–5), según la
+  decisión 1 y el caso de uso (K cliente = 3). Se actualizó el README.
+- No se repite el mismo ID del historial; los lugares ya visitados se marcan «¿vuelves?».
+- ⚠️ **Extrapolación:** con Beach + Nature (combinación que no existe en los datos) la red pone
+  Goa Beaches de último. Es la limitación de la sección 5 del informe; conviene avisarlo en la app.
+
+### Notebook de experimentos (`notebooks/experimentos_modulo_3.ipynb`, 2026-11-25) ✅ hecho
+- Pedido: un notebook para cambiar los hiperparámetros y comparar las métricas de todos los modelos.
+- Lógica en `src/experimentos.py` (mismo evaluador y partición que el informe); el notebook solo
+  tiene la configuración y las llamadas: tabla comparativa con p-valores contra el azar,
+  comparación pareada entre dos modelos, gráfico de métricas en función de K, barrido de un
+  hiperparámetro, curvas de aprendizaje y recomendaciones de un usuario.
+- Por defecto usa el escenario «ajuste» (validación), con la advertencia de no elegir
+  hiperparámetros mirando la prueba.
+- Se ejecutó completo (16 s, sin errores) y se guardó con sus salidas para verlo en GitHub.
+- Detalle técnico: `descriptivo.py` fija el backend «Agg» de matplotlib (apaga los gráficos en
+  un notebook), así que `experimentos.py` copia el estilo en lugar de importarlo.
+- La curva de aprendizaje de la red muestra la pérdida casi fija en 0,693 = ln 2 (la de una
+  moneda al aire): otra forma de ver que casi no hay nada que aprender.

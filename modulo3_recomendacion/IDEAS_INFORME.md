@@ -421,12 +421,6 @@ destinos; la factorización cubre más, pero porque el 71 % de su top-10 son des
   «Conversión» = el próximo viaje del cliente es a ese lugar (en el texto se dice «viajes»).
   Supuestos explícitos en el informe.
 
-- ⏳ P1 (usuarios nuevos): 💡 explicar el arranque en frío con la analogía del bibliotecario
-  (teoría, sección 13). Simulación: a los 606 usuarios de prueba se les oculta el historial y se
-  recomienda solo con el perfil; el ejemplo es la usuaria 1. Estrategias para comparar:
-  popularidad global, popularidad por perfil, contenido (tipo = preferencia) y torre de usuario
-  sin ID.
-- ⏳ P2 (concentración), P3 (campaña).
 
 ## Cacería de la alucinación — ✅ BORRADOR (8 hallazgos del módulo 3)
 
