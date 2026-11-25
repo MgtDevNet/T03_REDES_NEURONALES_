@@ -1,0 +1,11 @@
+{
+  "d": 2,
+  "perdida": "bce",
+  "negativos": 1,
+  "usuario": "preferencias",
+  "epocas": 8,
+  "motivo": "mayor HitRate@3 por lugar en validación y supera al azar (213 de 326; p-valor = 0.027)",
+  "configuraciones": 24,
+  "corridas": 72,
+  "segundos_ajuste": 64.3
+}

@@ -431,7 +431,7 @@ de programar, se midió qué puede lograr cada familia de modelos con estos dato
   (tarea 2) es el piso obligado: HitRate@10 ≈ 1 %.
 
 ### Decisión 7.2 — Popularidad = conteo de interacciones de entrenamiento, desempate al azar
-- Para llenar el top-10 hay que escoger 10 entre los 24 destinos empatados con 4 interacciones
+- Para llenar el top-10 se toma el destino con 6 interacciones y 9 de los 15 empatados con 5
   (T4-2): el orden dentro del empate es arbitrario, así que se desempata al azar con semilla y se
   repite en las 30 semillas.
 - **Descartado:** la columna `Popularity`, porque H5 mostró que no se relaciona con las
@@ -583,3 +583,46 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
   Lugar@3 en la prueba pareada (p-valor = 0,005), pero ninguna de las dos supera al azar; la
   diferencia se explica porque la popularidad fija siempre los mismos 3 lugares y estos son algo
   menos frecuentes en prueba. No se reporta como ventaja de la factorización.
+
+### Detalle del ajuste de la red, fijado ANTES de entrenar (2026-11-25)
+- Rejilla: d ∈ {2, 4, 8} × pérdida ∈ {BCE, BPR} × negativos por positivo ∈ {1, 4} × torre del
+  usuario ∈ {solo preferencias, perfil completo} = 24 configuraciones × 3 semillas.
+- Fijos: capa oculta de 16 neuronas (ReLU) en cada torre, Adam (tasa 0,01, decaimiento de pesos
+  10⁻⁴), lotes de 256, hasta 200 épocas, parada si HitRate@3 por lugar en validación no mejora en
+  10 épocas.
+- Criterio: mayor HitRate@3 por lugar medio en validación. Si la mejor no supera al azar en
+  validación (binomial contra 60 %), se elige la **más simple: d = 2, solo preferencias,
+  1 negativo, BPR** (BPR por coherencia con la factorización).
+
+### Resultado 8.a — Prueba de la red con datos simulados (`src/probar_dos_torres.py`) ✅ pasa
+- Datos simulados con los usuarios reales: cada interacción va con probabilidad 0,9 a un lugar de
+  sus 2 tipos preferidos. Máximo posible: Lugar@3 ≈ 96 %, Lugar@1 ≈ 47 %.
+- d = 4, 1 negativo: BPR y BCE logran Lugar@3 = 95,5 % y Lugar@1 = 48,2 %; la pérdida baja.
+  **El código aprende la relación cuando existe.**
+
+### Resultado 8.b — Red con los datos reales (`src/ajustar_dos_torres.py`) ✅ hecho
+- **Ajuste:** 24 configuraciones × 3 semillas = 72 corridas (64 s). Lugar@3 en validación entre
+  61,0 % y 65,2 %. Tres configuraciones empatan en 65,2 % (todas d = 2 y solo preferencias); por el
+  orden de la tabla se eligió **d = 2, BCE, 1 negativo, solo preferencias, 8 épocas** (238
+  parámetros). En validación superaba al azar: 213 de 326 frente a 195,6 (p-valor = 0,027).
+- Patrón del ajuste: «solo preferencias» queda por encima de «perfil completo» en la mayoría de
+  combinaciones, coherente con T5-4 (el perfil completo sobreajusta).
+- **Final (606 usuarios, 30 semillas):**
+  - PRINCIPAL — Lugar@3: 61,8 % (375 frente a 363,6 esperados), p-valor corregido = 0,37.
+  - Lugar@1: 22,2 % (134 frente a 121,2), p-valor corregido = 0,21.
+  - HitRate@10 por ID: 1,11 % (7 frente a 6,1), p-valor = 0,41.
+  - Pareadas en Lugar@3: +3,7 puntos frente a la popularidad (p-valor = 0,005; pero la popularidad
+    queda por debajo del azar, resultado 7.d) y +1,4 frente a la factorización (p-valor = 0,20).
+- **Conclusión:** la red va en la dirección esperada (por encima del azar en todas las métricas por
+  lugar), pero **no hay evidencia suficiente para afirmar que supera al azar** en la métrica
+  principal fijada de antemano.
+- ⚠️ **Lección (maldición del ganador):** en validación la elegida «superaba al azar»
+  (p-valor = 0,027), pero era la mejor de 24 configuraciones evaluadas en los mismos 326 usuarios
+  y con parada temprana en esa misma validación: ese p-valor es optimista. La prueba, que se miró
+  una sola vez, no lo confirma. Es exactamente para esto que existe el conjunto de prueba.
+- Modelo guardado: `models/dos_torres.pt` + `dos_torres.json` (semilla 0).
+
+> ⚠️ **Corrección (2026-11-25), decisión 7.2:** decía «escoger 10 entre los 24 destinos empatados
+> con 4 interacciones». Era una lectura equivocada de T4-2: el acumulado con ≥ 5 interacciones ya
+> es 16, así que el empate en el corte del top-10 es entre los 15 destinos con 5 interacciones
+> (se toman 9). Corregido en el informe (6.2), aquí y en IDEAS_INFORME.md.

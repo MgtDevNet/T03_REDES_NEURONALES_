@@ -1,0 +1,2 @@
+usuarios,lugar@3: aciertos / esperados,lugar@3: p-valor corregido (m = 2),lugar@1: aciertos / esperados,lugar@1: p-valor corregido (m = 2),ID@10: aciertos / esperados,ID@10: p-valor vs azar,lugar@3: red − popularidad (puntos),lugar@3: p-valor vs popularidad (pareada),lugar@3: red − factorización (puntos),lugar@3: p-valor vs factorización (pareada),segundos_por_entrenamiento,parametros
+606,375 / 363.6,0.366,134 / 121.2,0.214,7 / 6.1,0.405,3.73,0.005,1.39,0.2,0.1,238

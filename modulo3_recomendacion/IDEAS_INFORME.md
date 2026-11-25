@@ -317,8 +317,8 @@ si el modelo puede siquiera darle puntaje al destino escondido [T4-1]:
 - **Tres modelos:** azar (piso, ≈ 1 %), popularidad y factorización de matrices. **Sin KNN:** solo
   puntúa un destino si otro usuario lo comparte con alguno de los del usuario, y aquí eso casi
   nunca pasa (0–0,2 %).
-- **Popularidad = conteo de interacciones**, con desempate al azar: el top-10 sale de 24 destinos
-  empatados con 4 interacciones [T4-2]. La columna `Popularity` se descarta (H5: ρ = −0,011).
+- **Popularidad = conteo de interacciones**, con desempate al azar: el top-10 es el destino con 6
+  interacciones más 9 de los 15 empatados con 5 [T4-2]. La columna `Popularity` se descarta (H5: ρ = −0,011).
 - **Factorización de matrices con BPR** («el destino visitado debe quedar por encima de uno no
   visitado»), en PyTorch como el módulo 2; *d* y regularización elegidas en validación.
 - **Evaluación común:** se ordenan los 1000 destinos (sin muestrear), quitando los IDs ya vistos
@@ -372,6 +372,28 @@ destinos; la factorización reparte más; el azar cubre todo.
   concentraría la demanda en pocas rutas sin acertar más.
 - 💡 Decisión sobre la granularidad del ítem (ver `DECISIONES.md`, paso 1): explicarla en el
   informe como una decisión de modelado.
+
+### 5.2 Red de dos torres (tarea 5) — resultados, falta redactar en el informe
+> Evidencia: `results/tarea5_evidencia/` (T5-1 a T5-4), `results/tarea5/RESUMEN.md`; detalle en
+> `DECISIONES.md`, decisión 7.5 y paso 8.
+
+- 💡 **Por qué dos torres y qué entra:** la app debe recomendar a perfiles nuevos sin ID; torre del
+  usuario = 5 casillas de preferencias (lo único que predice el lugar: 23,9 % frente a 20 %,
+  p-valor = 0,010, T5-4); torre del destino = embedding del lugar + `Popularity`. `Type`, `State` y
+  `BestTimeToVisit` son redundantes con el lugar (T5-1).
+- 💡 **Por qué métricas por lugar:** un oráculo que siempre sabe el lugar solo llega a ≈ 5 % de
+  HitRate@10 por ID (200 IDs por lugar, T5-3). Se fijaron ANTES de entrenar la red (principal:
+  Lugar@3, azar 60 %).
+- 💡 **Dimensión d ∈ {2, 4, 8}:** tabla perfil × lugar de 3 × 5 (rango ≤ 3).
+- **Prueba con datos simulados:** Lugar@3 = 95,5 % (máximo ≈ 96 %): el código aprende.
+- **Ajuste:** 24 configuraciones × 3 semillas; elegida d = 2, BCE, 1 negativo, solo preferencias
+  (238 parámetros). «Solo preferencias» le gana casi siempre a «perfil completo».
+- **Prueba (606, 30 semillas):** Lugar@3 = 61,8 % (azar 60 %; p-valor corregido = 0,37);
+  Lugar@1 = 22,2 % (azar 20 %; 0,21); HitRate@10 = 1,11 % (0,41). Va en la dirección esperada,
+  pero no hay evidencia suficiente para afirmar que supera al azar.
+- ⚠️ **Maldición del ganador (para el informe):** en validación la elegida «superaba al azar»
+  (p-valor = 0,027), pero era la mejor de 24 configuraciones medidas en los mismos 326 usuarios;
+  en prueba no se confirma. Buen ejemplo de por qué la prueba se mira una sola vez.
 
 ## Preguntas de negocio
 - ⏳ P1 (usuarios nuevos): 💡 explicar el arranque en frío con la analogía del bibliotecario

@@ -1,0 +1,12 @@
+{
+  "d": 2,
+  "perdida": "bce",
+  "negativos": 1,
+  "usuario": "preferencias",
+  "epocas": 8,
+  "semilla": 0,
+  "oculta": 16,
+  "aprende_con": "entrenamiento + validación",
+  "parametros": 238,
+  "uso": "dos_torres.DosTorres(**config) y luego red.red.load_state_dict(torch.load(...)); puntuar_variables(variables_usuario(perfil, usuario)) sirve para perfiles nuevos"
+}

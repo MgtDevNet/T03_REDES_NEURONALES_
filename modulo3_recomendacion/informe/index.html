@@ -139,8 +139,17 @@
         <li><a href="#t4-resultados">6.5 Resultados</a></li>
       </ul>
     </li>
-    <li><a href="#caceria">7. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">8. Lo que falta</a></li>
+    <li><a href="#red">7. Red de dos torres (tarea 5)</a>
+      <ul>
+        <li><a href="#red-contenido">7.1 Qué puede aportar el contenido</a></li>
+        <li><a href="#red-diseno">7.2 Arquitectura y justificación</a></li>
+        <li><a href="#red-simulados">7.3 Prueba con datos simulados</a></li>
+        <li><a href="#red-ajuste">7.4 Ajuste</a></li>
+        <li><a href="#red-resultados">7.5 Resultados</a></li>
+      </ul>
+    </li>
+    <li><a href="#caceria">8. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">9. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -150,7 +159,7 @@
   <div class="eyebrow">Trabajo 3 · Redes neuronales · UNAL 2026-02</div>
   <h1>Módulo 3: Recomendación de destinos de viaje</h1>
   <p class="lead">Borrador de las secciones del informe escritas hasta ahora. Cada cifra sale de un script del repositorio y se puede regenerar.</p>
-  <p class="meta">Fuentes de evidencia: <code>results/inventario/RESUMEN.md</code> (tablas I-1 a I-15), <code>results/descriptivo/RESUMEN.md</code> (tablas D-1 a D-4), <code>results/tarea4_evidencia/RESUMEN.md</code> (tablas T4-1 a T4-3), <code>results/tarea4/RESUMEN.md</code> y <code>RESUMEN_factorizacion.md</code> y la bitácora <code>DECISIONES.md</code>. En las notas de fuente, «I-n», «D-n» y «T4-n» indican de qué tabla generada sale cada dato.</p>
+  <p class="meta">Fuentes de evidencia: <code>results/inventario/RESUMEN.md</code> (tablas I-1 a I-15), <code>results/descriptivo/RESUMEN.md</code> (tablas D-1 a D-4), <code>results/tarea4_evidencia/RESUMEN.md</code> (tablas T4-1 a T4-3), <code>results/tarea4/RESUMEN.md</code>, <code>RESUMEN_factorizacion.md</code>, <code>results/tarea5_evidencia/RESUMEN.md</code> (tablas T5-1 a T5-4), <code>results/tarea5/RESUMEN.md</code> y la bitácora <code>DECISIONES.md</code>. En las notas de fuente, «I-n», «D-n», «T4-n» y «T5-n» indican de qué tabla generada sale cada dato.</p>
 </header>
 
 <section id="estado">
@@ -165,7 +174,7 @@
       <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 5 hallazgos</span></td></tr>
       <tr><td>Modelos de referencia</td><td>Tarea 4 + figura de resultados</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Red neuronal</td><td>Tarea 5</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill wip">Teoría escrita; falta adaptarla</span></td></tr>
@@ -395,16 +404,16 @@
   <div class="table-wrap"><table>
     <thead><tr><th>Hipótesis</th><th>H₀ y H₁</th><th>Prueba y estadístico</th><th>Resultado</th><th class="num">p-valor</th><th class="num">p-valor corregido</th><th>Decisión (α = 0,05)</th></tr></thead>
     <tbody>
-      <tr><td>H1. Visitan los tipos de destino que dicen preferir</td><td><strong>H₀:</strong> el tipo visitado es independiente del perfil de preferencias<br><strong>H₁:</strong> el tipo visitado depende del perfil</td><td>Chi-cuadrado de independencia, perfil × tipo: χ² = 18,35; gl = 8</td><td>coinciden 42,3 % frente a ≈ 40 % del azar</td><td class="num">0,019</td><td class="num">0,113</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
-      <tr><td>H2. Con niños eligen más playa y naturaleza</td><td><strong>H₀:</strong> el tipo visitado es independiente de viajar con niños<br><strong>H₁:</strong> depende de viajar con niños</td><td>Chi-cuadrado de independencia, con/sin niños × tipo: χ² = 6,13; gl = 4</td><td>playa y naturaleza: 38,9 % con niños frente a 41,1 % sin niños</td><td class="num">0,190</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
-      <tr><td>H3. Viajar solo o con otro adulto cambia el destino</td><td><strong>H₀:</strong> el tipo visitado es independiente del número de adultos<br><strong>H₁:</strong> depende del número de adultos</td><td>Chi-cuadrado de independencia, adultos (1 o 2) × tipo: χ² = 6,60; gl = 4</td><td>—</td><td class="num">0,159</td><td class="num">0,952</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
-      <tr><td>H4. El género cambia el destino</td><td><strong>H₀:</strong> el tipo visitado es independiente del género<br><strong>H₁:</strong> depende del género</td><td>Chi-cuadrado de independencia, género × tipo: χ² = 0,40; gl = 4</td><td>—</td><td class="num">0,982</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
-      <tr><td>H5. Mayor <code>Popularity</code> atrae más interacciones</td><td><strong>H₀:</strong> ρ = 0 (no hay relación)<br><strong>H₁:</strong> ρ ≠ 0 (bilateral)</td><td>Correlación de Spearman entre <code>Popularity</code> e interacciones (1000 IDs)</td><td>ρ = −0,011</td><td class="num">0,721</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
-      <tr><td>H6. Visitan en la mejor temporada del destino</td><td><strong>H₀:</strong> el % de visitas en temporada es el del azar (72,6 %)<br><strong>H₁:</strong> es mayor que el del azar (unilateral)</td><td>Permutación, 2000 repeticiones (solo historial)</td><td>73,0 % en temporada</td><td class="num">0,295</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>Hipótesis 1. Visitan los tipos de destino que dicen preferir</td><td><strong>H₀:</strong> el tipo visitado es independiente del perfil de preferencias<br><strong>H₁:</strong> el tipo visitado depende del perfil</td><td>Chi-cuadrado de independencia, perfil × tipo: χ² = 18,35; gl = 8</td><td>coinciden 42,3 % frente a ≈ 40 % del azar</td><td class="num">0,019</td><td class="num">0,113</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>Hipótesis 2. Con niños eligen más playa y naturaleza</td><td><strong>H₀:</strong> el tipo visitado es independiente de viajar con niños<br><strong>H₁:</strong> depende de viajar con niños</td><td>Chi-cuadrado de independencia, con/sin niños × tipo: χ² = 6,13; gl = 4</td><td>playa y naturaleza: 38,9 % con niños frente a 41,1 % sin niños</td><td class="num">0,190</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>Hipótesis 3. Viajar solo o con otro adulto cambia el destino</td><td><strong>H₀:</strong> el tipo visitado es independiente del número de adultos<br><strong>H₁:</strong> depende del número de adultos</td><td>Chi-cuadrado de independencia, adultos (1 o 2) × tipo: χ² = 6,60; gl = 4</td><td>—</td><td class="num">0,159</td><td class="num">0,952</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>Hipótesis 4. El género cambia el destino</td><td><strong>H₀:</strong> el tipo visitado es independiente del género<br><strong>H₁:</strong> depende del género</td><td>Chi-cuadrado de independencia, género × tipo: χ² = 0,40; gl = 4</td><td>—</td><td class="num">0,982</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>Hipótesis 5. Mayor <code>Popularity</code> atrae más interacciones</td><td><strong>H₀:</strong> ρ = 0 (no hay relación)<br><strong>H₁:</strong> ρ ≠ 0 (bilateral)</td><td>Correlación de Spearman entre <code>Popularity</code> e interacciones (1000 IDs)</td><td>ρ = −0,011</td><td class="num">0,721</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
+      <tr><td>Hipótesis 6. Visitan en la mejor temporada del destino</td><td><strong>H₀:</strong> el % de visitas en temporada es el del azar (72,6 %)<br><strong>H₁:</strong> es mayor que el del azar (unilateral)</td><td>Permutación, 2000 repeticiones (solo historial)</td><td>73,0 % en temporada</td><td class="num">0,295</td><td class="num">1,000</td><td><span class="pill no">no se rechaza H₀</span></td></tr>
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-4. En las cuatro pruebas chi-cuadrado, la menor frecuencia esperada es 123, muy por encima del mínimo de 5 que exige la prueba. p-valor corregido = mín(1; 6 × p-valor), corrección de Bonferroni con m = 6.</p>
-  <p><strong>Qué es el p-valor corregido.</strong> Si se hacen muchas pruebas, alguna saldrá «significativa» por pura suerte: con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es 1 − 0,95<sup>6</sup> ≈ 26 %. La corrección de Bonferroni lo evita multiplicando cada p-valor por el número de pruebas, p-valor corregido = mín(1; 6 × p-valor) (Bland y Altman, 1995), y se rechaza H₀ solo si el p-valor corregido es menor que 0,05. Es lo mismo que exigir que el p-valor original sea menor que 0,05/6 ≈ 0,0083. Por ejemplo, H1 tiene p-valor = 0,019: sola parecería significativa, pero corregida queda en 6 × 0,019 = 0,113 &gt; 0,05.</p>
+  <p><strong>Qué es el p-valor corregido.</strong> Si se hacen muchas pruebas, alguna saldrá «significativa» por pura suerte: con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es 1 − 0,95<sup>6</sup> ≈ 26 %. La corrección de Bonferroni lo evita multiplicando cada p-valor por el número de pruebas, p-valor corregido = mín(1; 6 × p-valor) (Bland y Altman, 1995), y se rechaza H₀ solo si el p-valor corregido es menor que 0,05. Es lo mismo que exigir que el p-valor original sea menor que 0,05/6 ≈ 0,0083. Por ejemplo, la hipótesis 1 tiene p-valor = 0,019: sola parecería significativa, pero corregida queda en 6 × 0,019 = 0,113 &gt; 0,05.</p>
   <p><strong>Decisión.</strong> En las seis hipótesis <strong>no hay evidencia suficiente para rechazar H₀</strong>: ningún p-valor corregido baja de 0,05. Esto no demuestra que la relación no exista; dice que estos datos no alcanzan para afirmarla.</p>
   <div class="callout ok"><p><strong>Conclusión de la tarea 2.</strong> Ninguna de las explicaciones razonables de las preferencias se sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo que es coherente con que el conjunto sea sintético. Para el modelado, esto significa que esperamos que ningún modelo supere con claridad al azar, y que cualquier diferencia pequeña debe confirmarse con las 30 semillas antes de afirmarse.</p></div>
 </section>
@@ -462,7 +471,7 @@
 <!-- ======================= 6. MODELOS DE REFERENCIA ======================= -->
 <section id="referencias-t4">
   <h2>6. Modelos de referencia (tarea 4)</h2>
-  <p>El enunciado pide dos referencias contra las cuales comparar la red neuronal: la <strong>popularidad</strong> y un <strong>filtrado colaborativo clásico</strong> (KNN o factorización de matrices). Agregamos una tercera, el <strong>azar</strong>, porque la tarea 2 mostró que las interacciones se comportan como aleatorias: el azar es el mínimo que cualquier modelo útil debe superar.</p>
+  <p>Usamos tres modelos de referencia: el <strong>azar</strong>, la <strong>popularidad</strong> y la <strong>factorización de matrices</strong>. El azar se incluye porque la tarea 2 mostró que las interacciones se comportan como aleatorias: es el mínimo que cualquier modelo útil debe superar.</p>
   <p>Si un modelo acierta igual que el azar, hay dos explicaciones posibles: que los datos no tengan una relación que permita predecir (por ejemplo, que quienes visitan un destino tiendan a visitar otros, o que las preferencias se relacionen con lo que se visita), que es lo que anticipa la tarea 2; o que el código tenga un error. Con los datos reales las dos dan el mismo resultado. Para distinguirlas, antes de usar la factorización con los datos reales la probamos con datos simulados en los que esa relación sí existe (sección 6.3).</p>
 
   <h3 id="t4-posible">6.1 Qué puede lograr cada modelo, antes de entrenarlo</h3>
@@ -484,7 +493,7 @@
   <h3 id="t4-modelos">6.2 Los tres modelos y cómo se evalúan</h3>
   <ul>
     <li><strong>Azar.</strong> Un puntaje aleatorio para cada destino.</li>
-    <li><strong>Popularidad.</strong> El puntaje de un destino es su número de interacciones en lo aprendido, y a todos los usuarios se les recomienda lo mismo. Hay muchos empates: para llenar el top-10 hay que escoger 10 entre 24 destinos que tienen 4 interacciones cada uno (T4-2), así que el orden dentro del empate se decide al azar con una semilla. No usamos la columna <code>Popularity</code> del conjunto, porque no tiene relación con las interacciones (H5, Tabla 10).</li>
+    <li><strong>Popularidad.</strong> El puntaje de un destino es su número de interacciones en lo aprendido, y a todos los usuarios se les recomienda lo mismo. No usamos la columna <code>Popularity</code> del conjunto, porque no tiene relación con las interacciones (hipótesis 5, Tabla 10).</li>
     <li><strong>Factorización de matrices con BPR.</strong> Cada usuario \(u\) y cada destino \(i\) tienen un vector de \(d\) números que se aprende, y el puntaje es su producto punto, \(\hat y_{ui} = \mathbf p_u^\top \mathbf q_i\). Para entrenar se forman tríos \((u, i, j)\): \(i\) es un destino que \(u\) visitó y \(j\) uno que no, escogido al azar. La pérdida
       <div class="math-block">$$\mathcal L = -\ln \sigma\!\left(\hat y_{ui} - \hat y_{uj}\right) + \lambda\left(\lVert\mathbf p_u\rVert^2 + \lVert\mathbf q_i\rVert^2 + \lVert\mathbf q_j\rVert^2\right)$$</div>
       premia que lo visitado quede por encima de lo no visitado, que es justo lo que mide un top-K (Rendle et al., 2009). El segundo término, la regularización, castiga los vectores grandes para que el modelo no memorice. Tiene \((999 + 1000)\,d\) parámetros entrenables.</li>
@@ -526,7 +535,7 @@
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea4/RESUMEN_factorizacion.md</code>. En negrita, la configuración elegida.</p>
-  <p>Las mejores épocas son muy tempranas (entre 2 y 7), indicio de que la parada temprana sigue al ruido y no a un aprendizaje real. Ninguna configuración supera al azar en validación: la mejor acierta 6 de 326 casos cuando el azar acertaría 3,3 (prueba binomial unilateral, p-valor = 0,11), y ese p-valor es incluso optimista, porque la misma validación se usó para escoger la época. Por eso, en lugar de quedarnos con la que más brilló por suerte, aplicamos la regla fijada de antemano: elegir la más simple, <strong>d = 8 y λ = 1</strong>, entrenada durante 7 épocas (la mediana de sus mejores épocas).</p>
+  <p>Las mejores épocas son muy tempranas (entre 2 y 7), indicio de que la parada temprana sigue al ruido y no a un aprendizaje real. Ninguna configuración supera al azar en validación: la mejor acierta 6 de 326 casos cuando el azar acertaría 3,3 (prueba binomial unilateral; H₀: acierta con la probabilidad del azar, ≈ 1 %; H₁: acierta más; p-valor = 0,11), y ese p-valor es incluso optimista, porque la misma validación se usó para escoger la época. Por eso, en lugar de quedarnos con la que más brilló por suerte, aplicamos la regla fijada de antemano: elegir la más simple, <strong>d = 8 y λ = 1</strong>, entrenada durante 7 épocas (la mediana de sus mejores épocas).</p>
 
   <h3 id="t4-resultados">6.5 Resultados</h3>
   <p>Con la configuración elegida, cada modelo se entrenó con entrenamiento + validación y se midió una sola vez en prueba, con 30 semillas. La Tabla 16 y la Figura 3 muestran los resultados.</p>
@@ -551,12 +560,89 @@
   <div class="callout ok"><p><strong>Conclusión de la tarea 4.</strong> Ninguna referencia supera al azar. Como la prueba con datos simulados mostró que el código aprende cuando los datos tienen una relación que permita predecir, la causa son los datos y no la implementación, lo que es coherente con el análisis descriptivo (tarea 2). La red neuronal de la tarea 5 tendrá que compararse contra estos tres modelos con las mismas pruebas, y su ventaja posible está en las variables de contenido, que no dependen de que haya caminos entre usuarios.</p></div>
 </section>
 
-<!-- ======================= 7. CACERÍA ======================= -->
-<section id="caceria">
-  <h2>7. Cacería de la alucinación (aporte del módulo 3)</h2>
-  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 17 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+<!-- ======================= 7. RED DE DOS TORRES ======================= -->
+<section id="red">
+  <h2>7. Red de dos torres (tarea 5)</h2>
+  <p>La red usa variables de contenido del usuario y del destino. Antes de diseñarla medimos qué puede aportar ese contenido con estos datos.</p>
 
-  <p class="caption">Tabla 17. Resumen de los hallazgos del módulo 3</p>
+  <h3 id="red-contenido">7.1 Qué puede aportar el contenido</h3>
+  <p>Tres hechos guían el diseño (evidencia T5-1 a T5-4, <code>src/evidencia_tarea5.py</code>):</p>
+  <ul>
+    <li><strong>Del destino, solo importa el lugar.</strong> <code>Type</code>, <code>State</code> y <code>BestTimeToVisit</code> toman un único valor dentro de cada lugar, así que no dicen nada que el lugar no diga ya. Solo <code>Popularity</code> cambia entre IDs del mismo lugar, y no se relaciona con las interacciones (hipótesis 5, Tabla 10).</li>
+    <li><strong>Del usuario, solo las preferencias permiten predecir algo.</strong> La Tabla 17 muestra que, aprendiendo con unos usuarios y acertando con otros, las preferencias predicen el lugar mejor que el azar, aunque por poco; el perfil completo no, y volver a un lugar ya visitado ocurre lo mismo que al azar.</li>
+    <li><strong>Saber el lugar no basta para acertar el ID.</strong> Cada lugar tiene 200 IDs: un modelo que siempre adivinara el lugar del destino escondido llegaría apenas a un 5 % de HitRate@10 por ID (T5-3).</li>
+  </ul>
+  <p class="caption">Tabla 17. ¿Qué predice el lugar del destino escondido? (prueba, 606 usuarios)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Predictor del lugar</th><th class="num">Aciertos</th><th class="num">Acierto</th><th class="num">Azar</th><th class="num">p-valor</th></tr></thead>
+    <tbody>
+      <tr><td>Preferencias → el lugar más frecuente de ese perfil</td><td class="num">145</td><td class="num">23,9 %</td><td class="num">20,0 %</td><td class="num">0,010</td></tr>
+      <tr><td>Perfil completo (36 combinaciones) → el lugar más frecuente</td><td class="num">121</td><td class="num">20,0 %</td><td class="num">20,0 %</td><td class="num">0,52</td></tr>
+      <tr><td>Historial: el lugar escondido es uno que ya visitó</td><td class="num">195</td><td class="num">32,2 %</td><td class="num">32,4 %</td><td class="num">0,56</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: T5-4. El lugar más frecuente de cada perfil se calcula con entrenamiento + validación y se comprueba en prueba. p-valor: binomial unilateral (H₁: acierta más que el azar). En la fila del historial, el azar depende de cuántos lugares distintos ya visitó cada usuario.</p>
+  <p>Por el tercer punto, una red que aprendiera la relación de las preferencias apenas se notaría por ID (alrededor de 0,239 × 5 % ≈ 1,2 % frente al 1,0 % del azar). Por eso, <strong>antes de entrenar la red</strong>, fijamos las métricas por lugar de la sección 6.2 como las principales (HitRate@3 por lugar, que es lo que ve el cliente; azar 60 %), con corrección de Bonferroni para las dos métricas por lugar, y las aplicamos igual a todos los modelos.</p>
+
+  <h3 id="red-diseno">7.2 Arquitectura y justificación</h3>
+  <p><strong>Dos torres.</strong> Una torre convierte las variables del usuario en un vector \(\mathbf u \in \mathbb R^d\); la otra convierte las del destino en un vector \(\mathbf v \in \mathbb R^d\); el puntaje es \(s = \mathbf u^\top \mathbf v\). Elegimos esta arquitectura por dos razones: la app debe recomendar a un perfil nuevo que no tiene ID, y la torre del usuario solo necesita sus variables; y no depende de que haya conexiones entre usuarios, que es lo que hizo fallar a KNN y a la factorización.</p>
+  <ul>
+    <li><strong>Torre del usuario:</strong> las 5 casillas de preferencias → capa oculta de 16 neuronas (ReLU) → \(\mathbf u\). En el ajuste probamos también el perfil completo (preferencias, género, adultos y niños).</li>
+    <li><strong>Torre del destino:</strong> un embedding del lugar (5 valores) junto con <code>Popularity</code> estandarizada → capa oculta de 16 neuronas (ReLU) → \(\mathbf v\). No usa el ID, así que puede puntuar también los IDs que nadie tocó al aprender.</li>
+  </ul>
+  <p><strong>Dimensión \(d \in \{2, 4, 8\}\).</strong> Solo hay 3 perfiles de preferencias y 5 lugares: la tabla perfil × lugar tiene a lo sumo rango 3, así que unas pocas dimensiones bastan para representar cualquier relación entre ellos, y más dimensiones solo darían capacidad para sobreajustar.</p>
+  <p><strong>Negativos.</strong> Para cada interacción observada se toman \(k \in \{1, 4\}\) destinos que el usuario no tiene, al azar y con la misma probabilidad entre los 1000 IDs. Muestrear según la popularidad, la alternativa habitual, daría prácticamente lo mismo, porque el catálogo es parejo (sección 3.2).</p>
+  <p><strong>Pérdida: dos opciones, cada una derivada de un modelo probabilístico.</strong></p>
+  <ul>
+    <li><strong>BCE con negativos.</strong> Cada par (usuario, destino) se trata como una moneda: \(P(y = 1) = \sigma(s)\), con \(y = 1\) si lo visitó y \(y = 0\) si es un negativo. La verosimilitud es \(\prod \sigma(s)^{y}\,(1-\sigma(s))^{1-y}\), y minimizar su logaritmo negativo da
+      <div class="math-block">$$\mathcal L_{\text{BCE}} = -\left[\,y \ln \sigma(s) + (1-y)\ln\left(1-\sigma(s)\right)\right].$$</div></li>
+    <li><strong>BPR.</strong> Se modela la probabilidad de que el usuario prefiera el destino visitado \(i\) sobre un negativo \(j\) como \(\sigma(s_{ui} - s_{uj})\), y su logaritmo negativo es la pérdida de la factorización (sección 6.2):
+      <div class="math-block">$$\mathcal L_{\text{BPR}} = -\ln \sigma\left(s_{ui} - s_{uj}\right).$$</div></li>
+  </ul>
+  <p>BCE intenta acertar cada par por separado; BPR solo pide ordenar bien. Las dos entran en el ajuste. El resto se fija: Adam con tasa 0,01 y decaimiento de pesos 10⁻⁴, lotes de 256 y hasta 200 épocas, con parada cuando HitRate@3 por lugar en validación no mejora en 10 épocas.</p>
+
+  <h3 id="red-simulados">7.3 Prueba con datos simulados</h3>
+  <p>Como con la factorización (sección 6.3), antes de usar la red con los datos reales comprobamos que aprende cuando la relación existe. Simulamos interacciones con los mismos usuarios, las mismas cantidades y la misma partición, pero haciendo que cada interacción vaya, con probabilidad 0,9, a un lugar de uno de los dos tipos que el usuario dice preferir. Lo mejor posible es entonces un HitRate@3 por lugar de ≈ 96 % y un HitRate@1 de ≈ 47 %. La red (d = 4, 348 parámetros) logró <strong>95,5 % y 48,2 %</strong> tanto con BCE como con BPR (<code>src/probar_dos_torres.py</code>): el código aprende la relación cuando está en los datos.</p>
+
+  <h3 id="red-ajuste">7.4 Ajuste</h3>
+  <p>Probamos 24 configuraciones (\(d\) × pérdida × negativos × variables del usuario), cada una con 3 semillas: 72 corridas en 64 segundos. La Tabla 18 resume el efecto de cada opción.</p>
+  <p class="caption">Tabla 18. HitRate@3 por lugar en validación según cada opción (media de las corridas; azar 60 %)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Opción</th><th>Valores probados</th><th>HitRate@3 por lugar</th></tr></thead>
+    <tbody>
+      <tr><td>Dimensión \(d\)</td><td>2 · 4 · 8</td><td>63,1 % · 63,7 % · 63,0 %</td></tr>
+      <tr><td>Pérdida</td><td>BCE · BPR</td><td>63,4 % · 63,2 %</td></tr>
+      <tr><td>Negativos por interacción</td><td>1 · 4</td><td>63,6 % · 62,9 %</td></tr>
+      <tr><td>Variables del usuario</td><td>solo preferencias · perfil completo</td><td>63,8 % · 62,8 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea5/RESUMEN.md</code> (las 24 configuraciones). Validación: 326 usuarios.</p>
+  <p>Las diferencias entre opciones son pequeñas, del tamaño del ruido. Lo más consistente es que <strong>solo preferencias</strong> supera al perfil completo, como anticipaba la Tabla 17. Las tres mejores configuraciones empatan en 65,2 % y todas usan \(d = 2\) y solo preferencias; por el orden de la tabla quedó elegida <strong>\(d = 2\), BCE, 1 negativo y solo preferencias</strong>, entrenada 8 épocas, con 238 parámetros entrenables. En validación superaba al azar: 213 de 326 frente a 195,6 esperados (prueba binomial unilateral; H₀: su lugar escondido queda entre los 3 primeros con la probabilidad del azar, 60 %; H₁: con más; p-valor = 0,027).</p>
+
+  <h3 id="red-resultados">7.5 Resultados</h3>
+  <p>La Tabla 19 compara la red con las tres referencias en prueba, con la misma partición, el mismo evaluador y 30 semillas.</p>
+  <p class="caption">Tabla 19. Red de dos torres frente a las referencias (prueba, 606 usuarios, 30 semillas)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th class="num">Lugar@3 (azar 60 %)</th><th class="num">Lugar@1 (azar 20 %)</th><th class="num">HitRate@10</th><th class="num">NDCG@10</th><th class="num">Cobertura@10</th><th class="num">Parámetros entrenables</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">59,7 %</td><td class="num">19,3 %</td><td class="num">0,91 %</td><td class="num">0,42 %</td><td class="num">99,7 %</td><td class="num">0</td></tr>
+      <tr><td>Popularidad</td><td class="num">58,1 %</td><td class="num">16,1 %</td><td class="num">1,16 %</td><td class="num">0,46 %</td><td class="num">1,6 %</td><td class="num">0</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">60,4 %</td><td class="num">20,4 %</td><td class="num">0,94 %</td><td class="num">0,43 %</td><td class="num">17,4 %</td><td class="num">15 992</td></tr>
+      <tr><td><strong>Red de dos torres</strong></td><td class="num"><strong>61,8 %</strong></td><td class="num"><strong>22,2 %</strong></td><td class="num">1,11 %</td><td class="num">0,52 %</td><td class="num">2,5 %</td><td class="num">238</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea5/RESUMEN.md</code> y las de la Tabla 16.</p>
+  <p>La red es el único modelo que queda por encima del azar en las dos métricas por lugar, pero por poco: en la métrica principal acierta 375 de 606 casos cuando el azar acertaría 363,6 (p-valor corregido = 0,37), y en HitRate@1 por lugar, 134 frente a 121,2 (p-valor corregido = 0,21). Por ID tampoco se distingue del azar (7 aciertos frente a 6,1; p-valor = 0,41). Frente a la factorización, la diferencia pareada en Lugar@3 es de +1,4 puntos (p-valor = 0,20). <strong>No hay evidencia suficiente para afirmar que la red supera al azar</strong>, aunque va en la dirección que predecía la Tabla 17. Su cobertura es baja (2,5 %): con solo 3 perfiles de preferencias, recomienda casi lo mismo a todos los usuarios del mismo perfil.</p>
+  <div class="callout warn"><p><strong>La maldición del ganador.</strong> En validación, la red elegida «superaba al azar» (p-valor = 0,027), y en prueba no se confirma. No es una contradicción: esa configuración era la mejor de 24 medidas sobre los mismos 326 usuarios, y la parada temprana también usó esa validación, así que su resultado allí estaba inflado por la propia selección. Por eso la prueba se mira una sola vez y es la que manda.</p></div>
+  <div class="callout ok"><p><strong>Conclusión de la tarea 5.</strong> La red de dos torres con preferencias es la que mejor se ajusta a lo que hay en los datos y la única que puede recomendar a un perfil nuevo, pero su ventaja sobre el azar es demasiado pequeña para afirmarse con 606 usuarios. Como la prueba con datos simulados mostró que la red aprende cuando la relación existe, el límite está en los datos: en ellos, lo único que permite predecir el lugar es una relación débil con las preferencias.</p></div>
+</section>
+
+<!-- ======================= 8. CACERÍA ======================= -->
+<section id="caceria">
+  <h2>8. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 20 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+
+  <p class="caption">Tabla 20. Resumen de los hallazgos del módulo 3</p>
   <div class="table-wrap"><table>
     <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
     <tbody>
@@ -652,9 +738,9 @@
       <dt>Cómo se sospechó</dt>
       <dd>Al revisar el borrador pedimos mostrar de forma explícita la hipótesis nula, la alternativa y la prueba de cada fila («no se muestra explícitamente las hipótesis nula y alternativa ni que prueba se usa»). Al escribirlas, la hipótesis enunciada y lo que la prueba contrasta no coincidían.</dd>
       <dt>Evidencia</dt>
-      <dd>(a) H2 afirma una dirección («<strong>más</strong> playa y naturaleza»), pero se contrastó con un chi-cuadrado de independencia con/sin niños × tipo (χ² = 6,13; gl = 4), que detecta cualquier diferencia en el reparto de los 5 tipos y no distingue si es «más» o «menos». (b) H5 afirma «mayor <code>Popularity</code> → <strong>más</strong> interacciones», pero la correlación de Spearman se calculó bilateral (H₁: ρ ≠ 0). (c) La tabla no mostraba H₀ ni H₁, así que el desajuste no se veía. Código: <code>src/descriptivo.py</code>, función <code>s4_hipotesis</code>; resultados en D-4.</dd>
+      <dd>(a) La hipótesis 2 afirma una dirección («<strong>más</strong> playa y naturaleza»), pero se contrastó con un chi-cuadrado de independencia con/sin niños × tipo (χ² = 6,13; gl = 4), que detecta cualquier diferencia en el reparto de los 5 tipos y no distingue si es «más» o «menos». (b) La hipótesis 5 afirma «mayor <code>Popularity</code> → <strong>más</strong> interacciones», pero la correlación de Spearman se calculó bilateral (H₁: ρ ≠ 0). (c) La tabla no mostraba H₀ ni H₁, así que el desajuste no se veía. Código: <code>src/descriptivo.py</code>, función <code>s4_hipotesis</code>; resultados en D-4.</dd>
       <dt>Corrección</dt>
-      <dd>La Tabla 10 ahora escribe H₀ y H₁ tal como las contrasta cada prueba (por ejemplo, H2: «el tipo visitado es independiente de viajar con niños» frente a «depende»), junto con el estadístico, el p-valor, el p-valor corregido y la decisión. Las conclusiones no cambian: en las seis no hay evidencia suficiente para rechazar H₀, y en H2 el dato va incluso en la dirección contraria (38,9 % con niños frente a 41,1 % sin niños).</dd>
+      <dd>La Tabla 10 ahora escribe H₀ y H₁ tal como las contrasta cada prueba (por ejemplo, en la hipótesis 2: «el tipo visitado es independiente de viajar con niños» frente a «depende»), junto con el estadístico, el p-valor, el p-valor corregido y la decisión. Las conclusiones no cambian: en las seis no hay evidencia suficiente para rechazar H₀, y en la hipótesis 2 el dato va incluso en la dirección contraria (38,9 % con niños frente a 41,1 % sin niños).</dd>
       <dt>Lección</dt>
       <dd>Escribir H₀ y H₁ <em>antes</em> de elegir la prueba, y comprobar que la prueba contraste exactamente esa alternativa (con dirección o sin ella). Una tabla de «¿se sostiene?» sin hipótesis explícitas esconde este tipo de error.</dd>
     </dl>
@@ -663,7 +749,7 @@
   <h3>Verificaciones hechas que no encontraron error</h3>
   <p>El enunciado pide documentar también las verificaciones. Estas confirmaron lo que había dicho la IA:</p>
   <ul>
-    <li>El «40 % esperado por azar» de H1: recalculado con la distribución real de tipos y con 5000 permutaciones, da 40,1 % (I-6).</li>
+    <li>El «40 % esperado por azar» de la hipótesis 1: recalculado con la distribución real de tipos y con 5000 permutaciones, da 40,1 % (I-6).</li>
     <li>La forma de Poisson como referencia del azar: el ajuste por destino da p-valor = 0,998 (D-1).</li>
     <li>La partición: las verificaciones automáticas de <code>src/preprocesar.py</code> no encontraron fugas.</li>
   </ul>
@@ -672,11 +758,11 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>8. Lo que falta</h2>
+  <h2>9. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
-      <tr><td>Tarea 5 · Red neuronal</td><td>Modelo de dos torres o NCF con variables de contenido; justificar la dimensión de los embeddings, los negativos y la pérdida.</td></tr>
+      <tr><td>Tarea 5 · Red neuronal</td><td>Figura de la arquitectura y curvas de aprendizaje (figuras comunes).</td></tr>
       <tr><td>Tarea 6 · Evaluación</td><td>Precision, Recall y NDCG@K; cobertura; grupos de pocas y muchas interacciones; 30 semillas; 5 usuarios de ejemplo; t-SNE.</td></tr>
       <tr><td>P1 · Usuarios nuevos</td><td>Simular el arranque en frío con los 606 usuarios de prueba; comparar ≥ 2 estrategias.</td></tr>
       <tr><td>P2 · Concentración</td><td>Gini de las recomendaciones (por ID y por lugar) y efecto en la capacidad de las rutas.</td></tr>
@@ -694,7 +780,7 @@
   <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
   <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
   <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the 25th Conference on Uncertainty in Artificial Intelligence (UAI)</em>.</p>
-  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 7.</p></div>
+  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 8.</p></div>
 </section>
 </main>
 </div>
