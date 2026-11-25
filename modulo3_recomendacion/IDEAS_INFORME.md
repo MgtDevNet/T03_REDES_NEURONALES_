@@ -104,8 +104,8 @@ variable categórica con 5 niveles** (el lugar) más una numérica (`Popularity`
   (cómo se construye, evalúa y compara un recomendador), no un hallazgo de negocio.
 - **Hay muy poca señal que aprender.** Si las interacciones son casi aleatorias, ningún modelo
   puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso
-  incluiremos un recomendador **aleatorio** como piso y compararemos con 30 semillas antes de
-  afirmar que un modelo es mejor que otro.
+  incluiremos un recomendador **aleatorio** como piso y antes de afirmar que un modelo es mejor
+  que otro lo compararemos con 30 semillas y con pruebas que tratan a los usuarios como muestra.
 - **Si la red supera a la popularidad, ya sabemos dónde buscar la causa:** la única pista de
   señal es la débil relación entre preferencias y tipo de destino (que además no sobrevive a la
   corrección por pruebas múltiples), y solo un modelo con variables de contenido podría
@@ -240,7 +240,8 @@ que la relación no exista; dice que estos datos no alcanzan para afirmarla.
 sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo
 que es coherente con que el dataset sea sintético. Para el modelado, esto significa que
 **esperamos que ningún modelo supere con claridad al azar**, y que cualquier diferencia pequeña
-debe confirmarse con las 30 semillas antes de afirmarse.
+debe confirmarse con 30 semillas y con pruebas que tratan a los usuarios como muestra antes de
+afirmarse (ver hallazgo 7).
 
 💡 *Historia para el informe (también para la «Cacería de la alucinación»):* el análisis de H1 se
 hizo en tres momentos: (1) mirando solo el historial, «no hay relación» (p-valor = 0,14); (2) con la
@@ -403,7 +404,7 @@ destinos; la factorización reparte más; el azar cubre todo.
   sin ID.
 - ⏳ P2 (concentración), P3 (campaña).
 
-## Cacería de la alucinación — ✅ BORRADOR (5 hallazgos del módulo 3)
+## Cacería de la alucinación — ✅ BORRADOR (7 hallazgos del módulo 3)
 
 > ⚠️ **Definición correcta (enunciado, pp. 9–10):** errores que generó **una IA** durante el
 > trabajo, no errores de los datos. Cada hallazgo debe incluir: prompt literal, respuesta de la IA,
@@ -433,6 +434,15 @@ Redacción completa, con los prompts literales, en `informe/index.html`, secció
    un Spearman bilateral. La tabla no mostraba H₀ ni H₁, así que no se veía. Se detectó al pedir
    H₀, H₁ y la prueba de cada fila. Corrección: H₀/H₁ explícitas según la prueba (D-4); las
    conclusiones no cambian. Prompt literal: «sigamos con el análisi descriptivo».
+6. **Afirmaciones del informe que no coincidían con sus tablas (Datos/resultados, media):** «la
+   red es el único modelo por encima del azar en las dos métricas por lugar» (la factorización
+   también lo está: 60,4 % y 20,4 %), «la única que puede recomendar a un perfil nuevo», 25 s
+   escrito frente a 23 s en el archivo, «igual de seguido» con conteos 63 y 80, y un p-valor sin
+   corregir. Detectado al pedir verificar todo el informe (`src/verificar_informe.py`).
+7. **«Confirmar con 30 semillas» (Conceptos, alta):** la conclusión de la tarea 2 decía que las
+   diferencias pequeñas se confirmaban con 30 semillas; las semillas no miden el muestreo de
+   usuarios (error ≈ 0,40 puntos frente a una diferencia de 0,25 entre popularidad y azar;
+   binomial p-valor = 0,41). Corrección: semillas + pruebas que tratan a los usuarios como muestra.
 
 - ✅ Verificaciones sin error: el 40 % esperado (recalculado: 40,1 %), Poisson como referencia,
   partición sin fugas.

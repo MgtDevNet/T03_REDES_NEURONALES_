@@ -172,7 +172,7 @@
       <tr><td>Análisis descriptivo</td><td>Tarea 2 + figura de cola larga</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Partición</td><td>Tarea 3</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 5 hallazgos</span></td></tr>
+      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 7 hallazgos</span></td></tr>
       <tr><td>Modelos de referencia</td><td>Tarea 4 + figura de resultados</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill no">Pendiente</span></td></tr>
@@ -257,7 +257,7 @@
     <tbody>
       <tr><td>5 lugares clonados</td><td>El lugar de cada destino lo determina una fórmula, (ID − 1) mod 5; solo <code>Popularity</code> cambia entre copias.</td><td>I-2, I-3</td></tr>
       <tr><td>Ciclos exactos de 3</td><td>Preferencias, fecha de visita y texto de la reseña se repiten en ciclos exactos (por ejemplo, 333 visitas en cada una de solo 3 fechas).</td><td>I-2</td></tr>
-      <tr><td>Texto sin relación con el destino</td><td>«Loved the beaches!» aparece igual de seguido en el Taj Mahal que en las montañas (chi-cuadrado, p-valor = 0,88).</td><td>I-7</td></tr>
+      <tr><td>Texto sin relación con el destino</td><td>«Loved the beaches!» aparece en el Taj Mahal (63 veces) y en las montañas de Leh Ladakh (80) tanto o más que en las playas de Goa (65) (chi-cuadrado, p-valor = 0,88).</td><td>I-7</td></tr>
       <tr><td>Notas uniformes</td><td>≈ 20 % cada nota (p-valor = 0,66 y 0,12); sin relación con <code>Popularity</code> (correlación 0,04 en reseñas y 0,03 en historial).</td><td>I-4, I-5</td></tr>
       <tr><td>Tablas que no se cruzan</td><td>Ninguna persona reseñó un destino que aparezca en su historial de visitas.</td><td>I-8</td></tr>
     </tbody>
@@ -268,7 +268,7 @@
   <h3 id="implicaciones">1.4 ¿Qué implica para nuestras conclusiones?</h3>
   <ul>
     <li><strong>No hablamos de turistas reales.</strong> Ningún resultado se puede usar para afirmar algo sobre los viajeros de India ni sobre los clientes de la empresa. El módulo demuestra el <strong>método</strong> (cómo se construye, evalúa y compara un recomendador), no un hallazgo de negocio.</li>
-    <li><strong>Hay muy poca relación en los datos que permita predecir.</strong> Si las interacciones son casi aleatorias, ningún modelo puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso incluiremos un recomendador <strong>aleatorio</strong> como mínimo de referencia, y compararemos con 30 semillas antes de afirmar que un modelo es mejor que otro.</li>
+    <li><strong>Hay muy poca relación en los datos que permita predecir.</strong> Si las interacciones son casi aleatorias, ningún modelo puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso incluiremos un recomendador <strong>aleatorio</strong> como mínimo de referencia, y antes de afirmar que un modelo es mejor que otro lo compararemos con 30 semillas y con pruebas que tratan a los usuarios evaluados como muestra.</li>
     <li><strong>Si la red supera a la popularidad, ya sabemos dónde buscar la causa.</strong> El único indicio de algo que permita predecir es la débil relación entre preferencias y tipo de destino, y solo un modelo con variables de contenido podría aprovecharla. Lo más probable es que ningún modelo supere claramente al azar.</li>
     <li><strong>El catálogo real tiene 5 lugares.</strong> Esto obliga a la decisión de modelado que sigue.</li>
   </ul>
@@ -415,7 +415,7 @@
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: D-4. En las cuatro pruebas chi-cuadrado, la menor frecuencia esperada es 123, muy por encima del mínimo de 5 que exige la prueba. p-valor corregido = mín(1; 6 × p-valor), corrección de Bonferroni con m = 6.</p>
   <p><strong>Qué es el p-valor corregido.</strong> Si se hacen muchas pruebas, alguna saldrá «significativa» por pura suerte: con 6 pruebas y α = 0,05, la probabilidad de al menos un falso positivo es 1 − 0,95<sup>6</sup> ≈ 26 %. La corrección de Bonferroni lo evita multiplicando cada p-valor por el número de pruebas, p-valor corregido = mín(1; 6 × p-valor) (Bland y Altman, 1995), y se rechaza H₀ solo si el p-valor corregido es menor que 0,05. Es lo mismo que exigir que el p-valor original sea menor que 0,05/6 ≈ 0,0083. Por ejemplo, la hipótesis 1 tiene p-valor = 0,019: sola parecería significativa, pero corregida queda en 6 × 0,019 = 0,113 &gt; 0,05.</p>
   <p><strong>Decisión.</strong> En las seis hipótesis <strong>no hay evidencia suficiente para rechazar H₀</strong>: ningún p-valor corregido baja de 0,05. Esto no demuestra que la relación no exista; dice que estos datos no alcanzan para afirmarla.</p>
-  <div class="callout ok"><p><strong>Conclusión de la tarea 2.</strong> Ninguna de las explicaciones razonables de las preferencias se sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo que es coherente con que el conjunto sea sintético. Para el modelado, esto significa que esperamos que ningún modelo supere con claridad al azar, y que cualquier diferencia pequeña debe confirmarse con las 30 semillas antes de afirmarse.</p></div>
+  <div class="callout ok"><p><strong>Conclusión de la tarea 2.</strong> Ninguna de las explicaciones razonables de las preferencias se sostiene en estos datos. Las interacciones se comportan como si se hubieran asignado al azar, lo que es coherente con que el conjunto sea sintético. Para el modelado, esto significa que esperamos que ningún modelo supere con claridad al azar, y que cualquier diferencia pequeña debe confirmarse con 30 semillas y con pruebas que tratan a los usuarios evaluados como muestra antes de afirmarse.</p></div>
 </section>
 
 <!-- ======================= 4. PARTICIÓN ======================= -->
@@ -447,7 +447,7 @@
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-15 (semilla 0). «IDs de prueba no vistos» se mide contra el conjunto de entrenamiento solo, para comparar las estrategias en igualdad de condiciones.</p>
-  <p>La partición aleatoria dejaría a casi uno de cada cinco usuarios de prueba sin nada en entrenamiento, y solo evaluaría 181 usuarios. Dejar uno fuera garantiza que todo usuario evaluado tiene historial, que es la situación del caso de uso (un cliente que inicia sesión y ya ha viajado). También es el esquema que usan He et al. (2017).</p>
+  <p>La partición aleatoria dejaría a casi uno de cada cinco usuarios de prueba sin nada en entrenamiento, y solo evaluaría 181 usuarios. Dejar uno fuera garantiza que todo usuario evaluado tiene historial, que es la situación del caso de uso (un cliente que inicia sesión y ya ha viajado).</p>
 
   <div class="callout warn"><p><strong>Un hallazgo que sale de la partición: los «IDs fríos».</strong> Muchos destinos escondidos son IDs que nadie tocó en los datos con los que aprende el modelo. Un modelo que solo conoce IDs, como la popularidad o la factorización de matrices, no tiene información sobre ellos y solo los acertaría por casualidad, así que su tasa de aciertos tiene un máximo. Ese máximo depende del momento: al ajustar (aprende con entrenamiento y se mide en validación), el 34,4 % de los destinos escondidos es frío y el máximo es 65,6 %; en la evaluación final (aprende con entrenamiento + validación y se mide en prueba), el 22,6 % es frío y el máximo es 77,4 % (evidencia: T4-1, <code>src/evidencia_tarea4.py</code>). Un modelo que conoce el contenido («este ID es un Taj Mahal») no tiene ese límite. Es una razón concreta para usar variables de contenido en la red.</p></div>
 
@@ -518,7 +518,7 @@
   <p>Con λ = 0,1 la factorización llega prácticamente al máximo (58,4 % frente a 59 %): <strong>el código aprende cuando hay algo que aprender</strong>. La tabla deja una segunda lección: con poca regularización el modelo memoriza el entrenamiento (pérdida casi 0) y acierta mucho menos. Con solo 2 o 3 interacciones por usuario hace falta regularizar fuerte, y por eso la búsqueda de configuraciones con los datos reales usó λ entre 0,01 y 1.</p>
 
   <h3 id="t4-ajuste">6.4 Ajuste de la factorización</h3>
-  <p>Probamos 9 configuraciones (dimensión \(d \in \{8, 16, 32\}\) × regularización \(\lambda \in \{0{,}01;\ 0{,}1;\ 1\}\)), cada una con 3 semillas: 27 corridas que, junto con la evaluación final, tardaron 25 segundos en total. Cada corrida entrena hasta 200 épocas con Adam (tasa 0,01, un negativo por cada positivo) y para cuando el NDCG@10 en validación no mejora en 10 épocas. La Tabla 15 muestra los resultados.</p>
+  <p>Probamos 9 configuraciones (dimensión \(d \in \{8, 16, 32\}\) × regularización \(\lambda \in \{0{,}01;\ 0{,}1;\ 1\}\)), cada una con 3 semillas: 27 corridas que tardaron 23 segundos en total. Cada corrida entrena hasta 200 épocas con Adam (tasa 0,01, un negativo por cada positivo) y para cuando el NDCG@10 en validación no mejora en 10 épocas. La Tabla 15 muestra los resultados.</p>
   <p class="caption">Tabla 15. Configuraciones probadas (media de 3 semillas, validación con 326 usuarios)</p>
   <div class="table-wrap"><table>
     <thead><tr><th class="num">d</th><th class="num">λ</th><th class="num">NDCG@10</th><th class="num">HitRate@10</th><th class="num">Mejor época (mediana)</th><th class="num">Parámetros</th></tr></thead>
@@ -569,7 +569,7 @@
   <p>Tres hechos guían el diseño (evidencia T5-1 a T5-4, <code>src/evidencia_tarea5.py</code>):</p>
   <ul>
     <li><strong>Del destino, solo importa el lugar.</strong> <code>Type</code>, <code>State</code> y <code>BestTimeToVisit</code> toman un único valor dentro de cada lugar, así que no dicen nada que el lugar no diga ya. Solo <code>Popularity</code> cambia entre IDs del mismo lugar, y no se relaciona con las interacciones (hipótesis 5, Tabla 10).</li>
-    <li><strong>Del usuario, solo las preferencias permiten predecir algo.</strong> La Tabla 17 muestra que, aprendiendo con unos usuarios y acertando con otros, las preferencias predicen el lugar mejor que el azar, aunque por poco; el perfil completo no, y volver a un lugar ya visitado ocurre lo mismo que al azar.</li>
+    <li><strong>Del usuario, solo las preferencias permiten predecir algo.</strong> La Tabla 17 muestra que, aprendiendo con unos usuarios y acertando con otros, las preferencias predicen el lugar mejor que el azar, aunque por poco; el perfil completo no, y volver a un lugar ya visitado ocurre lo mismo que al azar. Es la misma relación débil de la hipótesis 1 (sección 3.4), pero medida de otra forma: se calcula la regla con unos usuarios y se comprueba con otros, y así sí resulta significativa, incluso corrigiendo por los 3 predictores probados (p-valor corregido ≈ 0,03).</li>
     <li><strong>Saber el lugar no basta para acertar el ID.</strong> Cada lugar tiene 200 IDs: un modelo que siempre adivinara el lugar del destino escondido llegaría apenas a un 5 % de HitRate@10 por ID (T5-3).</li>
   </ul>
   <p class="caption">Tabla 17. ¿Qué predice el lugar del destino escondido? (prueba, 606 usuarios)</p>
@@ -581,7 +581,7 @@
       <tr><td>Historial: el lugar escondido es uno que ya visitó</td><td class="num">195</td><td class="num">32,2 %</td><td class="num">32,4 %</td><td class="num">0,56</td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: T5-4. El lugar más frecuente de cada perfil se calcula con entrenamiento + validación y se comprueba en prueba. p-valor: binomial unilateral (H₁: acierta más que el azar). En la fila del historial, el azar depende de cuántos lugares distintos ya visitó cada usuario.</p>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: T5-4. El lugar más frecuente de cada perfil se calcula con entrenamiento + validación y se comprueba en prueba. p-valor: binomial unilateral (H₁: acierta más que el azar). Los p-valores no están corregidos; con Bonferroni por los 3 predictores (m = 3), el de las preferencias queda en ≈ 0,03. En la fila del historial, el azar depende de cuántos lugares distintos ya visitó cada usuario; el 33,8 % de la sección 2 mide lo mismo con una partición exploratoria distinta, por eso no coincide exactamente.</p>
   <p>Por el tercer punto, una red que aprendiera la relación de las preferencias apenas se notaría por ID (alrededor de 0,239 × 5 % ≈ 1,2 % frente al 1,0 % del azar). Por eso, <strong>antes de entrenar la red</strong>, fijamos las métricas por lugar de la sección 6.2 como las principales (HitRate@3 por lugar, que es lo que ve el cliente; azar 60 %), con corrección de Bonferroni para las dos métricas por lugar, y las aplicamos igual a todos los modelos.</p>
 
   <h3 id="red-diseno">7.2 Arquitectura y justificación</h3>
@@ -632,9 +632,9 @@
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea5/RESUMEN.md</code> y las de la Tabla 16.</p>
-  <p>La red es el único modelo que queda por encima del azar en las dos métricas por lugar, pero por poco: en la métrica principal acierta 375 de 606 casos cuando el azar acertaría 363,6 (p-valor corregido = 0,37), y en HitRate@1 por lugar, 134 frente a 121,2 (p-valor corregido = 0,21). Por ID tampoco se distingue del azar (7 aciertos frente a 6,1; p-valor = 0,41). Frente a la factorización, la diferencia pareada en Lugar@3 es de +1,4 puntos (p-valor = 0,20). <strong>No hay evidencia suficiente para afirmar que la red supera al azar</strong>, aunque va en la dirección que predecía la Tabla 17. Su cobertura es baja (2,5 %): con solo 3 perfiles de preferencias, recomienda casi lo mismo a todos los usuarios del mismo perfil.</p>
+  <p>La red es la que más se aleja del azar en las dos métricas por lugar, pero por poco: en la métrica principal acierta 375 de 606 casos cuando el azar acertaría 363,6 (p-valor corregido = 0,37), y en HitRate@1 por lugar, 134 frente a 121,2 (p-valor corregido = 0,21). Por ID tampoco se distingue del azar (7 aciertos frente a 6,1; p-valor = 0,41). Frente a la factorización, la diferencia pareada en Lugar@3 es de +1,4 puntos (p-valor = 0,20). <strong>No hay evidencia suficiente para afirmar que la red supera al azar</strong>, aunque va en la dirección que predecía la Tabla 17. Su cobertura es baja (2,5 %): con solo 3 perfiles de preferencias, recomienda casi lo mismo a todos los usuarios del mismo perfil.</p>
   <div class="callout warn"><p><strong>La maldición del ganador.</strong> En validación, la red elegida «superaba al azar» (p-valor = 0,027), y en prueba no se confirma. No es una contradicción: esa configuración era la mejor de 24 medidas sobre los mismos 326 usuarios, y la parada temprana también usó esa validación, así que su resultado allí estaba inflado por la propia selección. Por eso la prueba se mira una sola vez y es la que manda.</p></div>
-  <div class="callout ok"><p><strong>Conclusión de la tarea 5.</strong> La red de dos torres con preferencias es la que mejor se ajusta a lo que hay en los datos y la única que puede recomendar a un perfil nuevo, pero su ventaja sobre el azar es demasiado pequeña para afirmarse con 606 usuarios. Como la prueba con datos simulados mostró que la red aprende cuando la relación existe, el límite está en los datos: en ellos, lo único que permite predecir el lugar es una relación débil con las preferencias.</p></div>
+  <div class="callout ok"><p><strong>Conclusión de la tarea 5.</strong> La red de dos torres con preferencias es la que mejor se ajusta a lo que hay en los datos y la única que personaliza la recomendación para un perfil nuevo, pero su ventaja sobre el azar es demasiado pequeña para afirmarse con 606 usuarios. Como la prueba con datos simulados mostró que la red aprende cuando la relación existe, el límite está en los datos: en ellos, lo único que permite predecir el lugar es una relación débil con las preferencias.</p></div>
 </section>
 
 <!-- ======================= 8. CACERÍA ======================= -->
@@ -651,9 +651,11 @@
       <tr><td>3</td><td>Propuesta de un «hallazgo» que no cumple la definición del enunciado</td><td>Ninguna de las categorías (interpretación del enunciado)</td><td><span class="pill wip">Media</span></td></tr>
       <tr><td>4</td><td>Propuso «escoger el dataset» cuando el enunciado ya lo fija</td><td>Datos del mundo real</td><td><span class="pill wip">Baja</span></td></tr>
       <tr><td>5</td><td>Hipótesis enunciadas con dirección («más») contrastadas con pruebas sin dirección</td><td>Matemáticas (estadística)</td><td><span class="pill wip">Media</span></td></tr>
+      <tr><td>6</td><td>Afirmaciones del informe que no coincidían con sus propias tablas</td><td>Datos del mundo real (resultados del trabajo)</td><td><span class="pill wip">Media</span></td></tr>
+      <tr><td>7</td><td>«Confirmar con 30 semillas» como si bastara para comparar modelos</td><td>Conceptos (estadística)</td><td><span class="pill no">Alta</span></td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23 y 24-nov-2026.</p>
+  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23 al 25-nov-2026.</p>
 
   <div class="finding">
     <h4>Hallazgo 1. Conclusión estadística prematura sobre preferencias y visitas</h4>
@@ -743,6 +745,42 @@
       <dd>La Tabla 10 ahora escribe H₀ y H₁ tal como las contrasta cada prueba (por ejemplo, en la hipótesis 2: «el tipo visitado es independiente de viajar con niños» frente a «depende»), junto con el estadístico, el p-valor, el p-valor corregido y la decisión. Las conclusiones no cambian: en las seis no hay evidencia suficiente para rechazar H₀, y en la hipótesis 2 el dato va incluso en la dirección contraria (38,9 % con niños frente a 41,1 % sin niños).</dd>
       <dt>Lección</dt>
       <dd>Escribir H₀ y H₁ <em>antes</em> de elegir la prueba, y comprobar que la prueba contraste exactamente esa alternativa (con dirección o sin ella). Una tabla de «¿se sostiene?» sin hipótesis explícitas esconde este tipo de error.</dd>
+    </dl>
+  </div>
+
+  <div class="finding">
+    <h4>Hallazgo 6. Afirmaciones del informe que no coincidían con sus propias tablas</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>si</blockquote> (respuesta a «¿Escribo la sección del informe?», tras entrenar la red).</dd>
+      <dt>Respuesta de la IA</dt>
+      <dd>En la sección 7.5 escribió:<blockquote>La red es el único modelo que queda por encima del azar en las dos métricas por lugar, pero por poco</blockquote>y en la conclusión, que la red era «la única que puede recomendar a un perfil nuevo».</dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Antes de seguir con la tarea 6 pedimos verificar todo el informe («puedes verificar los datos del informe que llevamos hasta el momento? que no este nada mal o malas interpretaciones»). La IA escribió un script que recalcula las cifras y las compara con el texto (<code>src/verificar_informe.py</code>).</dd>
+      <dt>Evidencia</dt>
+      <dd>En la propia Tabla 19, la factorización también queda por encima del azar en las dos métricas por lugar (60,4 % frente a 60 % y 20,4 % frente a 20 %). La popularidad y el azar también pueden recomendar a un perfil nuevo, aunque no de forma personalizada. La misma revisión encontró otros tres desajustes menores: un tiempo de cómputo (25 s escrito, 23 s en el archivo de resultados), una frase que decía que un texto aparecía «igual de seguido» en dos lugares con conteos de 63 y 80, y un p-valor de la Tabla 17 sin corregir aunque se habían probado 3 predictores.</dd>
+      <dt>Corrección</dt>
+      <dd>«La red es la que más se aleja del azar en las dos métricas por lugar, pero por poco», «la única que personaliza la recomendación para un perfil nuevo», 23 s, los conteos explícitos y el p-valor corregido (≈ 0,03).</dd>
+      <dt>Lección</dt>
+      <dd>Las frases que resumen una tabla («el único», «igual», «ninguno») son las que más fallan: hay que comprobarlas contra la tabla, idealmente con un script que se pueda volver a correr cuando el informe cambie.</dd>
+    </dl>
+  </div>
+
+  <div class="finding">
+    <h4>Hallazgo 7. «Confirmar con 30 semillas» como si bastara para comparar modelos</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>sigamos con el análisi descriptivo</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd>En la conclusión de la tarea 2 escribió:<blockquote>cualquier diferencia pequeña debe confirmarse con las 30 semillas antes de afirmarse</blockquote>y en la sección 1.4, «compararemos con 30 semillas antes de afirmar que un modelo es mejor que otro».</dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>En la tarea 4, los intervalos entre semillas del azar (0,77–1,06) y de la popularidad (1,07–1,24) no se solapaban, lo que sugería que la popularidad ganaba; la prueba binomial decía lo contrario. Al verificar el informe, la frase de la tarea 2 resultó contradecir el recuadro de la sección 6.5.</dd>
+      <dt>Evidencia</dt>
+      <dd>Las semillas solo miden la variación del entrenamiento y de los desempates, con los mismos 606 usuarios siempre. Con 606 usuarios, el error por muestreo de HitRate@10 es de unos 0,40 puntos, mayor que la diferencia entre popularidad y azar (0,25); la prueba binomial da p-valor = 0,41 (Tabla 16). Confirmar «con 30 semillas» habría llevado a afirmar que la popularidad supera al azar.</dd>
+      <dt>Corrección</dt>
+      <dd>«…debe confirmarse con 30 semillas y con pruebas que tratan a los usuarios evaluados como muestra». Desde la tarea 4, toda comparación entre modelos lleva una prueba binomial o pareada por usuario.</dd>
+      <dt>Lección</dt>
+      <dd>La variación entre semillas y la variación por muestreo de usuarios son fuentes de incertidumbre distintas; para afirmar que un modelo es mejor hay que considerar las dos.</dd>
     </dl>
   </div>
 
