@@ -1,0 +1,5 @@
+modelo,Lugar@3,Lugar@1,HitRate@10,Lugar@3 DE,HitRate@10 DE
+Azar,59.68,19.32,0.91,1.95,0.38
+Popularidad,58.11,16.14,1.16,1.79,0.22
+Factorización (BPR),60.45,20.35,0.94,2.36,0.31
+Red de dos torres,61.84,22.18,1.11,2.54,0.27

@@ -396,6 +396,16 @@ destinos; la factorización reparte más; el azar cubre todo.
   (p-valor = 0,027), pero era la mejor de 24 configuraciones medidas en los mismos 326 usuarios;
   en prueba no se confirma. Buen ejemplo de por qué la prueba se mira una sola vez.
 
+### 6. Evaluación (tarea 6) — ✅ borrador en el informe (sección 8)
+- Grupos: pocas (1 interacción para aprender, 280) y muchas (≥ 2, 326). Ningún modelo supera al
+  azar en ningún grupo; la red rinde algo mejor con pocas (63,4 % frente a 60,5 % en Lugar@3), sin
+  significancia (p-valor = 0,46): solo usa preferencias, no el historial.
+- Diagramas de caja de las 30 semillas, con la advertencia del hallazgo 7.
+- 5 usuarios de ejemplo (red guardada): acierta 3 de 5. «City, Historical» recibe Kerala primero
+  porque así está en los datos: la red sigue a los datos, no a lo declarado.
+- Embeddings: red (d = 2) sin proyectar, una curva por lugar (por diseño); factorización con t-SNE,
+  sin estructura.
+
 ## Preguntas de negocio
 - ⏳ P1 (usuarios nuevos): 💡 explicar el arranque en frío con la analogía del bibliotecario
   (teoría, sección 13). Simulación: a los 606 usuarios de prueba se les oculta el historial y se

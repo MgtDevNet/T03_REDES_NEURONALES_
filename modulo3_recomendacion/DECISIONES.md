@@ -626,3 +626,36 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
 > con 4 interacciones». Era una lectura equivocada de T4-2: el acumulado con ≥ 5 interacciones ya
 > es 16, así que el empate en el corte del top-10 es entre los 15 destinos con 5 interacciones
 > (se toman 9). Corregido en el informe (6.2), aquí y en IDEAS_INFORME.md.
+
+---
+
+## Paso 9 — Tarea 6: evaluación (2026-11-25) 🔄 en curso
+
+### Resultado 9.a — Grupos de usuarios y 30 semillas (`src/evaluar_tarea6.py`) ✅ hecho
+- **Grupos** (definidos por las interacciones que el usuario tiene para aprender en el momento
+  final): «pocas» = 1 (280 usuarios), «muchas» = 2 o más (326). Quedan equilibrados.
+- Las medias generales coinciden con las Tablas 16 y 19 (reproducibilidad comprobada).
+- Lugar@3 por grupo: azar 60,2 / 59,2 %; popularidad 57,5 / 58,6 %; factorización 59,7 / 61,1 %;
+  red **63,4 % (pocas)** / 60,5 % (muchas). Ningún grupo de ningún modelo supera al azar
+  (p-valores ≥ 0,12, sin corregir).
+- La red rinde algo mejor con «pocas» que con «muchas», pero la diferencia (2,9 puntos) no es
+  significativa (z = 0,73; p-valor = 0,46). Es coherente con su diseño: solo usa preferencias, no
+  el historial, así que tener más interacciones no le da más información.
+- Figura `figures/tarea6_semillas.png`: diagramas de caja de Lugar@3 y HitRate@10 en las 30
+  semillas, con la advertencia de que solo muestran la variación entre semillas (hallazgo 7).
+
+### Resultado 9.b — Usuarios de ejemplo y embeddings (`src/ejemplos_embeddings.py`) ✅ hecho
+- Se instaló `scikit-learn==1.8.0` (misma versión del módulo 2) para t-SNE; numpy y scipy no cambian.
+- **5 usuarios de ejemplo** con reglas fijas (el menor UserID que cumple cada una): uno por perfil
+  de preferencias sin niños (usuarios 1, 3 y 20), uno con niños (2) y el que más interacciones
+  tiene para aprender (234, con 6). Con la red guardada, el lugar escondido está entre los 3
+  recomendados en 3 de los 5. Se carga `models/dos_torres.pt` igual que lo hará la app.
+- **Qué aprendió la red** (puntaje medio por lugar y perfil): «Beaches, Historical» → Goa y Taj
+  Mahal arriba; «Nature, Adventure» → Kerala y Leh Ladakh arriba (coinciden con lo declarado).
+  «City, Historical» → Kerala arriba y Taj Mahal abajo, **porque así está en los datos
+  aprendidos** (Kerala 21,6 %, Taj Mahal 18,5 % para ese perfil): la red sigue a los datos, no a
+  lo que el usuario dice preferir.
+- **Embeddings** (`figures/tarea6_embeddings.png`): la red (d = 2) se grafica sin proyectar; cada
+  lugar forma una curva (por diseño: la torre del destino solo recibe el lugar y Popularity, que
+  mueve el punto a lo largo de la curva). La factorización (d = 8, t-SNE) no muestra ninguna
+  estructura por lugar, coherente con que no aprendió nada útil.

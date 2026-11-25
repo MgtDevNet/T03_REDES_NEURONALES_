@@ -148,8 +148,16 @@
         <li><a href="#red-resultados">7.5 Resultados</a></li>
       </ul>
     </li>
-    <li><a href="#caceria">8. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">9. Lo que falta</a></li>
+    <li><a href="#evaluacion">8. Evaluación (tarea 6)</a>
+      <ul>
+        <li><a href="#eval-grupos">8.1 Pocas y muchas interacciones</a></li>
+        <li><a href="#eval-semillas">8.2 Variación entre semillas</a></li>
+        <li><a href="#eval-ejemplos">8.3 Usuarios de ejemplo</a></li>
+        <li><a href="#eval-embeddings">8.4 Embeddings de destinos</a></li>
+      </ul>
+    </li>
+    <li><a href="#caceria">9. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">10. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -175,7 +183,7 @@
       <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 7 hallazgos</span></td></tr>
       <tr><td>Modelos de referencia</td><td>Tarea 4 + figura de resultados</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill wip">Teoría escrita; falta adaptarla</span></td></tr>
     </tbody>
@@ -637,12 +645,68 @@
   <div class="callout ok"><p><strong>Conclusión de la tarea 5.</strong> La red de dos torres con preferencias es la que mejor se ajusta a lo que hay en los datos y la única que personaliza la recomendación para un perfil nuevo, pero su ventaja sobre el azar es demasiado pequeña para afirmarse con 606 usuarios. Como la prueba con datos simulados mostró que la red aprende cuando la relación existe, el límite está en los datos: en ellos, lo único que permite predecir el lugar es una relación débil con las preferencias.</p></div>
 </section>
 
-<!-- ======================= 8. CACERÍA ======================= -->
-<section id="caceria">
-  <h2>8. Cacería de la alucinación (aporte del módulo 3)</h2>
-  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 20 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+<!-- ======================= 8. EVALUACIÓN ======================= -->
+<section id="evaluacion">
+  <h2>8. Evaluación (tarea 6)</h2>
+  <p>Precision, Recall, NDCG y cobertura de los cuatro modelos ya están en las Tablas 16 y 19. Aquí se completa la evaluación: cómo les va según cuántas interacciones tiene el usuario, cuánto varían entre semillas, cómo se ven sus recomendaciones y qué aprendieron sus embeddings. Todo se calcula en prueba (606 usuarios) con 30 semillas.</p>
 
-  <p class="caption">Tabla 20. Resumen de los hallazgos del módulo 3</p>
+  <h3 id="eval-grupos">8.1 Usuarios con pocas y con muchas interacciones</h3>
+  <p>Separamos a los usuarios según cuántas interacciones tienen para aprender: <strong>pocas</strong> (1; 280 usuarios) y <strong>muchas</strong> (2 o más; 326 usuarios). La Tabla 20 muestra el resultado.</p>
+  <p class="caption">Tabla 20. Desempeño según el número de interacciones del usuario (prueba, media de 30 semillas)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th class="num">Lugar@3, pocas</th><th class="num">Lugar@3, muchas</th><th class="num">Lugar@1, pocas</th><th class="num">Lugar@1, muchas</th><th class="num">HitRate@10, pocas</th><th class="num">HitRate@10, muchas</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">60,2 %</td><td class="num">59,2 %</td><td class="num">19,9 %</td><td class="num">18,8 %</td><td class="num">1,08 %</td><td class="num">0,77 %</td></tr>
+      <tr><td>Popularidad</td><td class="num">57,5 %</td><td class="num">58,6 %</td><td class="num">14,3 %</td><td class="num">17,7 %</td><td class="num">0,96 %</td><td class="num">1,32 %</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">59,7 %</td><td class="num">61,1 %</td><td class="num">20,0 %</td><td class="num">20,6 %</td><td class="num">0,81 %</td><td class="num">1,05 %</td></tr>
+      <tr><td>Red de dos torres</td><td class="num">63,4 %</td><td class="num">60,5 %</td><td class="num">23,8 %</td><td class="num">20,8 %</td><td class="num">0,99 %</td><td class="num">1,22 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea6/RESUMEN.md</code>. Azar: 60 % en Lugar@3, 20 % en Lugar@1 y ≈ 1 % en HitRate@10, en ambos grupos.</p>
+  <p>En ningún grupo hay un modelo que supere al azar (pruebas binomiales contra el 60 %; el p-valor más bajo, sin corregir, es 0,12, el de la red con pocas interacciones). La red rinde algo mejor con pocas interacciones que con muchas, pero la diferencia (2,9 puntos) no es significativa (p-valor = 0,46). Tiene sentido: la red solo usa las preferencias, no el historial, así que tener más interacciones no le da más información.</p>
+
+  <h3 id="eval-semillas">8.2 Variación entre las 30 semillas</h3>
+  <p>La Figura 4 muestra cuánto cambia cada métrica al repetir el entrenamiento con 30 semillas distintas.</p>
+  <figure>
+    <figcaption>Figura 4. Resultados de las 30 semillas por modelo</figcaption>
+    <img src="../figures/tarea6_semillas.png" alt="Diagramas de caja de HitRate@3 por lugar y HitRate@10 por ID para los cuatro modelos en las 30 semillas; todas las cajas cruzan la línea del azar.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/evaluar_tarea6.py</code>.</p>
+  <p>La red tiene la mediana más alta en la métrica principal, pero todas las cajas cruzan la línea del azar. Además, las cajas solo muestran la variación entre semillas, con los mismos 606 usuarios siempre; no incluyen la incertidumbre de que esos usuarios son una muestra, que es la que miden las pruebas de las Tablas 16 y 19 (hallazgo 7).</p>
+
+  <h3 id="eval-ejemplos">8.3 Usuarios de ejemplo</h3>
+  <p>La Tabla 21 muestra qué le recomendaría la red guardada (la que usa la app) a cinco usuarios de prueba con perfiles distintos, elegidos con reglas fijas: el de menor ID de cada perfil de preferencias sin niños, el de menor ID que viaja con niños y el que más interacciones tiene para aprender.</p>
+  <p class="caption">Tabla 21. Recomendaciones de la red para cinco usuarios de prueba</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="num">Usuario</th><th>Perfil</th><th>Historial (lo aprendido)</th><th>La red le recomienda</th><th>Lugar escondido</th><th>¿Acierta?</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>Beaches, Historical; mujer; 1 adulto, sin niños</td><td>Goa Beaches</td><td>Goa Beaches (¿vuelves?), Taj Mahal, Jaipur City</td><td>Taj Mahal</td><td>sí</td></tr>
+      <tr><td class="num">3</td><td>City, Historical; mujer; 2 adultos, sin niños</td><td>Taj Mahal</td><td>Kerala Backwaters, Leh Ladakh, Jaipur City</td><td>Kerala Backwaters</td><td>sí</td></tr>
+      <tr><td class="num">20</td><td>Nature, Adventure; mujer; 2 adultos, sin niños</td><td>Kerala (2), Taj Mahal (3), Jaipur City</td><td>Kerala Backwaters (¿vuelves?), Leh Ladakh, Jaipur City (¿vuelves?)</td><td>Kerala Backwaters</td><td>sí</td></tr>
+      <tr><td class="num">2</td><td>Nature, Adventure; hombre; 2 adultos, 2 niños</td><td>Leh Ladakh, Goa Beaches</td><td>Kerala Backwaters, Leh Ladakh (¿vuelves?), Jaipur City</td><td>Goa Beaches</td><td>no</td></tr>
+      <tr><td class="num">234</td><td>City, Historical; hombre; 1 adulto, sin niños</td><td>Kerala (2), Leh Ladakh (2), Goa Beaches, Taj Mahal</td><td>Kerala Backwaters (¿vuelves?), Leh Ladakh (¿vuelves?), Jaipur City</td><td>Goa Beaches</td><td>no</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea6/RESUMEN_ejemplos.md</code> (modelo <code>models/dos_torres.pt</code>). Entre paréntesis en el historial, el número de interacciones con ese lugar cuando hay más de una.</p>
+  <p>Acierta en 3 de 5, un número sin valor estadístico con tan pocos usuarios; los ejemplos sirven para ver cómo se comporta la red. Como solo usa las preferencias, recomienda lo mismo a todos los usuarios de un mismo perfil (salvo los IDs que cada uno ya tiene): a los perfiles «Beaches, Historical» les pone primero Goa y el Taj Mahal, y a «Nature, Adventure», Kerala y Leh Ladakh, lo que coincide con lo que dicen preferir. A «City, Historical», en cambio, le pone primero Kerala y deja al Taj Mahal entre los últimos, porque en los datos de entrenamiento ese perfil fue más a Kerala (21,6 %) que al Taj Mahal (18,5 %): <strong>la red sigue a los datos, no a lo que el usuario dice preferir</strong>.</p>
+
+  <h3 id="eval-embeddings">8.4 Embeddings de destinos</h3>
+  <p>La Figura 5 muestra los vectores que cada modelo aprendió para los 1000 destinos.</p>
+  <figure>
+    <figcaption>Figura 5. Embeddings de los destinos en la red y en la factorización</figcaption>
+    <img src="../figures/tarea6_embeddings.png" alt="A la izquierda, los vectores 2D de la red: cada lugar forma una curva y tres flechas representan los perfiles de preferencias. A la derecha, la proyección t-SNE de los vectores de la factorización: una nube sin agrupación por lugar.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/ejemplos_embeddings.py</code>.</p>
+  <p><strong>Red (izquierda).</strong> Como la red elegida usa \(d = 2\), sus vectores ya están en dos dimensiones y se grafican sin proyectar. Cada lugar forma una curva, y <code>Popularity</code> mueve cada ID a lo largo de ella. Esta separación por lugar es por diseño, porque la torre del destino solo recibe el lugar y <code>Popularity</code>; no es algo que la red haya descubierto. Las flechas son los vectores de los tres perfiles: el puntaje de un destino es el producto punto con la flecha, así que un perfil prefiere los destinos que quedan en su dirección.</p>
+  <p><strong>Factorización (derecha).</strong> Sus vectores tienen 8 dimensiones y se proyectan con t-SNE. No aparece ninguna agrupación por lugar: los destinos de los cinco lugares se mezclan en una sola nube. Es coherente con que no encontró ninguna relación en los datos (sección 6).</p>
+</section>
+
+<!-- ======================= 9. CACERÍA ======================= -->
+<section id="caceria">
+  <h2>9. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 22 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+
+  <p class="caption">Tabla 22. Resumen de los hallazgos del módulo 3</p>
   <div class="table-wrap"><table>
     <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
     <tbody>
@@ -796,12 +860,11 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>9. Lo que falta</h2>
+  <h2>10. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
       <tr><td>Tarea 5 · Red neuronal</td><td>Figura de la arquitectura y curvas de aprendizaje (figuras comunes).</td></tr>
-      <tr><td>Tarea 6 · Evaluación</td><td>Precision, Recall y NDCG@K; cobertura; grupos de pocas y muchas interacciones; 30 semillas; 5 usuarios de ejemplo; t-SNE.</td></tr>
       <tr><td>P1 · Usuarios nuevos</td><td>Simular el arranque en frío con los 606 usuarios de prueba; comparar ≥ 2 estrategias.</td></tr>
       <tr><td>P2 · Concentración</td><td>Gini de las recomendaciones (por ID y por lugar) y efecto en la capacidad de las rutas.</td></tr>
       <tr><td>P3 · Campaña</td><td>Grupo objetivo y conversiones esperadas, con los supuestos explícitos.</td></tr>
@@ -818,7 +881,7 @@
   <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
   <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
   <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the 25th Conference on Uncertainty in Artificial Intelligence (UAI)</em>.</p>
-  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 8.</p></div>
+  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 9.</p></div>
 </section>
 </main>
 </div>
