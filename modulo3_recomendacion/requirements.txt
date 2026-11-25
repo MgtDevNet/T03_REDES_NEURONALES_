@@ -1,4 +1,9 @@
+# Python 3.12 (igual que el módulo 2). Versiones alineadas con modulo2_conduccion/requirements.txt
+# para que la app cargue los tres módulos en un solo entorno.
+# PyTorch solo-CPU se instala aparte:
+#   python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
 pandas==3.1.1
-numpy==2.5.5
-scipy==1.18.1
-matplotlib==3.11.2
+numpy==2.3.5
+scipy==1.17.0
+matplotlib==3.10.8
+torch==2.8.0

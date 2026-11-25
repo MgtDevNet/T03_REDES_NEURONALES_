@@ -1,0 +1,5 @@
+escenario,modelo de referencia (oráculo),HitRate@10 (%)
+ajuste,sabe el lugar; IDs del lugar al azar,5.13
+ajuste,sabe el lugar; IDs del lugar por Popularity,6.13
+final,sabe el lugar; IDs del lugar al azar,5.05
+final,sabe el lugar; IDs del lugar por Popularity,4.79

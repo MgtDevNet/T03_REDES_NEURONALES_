@@ -1,0 +1,9 @@
+{
+  "d": 8,
+  "lambda": 1.0,
+  "epocas": 7,
+  "motivo": "ninguna configuración supera al azar en validación (la mejor, d = 16, λ = 0.01, acierta 6 de 326 frente a 3.3 esperados; p-valor = 0.112), así que se elige la más simple",
+  "configuraciones": 9,
+  "corridas": 27,
+  "segundos_ajuste": 23.4
+}

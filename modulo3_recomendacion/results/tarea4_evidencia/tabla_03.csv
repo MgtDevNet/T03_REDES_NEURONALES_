@@ -1,0 +1,3 @@
+escenario,interacciones,usuarios con ≥ 1,destinos con ≥ 1,densidad (%)
+ajuste: entrenamiento → validación,1066,858,661,0.107
+final: entrenamiento+validación → prueba,1392,858,755,0.139

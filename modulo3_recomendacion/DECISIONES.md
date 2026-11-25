@@ -270,6 +270,13 @@ podrá recomendarlos, porque no sabe nada de ellos: **su HitRate tiene un techo 
 Un modelo con contenido (el lugar, el tipo) sí puede, porque sabe que ese ID «es un Taj Mahal».
 Es un argumento concreto a favor de la red con variables de contenido, y hay que reportarlo.
 
+> ⚠️ **Corrección (2026-11-24, paso 7).** El 33,7 % compara prueba contra **entrenamiento solo**.
+> El modelo final aprende con **entrenamiento + validación**, y entonces solo el **22,6 %** de los
+> destinos de prueba es frío (techo **77,4 %**). Al ajustar (entrenamiento → validación) es 34,4 %
+> (techo 65,6 %). Evidencia: `results/tarea4_evidencia/tabla_01.csv`. Además, «nunca podrá
+> recomendarlos» es demasiado fuerte: no tiene información sobre ellos y solo los acertaría por
+> casualidad.
+
 ### ✅ Decisión tomada: dejar uno fuera por usuario
 
 1. **Cómo se reparte.** A cada usuario con ≥ 2 interacciones se le esconde 1 interacción al azar
@@ -398,3 +405,181 @@ sin registro). Se corrigieron `IDEAS_INFORME.md` (sección 2) e `informe/index.h
 **Consecuencia para el código (paso 11):** `predict.py` debe ofrecer
 `recomendar_perfil_nuevo(preferencias: dict, k)` que funcione **sin ID de usuario**. Esto favorece
 una red cuya torre de usuario pueda funcionar solo con variables de contenido (dos torres).
+
+---
+
+## Paso 7 — Tarea 4: modelos de referencia (2026-11-24) ✅ decidido
+
+**Evidencia previa:** `src/evidencia_tarea4.py` → `results/tarea4_evidencia/` (T4-1 a T4-3). Antes
+de programar, se midió qué puede lograr cada familia de modelos con estos datos.
+
+| Medida (T4-1) | Ajuste (ent → val) | Final (ent+val → prueba) |
+|---|---|---|
+| Casos evaluados | 326 | 606 |
+| HitRate@10 esperado del azar | 1,0 % | 1,0 % |
+| Destino escondido nunca visto al aprender | 34,4 % | 22,6 % |
+| Techo de un modelo solo de IDs | 65,6 % | 77,4 % |
+| KNN ítem–ítem puede puntuarlo | 0,0 % | 0,2 % |
+| KNN usuario–usuario puede puntuarlo | 0,0 % | 0,2 % |
+
+### Decisión 7.1 — Modelos: azar + popularidad + factorización de matrices (sin KNN)
+- **Por qué no KNN:** KNN solo puntúa un destino si otro usuario lo comparte con alguno de los
+  destinos del usuario evaluado; aquí eso ocurre en el 0–0,2 % de los casos (T4-1). Fallaría casi
+  siempre, sin importar sus hiperparámetros.
+- **Por qué factorización de matrices:** puntúa cualquier destino visto al aprender (techo 77 %).
+- **Por qué el azar:** el enunciado no lo pide, pero con datos que se comportan como aleatorios
+  (tarea 2) es el piso obligado: HitRate@10 ≈ 1 %.
+
+### Decisión 7.2 — Popularidad = conteo de interacciones de entrenamiento, desempate al azar
+- Para llenar el top-10 hay que escoger 10 entre los 24 destinos empatados con 4 interacciones
+  (T4-2): el orden dentro del empate es arbitrario, así que se desempata al azar con semilla y se
+  repite en las 30 semillas.
+- **Descartado:** la columna `Popularity`, porque H5 mostró que no se relaciona con las
+  interacciones (ρ = −0,011; D-4).
+
+### Decisión 7.3 — Factorización de matrices con pérdida BPR, en PyTorch
+- **BPR** premia que el destino visitado quede por encima de uno no visitado: es exactamente lo
+  que mide un top-K, y sirve con retroalimentación implícita (decisión 3). BCE con negativos queda
+  para comparar en la tarea 5.
+- Dimensión $d \in \{8, 16, 32\}$ y regularización elegidas en validación; se reportan el número de
+  configuraciones probadas y el tiempo de cómputo.
+- **PyTorch** porque lo usa el módulo 2 (torch 2.8.0): la app carga los modelos igual.
+
+### Decisión 7.4 — Protocolo de evaluación común
+- Se ordenan los **1000 destinos completos** (no una muestra de negativos), quitando los IDs que el
+  usuario ya tiene en lo aprendido. Como el destino escondido nunca está en lo aprendido (verificado
+  en `preprocesar.py`), quitarlos no le resta ningún acierto posible. Se quitan **IDs**, no
+  lugares: un usuario puede recibir otro ID del mismo lugar («¿vuelves?», paso 3).
+- Métricas: HitRate, Recall, Precision y NDCG con K ∈ {1, 3, 5, 10, 20}, y cobertura.
+- 30 semillas para todo lo que tenga azar (desempates, inicialización, muestreo de negativos).
+
+**Expectativa honesta:** T4-1 sugiere que la factorización de matrices tendrá muy poca señal
+colaborativa (casi no hay caminos entre usuarios), así que probablemente quede cerca del azar. Es
+lo que predice la tarea 2 y se documentará como resultado, no como fallo.
+
+### Resultado 7.a — Azar y popularidad (`src/referencias.py`, 2026-11-24) ✅ hecho
+- Final (606 usuarios, 30 semillas): HitRate@10 azar 0,91 %, popularidad 1,16 %; cobertura@10
+  99,7 % frente a 1,6 %. Detalle: `results/tarea4/RESUMEN.md`.
+- **La popularidad no supera al azar:** 7 aciertos frente a 6,1 esperados, p-valor = 0,41 (binomial
+  unilateral). Los IC 95 % entre semillas no bastan para comparar: solo miden la variación por
+  semilla, no el muestreo de usuarios (error estándar ≈ 0,40 puntos). **Regla para el resto del
+  módulo:** toda comparación entre modelos se acompaña de una prueba que considere a los usuarios
+  como muestra.
+- Evaluador común: `src/evaluacion.py`, validado con `src/probar_evaluacion.py` (ejemplo a mano,
+  empates, reproducibilidad, azar ≈ 1 %).
+
+### Cambio de entorno: Python 3.14 → 3.12 (2026-11-24) ✅ hecho
+- **Por qué:** el módulo 2 usa Python 3.12 + torch 2.8.0, y torch 2.8.0 no existe para Python 3.14.
+  La app carga los tres módulos en un solo entorno, así que conviene un entorno común.
+- **Qué cambió:** `T03/.venv` ahora es Python 3.12.15 con pandas 3.1.1, numpy 2.3.5, scipy 1.17.0,
+  matplotlib 3.10.8 y torch 2.8.0+cpu (versiones del módulo 2). El entorno viejo (Python 3.14.4,
+  numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2) quedó como respaldo en `T03/.venv314`.
+- **Verificación:** se volvieron a correr los 6 scripts. Todas las tablas CSV, los RESUMEN.md y los
+  datos procesados (incluida la partición) salieron **idénticos byte a byte**. Las dos figuras
+  cambian solo en el renderizado de matplotlib; revisadas a ojo, son iguales.
+
+### Resultado 7.b — Prueba de la factorización con datos de juguete (`src/probar_factorizacion.py`) ✅ pasa
+- **Para qué:** distinguir «los datos no tienen señal» de «el código tiene un error». Se fabricaron
+  datos del mismo tamaño CON señal: 50 grupos de 20 destinos; cada usuario visita 4 destinos de
+  su grupo. Techo teórico de HitRate@10: 10/17 ≈ 59 %; azar ≈ 1 %.
+- **Resultado (d = 16, λ = 0,1):** HitRate@10 = **58,4 %** (azar 0,9 %, popularidad 0,5 %); la
+  pérdida baja; parámetros = 31 984 = (999 + 1000) × 16. **El código aprende.**
+- **Hallazgo:** con la regularización planeada el modelo memorizaba:
+
+  | λ | Pérdida final | HitRate@10 (prueba de juguete) |
+  |---|---|---|
+  | 0,0001 | 0,007 | 12,8 % |
+  | 0,001 | 0,029 | 15,2 % |
+  | 0,01 | 0,148 | 48,4 % |
+  | 0,1 | 0,602 | 58,4 % |
+
+  Con tan pocas interacciones por usuario (2–3), hace falta una regularización mucho más fuerte de
+  la que se planeó.
+
+### ⚠️ Cambio en la decisión 7.3 (por el resultado 7.b)
+- **λ ∈ {0,01; 0,1; 1}** en lugar de {0,0001; 0,001; 0,01}: la rejilla original quedaba entera en
+  la zona donde el modelo memoriza. Se incluye 1 para no dejar el mejor valor en el borde.
+- **Hasta 200 épocas** (antes 100): con λ = 0,01 la mejor época fue la 111.
+- Sigue: d ∈ {8, 16, 32} → 9 configuraciones × 3 semillas en validación.
+
+### Resultado 7.c — Factorización con los datos reales (`src/ajustar_factorizacion.py`) ✅ hecho
+- **Ajuste:** 9 configuraciones × 3 semillas = 27 corridas, 25 s en total (incluida la fase final).
+  HitRate@10 medio en validación entre 1,0 % y 2,2 %; las mejores épocas fueron muy tempranas
+  (1 a 24), señal de que la parada temprana sigue ruido. La mejor (d = 16, λ = 0,01) acierta 6 de
+  326 frente a 3,3 esperados por azar: p-valor = 0,112 (y ese p-valor es optimista, porque la
+  validación se usó también para escoger la época). **Ninguna supera al azar** → por la regla
+  acordada se eligió la más simple: **d = 8, λ = 1, 7 épocas** (15 992 parámetros).
+- **Final (606 usuarios, 30 semillas):** HitRate@10 = 0,94 % (IC entre semillas 0,83–1,06),
+  NDCG@10 = 0,43 %, cobertura@10 = 17,4 %. 0,04 s por entrenamiento.
+- **Contra el azar:** 5,7 aciertos frente a 6,1 esperados, p-valor = 0,57. **No lo supera.**
+- **Contra la popularidad (pareada por usuario):** p-valor = 0,57. **No hay diferencia.** (La
+  factorización acierta «un poco» a 133 usuarios, en algunas semillas; la popularidad acierta
+  siempre a los mismos 7. En total, empatan.)
+- **Conclusión de la tarea 4:** ninguna referencia supera al azar. Como la prueba de juguete
+  (7.b) mostró que el código aprende cuando hay señal, la causa son los datos, coherente con la
+  tarea 2. Diferencia útil entre ellas: la cobertura (azar 99,7 %, factorización 17,4 %,
+  popularidad 1,6 %).
+- **Modelos guardados** (`models/`): `factorizacion_bpr.npz` (+ `.json`, semilla 0) y
+  `popularidad.npz` (conteos). Se guardan como numpy: la app no depende de la versión de torch.
+
+---
+
+## Decisión 7.5 — Métricas por lugar, fijadas ANTES de entrenar la red (2026-11-25) ✅ decidido
+
+**Qué:** además de las métricas por ID (Precision, Recall, NDCG@K, HitRate@K, cobertura), todos los
+modelos se evalúan por **lugar**, que es lo que ve el cliente (decisión 1, K = 3 lugares):
+1. Con los puntajes del modelo (sin los IDs ya aprendidos), cada lugar recibe el **mejor puntaje**
+   de sus IDs; se ordenan los 5 lugares (empates al azar con semilla).
+2. **HitRate@3 por lugar (métrica PRINCIPAL):** el lugar del destino escondido está entre los 3
+   que ve el cliente. Azar: 3/5 = 60 %.
+3. **HitRate@1 por lugar (secundaria):** el lugar escondido queda primero. Azar: 1/5 = 20 %.
+
+**Por qué:** las preferencias predicen el lugar fuera de muestra (23,9 % frente a 20 %, p-valor =
+0,010; T5-4), pero por ID ese efecto es invisible (cada lugar tiene 200 IDs; un oráculo que
+siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
+
+**Salvaguardas contra «buscar la métrica que salga bien»** (cf. hallazgo 1):
+- Se fijan aquí, antes de ver ningún resultado de la red, y se aplican igual a los 4 modelos.
+- Contra el azar, las dos métricas por lugar se prueban con corrección de Bonferroni (m = 2).
+- Elección de la configuración de la red: mayor HitRate@3 por lugar medio en validación (3
+  semillas). Si ninguna supera al azar en validación, se elige la más simple.
+- Las métricas por ID se siguen reportando: las pide el enunciado.
+
+## Paso 8 — Tarea 5: red neuronal de dos torres (2026-11-25) ✅ diseño decidido
+
+**Evidencia:** `src/evidencia_tarea5.py` → `results/tarea5_evidencia/` (T5-1 a T5-4).
+- T5-1: `Type`, `State` y `BestTimeToVisit` quedan fijados por el lugar (redundantes); solo
+  `Popularity` cambia entre IDs del mismo lugar (y no se relaciona con las interacciones, H5).
+- T5-2: 3 perfiles de preferencias; 36 si se agregan género, adultos y niños.
+- T5-3: un oráculo que siempre sabe el lugar llega a ≈ 5 % de HitRate@10 (máximo del contenido).
+- T5-4 (prueba, 606): `Preferences` → lugar más frecuente del perfil acierta 23,9 % (azar 20 %,
+  p-valor = 0,010); el perfil completo, 20,0 % (p-valor = 0,52, sobreajuste); volver a un lugar ya
+  visitado, 32,2 % frente a 32,4 % esperado (p-valor = 0,56).
+
+**Decisiones:**
+1. **Dos torres:** la app recomienda a perfiles nuevos sin ID, y no depende de caminos entre
+   usuarios (lo que hizo fallar a KNN y a la factorización).
+2. **Torre del usuario:** las 5 casillas de preferencias. Variante en el ajuste: perfil completo
+   (para mostrar con datos si ayuda). Sin embedding de usuario ni de ID de destino.
+3. **Torre del destino:** embedding del lugar (5 valores) + `Popularity` estandarizada.
+4. **Dimensión d ∈ {2, 4, 8}:** la tabla perfil × lugar es 3 × 5 (rango ≤ 3); más dimensiones solo
+   darían capacidad para sobreajustar.
+5. **Negativos:** uniformes entre los 1000 IDs (sin los positivos del usuario), 1 o 4 por positivo;
+   muestrear por popularidad sería casi igual porque el catálogo es parejo (Gini del azar).
+6. **Pérdida:** BCE con negativos y BPR, ambas en el ajuste; derivación en la fundamentación.
+7. **Prueba previa con datos simulados** en los que las preferencias sí determinen el lugar.
+
+### Resultado 7.d — Referencias con métricas por lugar (2026-11-25) ✅ hecho
+- Evaluador ampliado (`evaluacion.py`) y probado (`probar_evaluacion.py`: ejemplo a mano por lugar;
+  azar ≈ 20 % y 60 %). Al volver a correr, **todas las métricas por ID salieron idénticas**.
+- Prueba (606 usuarios, 30 semillas): Lugar@3 / Lugar@1 = azar 59,7 % / 19,3 %; popularidad
+  58,1 % / 16,1 %; factorización 60,4 % / 20,4 %. Ninguno supera al azar (binomial, Bonferroni
+  m = 2; p-valores corregidos ≥ 0,88).
+- ⚠️ La popularidad por lugar ordena según el **mejor ID** de cada lugar (un ID de Jaipur City con
+  6 interacciones), no según el total del lugar: pone primero a Jaipur City, el lugar menos
+  frecuente entre los escondidos de prueba (16,2 %). Se había anticipado «Leh Ladakh, ≈ 21 %»
+  sin calcularlo; era incorrecto.
+- Exploratorio (no estaba fijado de antemano): la factorización supera a la popularidad en
+  Lugar@3 en la prueba pareada (p-valor = 0,005), pero ninguna de las dos supera al azar; la
+  diferencia se explica porque la popularidad fija siempre los mismos 3 lugares y estos son algo
+  menos frecuentes en prueba. No se reporta como ventaja de la factorización.

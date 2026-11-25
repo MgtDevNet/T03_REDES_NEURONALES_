@@ -1,0 +1,9 @@
+{
+  "d": 8,
+  "lambda": 1.0,
+  "epocas": 7,
+  "semilla": 0,
+  "aprende_con": "entrenamiento + validación",
+  "parametros": 15992,
+  "uso": "puntaje(u, i) = P[u-1] · Q[i-1]; UserID y DestinationID empiezan en 1"
+}

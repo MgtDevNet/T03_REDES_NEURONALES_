@@ -5,6 +5,20 @@ Aman Mehra, Kaggle: https://www.kaggle.com/datasets/amanmehra23/travel-recommend
 
 Ver el enunciado completo en `docs/instrucciones_trabajo_3.pdf` (páginas 5–7).
 
+## Entorno
+
+Python **3.12** con las mismas versiones que el módulo 2. Desde la raíz del repo `T03`:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+.venv/bin/python -m pip install -r modulo3_recomendacion/requirements.txt
+```
+
+Orden de los scripts (cada uno regenera sus tablas en `results/`):
+`inventario.py` → `preprocesar.py` → `descriptivo.py` → `evidencia_tarea4.py` →
+`probar_evaluacion.py` → `referencias.py`.
+
 ## Lo que este módulo debe entregar para la aplicación web
 
 La app debe permitir: **elegir un usuario existente o crear un perfil nuevo (con un listado de

@@ -1,0 +1,2 @@
+usuarios,aciertos_fm_media,aciertos_popularidad_media,esperados_por_azar,p_valor_vs_azar,usuarios_donde_fm_acierta_mas,usuarios_donde_popularidad_acierta_mas,p_valor_vs_popularidad_pareada,segundos_por_entrenamiento,lugar@3: aciertos / esperados,lugar@3: p-valor corregido (m = 2),lugar@1: aciertos / esperados,lugar@1: p-valor corregido (m = 2),lugar@3: p-valor vs popularidad (pareada)
+606,5.7,7.0,6.1,0.567,133,11,0.565,0.03,366 / 363.6,0.877,123 / 121.2,0.887,0.005

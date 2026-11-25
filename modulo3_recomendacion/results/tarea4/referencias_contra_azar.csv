@@ -1,0 +1,5 @@
+escenario,modelo,usuarios,aciertos (media de 30 semillas),esperados por azar,error estándar por muestreo (pp),p-valor (H1: acierta más que el azar),lugar@3: aciertos / esperados,lugar@3: p-valor corregido (m = 2),lugar@1: aciertos / esperados,lugar@1: p-valor corregido (m = 2)
+ajuste,Azar,326,3,3.3,0.55,0.635,196 / 195.6,1.0,64 / 65.2,1.0
+ajuste,Popularidad,326,3,3.3,0.55,0.635,203 / 195.6,0.436,68 / 65.2,0.741
+final,Azar,606,6,6.1,0.4,0.567,362 / 363.6,1.0,117 / 121.2,1.0
+final,Popularidad,606,7,6.1,0.4,0.405,352 / 363.6,1.0,98 / 121.2,1.0

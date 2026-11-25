@@ -98,7 +98,7 @@
   }
 </style>
 <script>
-  window.MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] }, chtml: { displayAlign: 'center' } };
+  window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] }, chtml: { displayAlign: 'center' } };
 </script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
@@ -130,8 +130,17 @@
     </li>
     <li><a href="#particion">4. Partición (tarea 3)</a></li>
     <li><a href="#preprocesamiento">5. Preprocesamiento</a></li>
-    <li><a href="#caceria">6. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">7. Lo que falta</a></li>
+    <li><a href="#referencias-t4">6. Modelos de referencia (tarea 4)</a>
+      <ul>
+        <li><a href="#t4-posible">6.1 Qué puede lograr cada modelo</a></li>
+        <li><a href="#t4-modelos">6.2 Los tres modelos y cómo se evalúan</a></li>
+        <li><a href="#t4-juguete">6.3 ¿El código funciona?</a></li>
+        <li><a href="#t4-ajuste">6.4 Ajuste de la factorización</a></li>
+        <li><a href="#t4-resultados">6.5 Resultados</a></li>
+      </ul>
+    </li>
+    <li><a href="#caceria">7. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">8. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -141,7 +150,7 @@
   <div class="eyebrow">Trabajo 3 · Redes neuronales · UNAL 2026-02</div>
   <h1>Módulo 3: Recomendación de destinos de viaje</h1>
   <p class="lead">Borrador de las secciones del informe escritas hasta ahora. Cada cifra sale de un script del repositorio y se puede regenerar.</p>
-  <p class="meta">Fuentes de evidencia: <code>results/inventario/RESUMEN.md</code> (tablas I-1 a I-15), <code>results/descriptivo/RESUMEN.md</code> (tablas D-1 a D-4) y la bitácora <code>DECISIONES.md</code>. En las notas de fuente, «I-n» y «D-n» indican de qué tabla generada sale cada dato.</p>
+  <p class="meta">Fuentes de evidencia: <code>results/inventario/RESUMEN.md</code> (tablas I-1 a I-15), <code>results/descriptivo/RESUMEN.md</code> (tablas D-1 a D-4), <code>results/tarea4_evidencia/RESUMEN.md</code> (tablas T4-1 a T4-3), <code>results/tarea4/RESUMEN.md</code> y <code>RESUMEN_factorizacion.md</code> y la bitácora <code>DECISIONES.md</code>. En las notas de fuente, «I-n», «D-n» y «T4-n» indican de qué tabla generada sale cada dato.</p>
 </header>
 
 <section id="estado">
@@ -155,7 +164,8 @@
       <tr><td>Partición</td><td>Tarea 3</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 5 hallazgos</span></td></tr>
-      <tr><td>Modelos de referencia y red neuronal</td><td>Tareas 4 y 5</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Modelos de referencia</td><td>Tarea 4 + figura de resultados</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Red neuronal</td><td>Tarea 5</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3</td><td><span class="pill no">Pendiente</span></td></tr>
       <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill wip">Teoría escrita; falta adaptarla</span></td></tr>
@@ -244,13 +254,13 @@
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024).</p>
-  <p>Hay una relación débil entre lo que el usuario dice preferir y lo que visita: el 42,3 % de sus interacciones van a un tipo de destino preferido, frente al 40 % que se esperaría por azar (permutación, p-valor = 0,019). Sin embargo, esa diferencia <strong>no se sostiene</strong> cuando se corrige por hacer varias pruebas a la vez (p-valor corregido = 0,11; sección 3.4). Es, en el mejor de los casos, una señal débil e incierta.</p>
+  <p>Hay una relación débil entre lo que el usuario dice preferir y lo que visita: el 42,3 % de sus interacciones van a un tipo de destino preferido, frente al 40 % que se esperaría por azar (permutación, p-valor = 0,019). Sin embargo, esa diferencia <strong>no se sostiene</strong> cuando se corrige por hacer varias pruebas a la vez (p-valor corregido = 0,11; sección 3.4). Es, en el mejor de los casos, una relación débil e incierta.</p>
 
   <h3 id="implicaciones">1.4 ¿Qué implica para nuestras conclusiones?</h3>
   <ul>
     <li><strong>No hablamos de turistas reales.</strong> Ningún resultado se puede usar para afirmar algo sobre los viajeros de India ni sobre los clientes de la empresa. El módulo demuestra el <strong>método</strong> (cómo se construye, evalúa y compara un recomendador), no un hallazgo de negocio.</li>
-    <li><strong>Hay muy poca señal que aprender.</strong> Si las interacciones son casi aleatorias, ningún modelo puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso incluiremos un recomendador <strong>aleatorio</strong> como piso, y compararemos con 30 semillas antes de afirmar que un modelo es mejor que otro.</li>
-    <li><strong>Si la red supera a la popularidad, ya sabemos dónde buscar la causa.</strong> La única pista de señal es la débil relación entre preferencias y tipo de destino, y solo un modelo con variables de contenido podría aprovecharla. Lo más probable es que ningún modelo supere claramente al azar.</li>
+    <li><strong>Hay muy poca relación en los datos que permita predecir.</strong> Si las interacciones son casi aleatorias, ningún modelo puede acertar mucho. Esperamos métricas bajas y diferencias pequeñas entre modelos. Por eso incluiremos un recomendador <strong>aleatorio</strong> como mínimo de referencia, y compararemos con 30 semillas antes de afirmar que un modelo es mejor que otro.</li>
+    <li><strong>Si la red supera a la popularidad, ya sabemos dónde buscar la causa.</strong> El único indicio de algo que permita predecir es la débil relación entre preferencias y tipo de destino, y solo un modelo con variables de contenido podría aprovecharla. Lo más probable es que ningún modelo supere claramente al azar.</li>
     <li><strong>El catálogo real tiene 5 lugares.</strong> Esto obliga a la decisión de modelado que sigue.</li>
   </ul>
 
@@ -427,10 +437,10 @@
       <tr><td><strong>Dejar uno fuera (elegida)</strong></td><td class="num"><strong>1066 / 326 / 606</strong></td><td class="num"><strong>606</strong></td><td class="num"><strong>0 %</strong></td><td class="num">33,7 %</td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-15 (semilla 0).</p>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: I-15 (semilla 0). «IDs de prueba no vistos» se mide contra el conjunto de entrenamiento solo, para comparar las estrategias en igualdad de condiciones.</p>
   <p>La partición aleatoria dejaría a casi uno de cada cinco usuarios de prueba sin nada en entrenamiento, y solo evaluaría 181 usuarios. Dejar uno fuera garantiza que todo usuario evaluado tiene historial, que es la situación del caso de uso (un cliente que inicia sesión y ya ha viajado). También es el esquema que usan He et al. (2017).</p>
 
-  <div class="callout warn"><p><strong>Un hallazgo que sale de la partición.</strong> Uno de cada tres destinos de prueba (33,7 %) es un ID que nadie tocó en entrenamiento (Tabla 12). Un modelo que solo conoce IDs, como la popularidad o la factorización de matrices, no puede recomendar algo que nunca vio, así que su tasa de aciertos tiene un techo cercano al 66 %. Un modelo que conoce el contenido («este ID es un Taj Mahal») no tiene ese techo. Es una razón concreta para usar variables de contenido en la red.</p></div>
+  <div class="callout warn"><p><strong>Un hallazgo que sale de la partición: los «IDs fríos».</strong> Muchos destinos escondidos son IDs que nadie tocó en los datos con los que aprende el modelo. Un modelo que solo conoce IDs, como la popularidad o la factorización de matrices, no tiene información sobre ellos y solo los acertaría por casualidad, así que su tasa de aciertos tiene un máximo. Ese máximo depende del momento: al ajustar (aprende con entrenamiento y se mide en validación), el 34,4 % de los destinos escondidos es frío y el máximo es 65,6 %; en la evaluación final (aprende con entrenamiento + validación y se mide en prueba), el 22,6 % es frío y el máximo es 77,4 % (evidencia: T4-1, <code>src/evidencia_tarea4.py</code>). Un modelo que conoce el contenido («este ID es un Taj Mahal») no tiene ese límite. Es una razón concreta para usar variables de contenido en la red.</p></div>
 
   <p><strong>Cómo se usan los conjuntos.</strong> Elegimos la configuración de cada modelo entrenando con el conjunto de entrenamiento y midiendo en validación. Con la configuración ganadora volvemos a entrenar con entrenamiento + validación (1392 interacciones) y medimos una sola vez en prueba. Todos los modelos y las 30 repeticiones con semillas distintas usan exactamente la misma partición.</p>
 </section>
@@ -449,12 +459,104 @@
   <div class="callout warn"><p><strong>Limitación.</strong> En los datos solo hay 3 combinaciones de preferencias. Un perfil nuevo con otra combinación (por ejemplo, Beach + Nature) obliga al modelo a extrapolar.</p></div>
 </section>
 
-<!-- ======================= 6. CACERÍA ======================= -->
-<section id="caceria">
-  <h2>6. Cacería de la alucinación (aporte del módulo 3)</h2>
-  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 13 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+<!-- ======================= 6. MODELOS DE REFERENCIA ======================= -->
+<section id="referencias-t4">
+  <h2>6. Modelos de referencia (tarea 4)</h2>
+  <p>El enunciado pide dos referencias contra las cuales comparar la red neuronal: la <strong>popularidad</strong> y un <strong>filtrado colaborativo clásico</strong> (KNN o factorización de matrices). Agregamos una tercera, el <strong>azar</strong>, porque la tarea 2 mostró que las interacciones se comportan como aleatorias: el azar es el mínimo que cualquier modelo útil debe superar.</p>
+  <p>Si un modelo acierta igual que el azar, hay dos explicaciones posibles: que los datos no tengan una relación que permita predecir (por ejemplo, que quienes visitan un destino tiendan a visitar otros, o que las preferencias se relacionen con lo que se visita), que es lo que anticipa la tarea 2; o que el código tenga un error. Con los datos reales las dos dan el mismo resultado. Para distinguirlas, antes de usar la factorización con los datos reales la probamos con datos simulados en los que esa relación sí existe (sección 6.3).</p>
 
-  <p class="caption">Tabla 13. Resumen de los hallazgos del módulo 3</p>
+  <h3 id="t4-posible">6.1 Qué puede lograr cada modelo, antes de entrenarlo</h3>
+  <p>Antes de entrenar, contamos en cuántos de los usuarios evaluados es <strong>posible</strong> acertar. Cada usuario tiene un destino escondido, y la Tabla 13 dice, para cada familia de modelos, en cuántos de esos casos el modelo tiene alguna forma de ponerlo arriba. Se mide en los dos momentos: el <em>ajuste</em>, en el que el modelo aprende con entrenamiento y se mide en validación para elegir su configuración, y el <em>final</em>, en el que aprende con entrenamiento + validación y se mide una sola vez en prueba.</p>
+  <p><strong>Qué es un «modelo solo de IDs».</strong> Es un modelo que conoce cada destino solo por su número (ID) y sus interacciones, sin saber qué lugar es ni de qué tipo; aquí lo son la popularidad y la factorización de matrices. Si el ID 941 no aparece en lo aprendido, ninguno de los dos sabe que es un Taj Mahal; una red con variables de contenido (tarea 5) sí lo sabe.</p>
+  <p class="caption">Tabla 13. Casos en los que acertar es posible, según la familia de modelos</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Pregunta, para cada usuario evaluado</th><th class="num">Ajuste (326 usuarios)</th><th class="num">Final (606 usuarios)</th><th>Cómo leerlo</th></tr></thead>
+    <tbody>
+      <tr><td>¿Con qué probabilidad el azar pone su destino escondido en el top-10?</td><td class="num">1,0 %</td><td class="num">1,0 %</td><td>Es el mínimo: 10 de unos 1000 destinos.</td></tr>
+      <tr><td>¿Su destino escondido es un ID que nadie tocó en lo aprendido («ID frío»)?</td><td class="num">112 (34,4 %)</td><td class="num">137 (22,6 %)</td><td>Un modelo que solo usa IDs no sabe nada de esos destinos y solo los acertaría por casualidad.</td></tr>
+      <tr><td>¿En cuántos casos es posible acertar con un modelo que solo usa IDs?</td><td class="num">214 (65,6 %)</td><td class="num">469 (77,4 %)</td><td>Los que no son fríos: es el máximo posible de la popularidad y de la factorización.</td></tr>
+      <tr><td>¿En cuántos casos KNN puede darle algún puntaje a su destino escondido?</td><td class="num">0 (0,0 %)</td><td class="num">1 (0,2 %)</td><td>Para eso, otro usuario debe compartir ese destino con uno de los suyos. Casi nunca pasa, así que KNN fallaría casi siempre.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: T4-1 (<code>src/evidencia_tarea4.py</code>). Son casos en los que acertar es posible, no aciertos; los aciertos reales de cada modelo están en la Tabla 16.</p>
+  <p>La tabla decide el filtrado colaborativo: KNN solo tiene casos posibles en el 0–0,2 % de los usuarios, así que fallaría casi siempre, se ajuste como se ajuste. Por eso usamos <strong>factorización de matrices</strong>, que puede puntuar cualquier destino visto al aprender (469 casos posibles de 606).</p>
+
+  <h3 id="t4-modelos">6.2 Los tres modelos y cómo se evalúan</h3>
+  <ul>
+    <li><strong>Azar.</strong> Un puntaje aleatorio para cada destino.</li>
+    <li><strong>Popularidad.</strong> El puntaje de un destino es su número de interacciones en lo aprendido, y a todos los usuarios se les recomienda lo mismo. Hay muchos empates: para llenar el top-10 hay que escoger 10 entre 24 destinos que tienen 4 interacciones cada uno (T4-2), así que el orden dentro del empate se decide al azar con una semilla. No usamos la columna <code>Popularity</code> del conjunto, porque no tiene relación con las interacciones (H5, Tabla 10).</li>
+    <li><strong>Factorización de matrices con BPR.</strong> Cada usuario \(u\) y cada destino \(i\) tienen un vector de \(d\) números que se aprende, y el puntaje es su producto punto, \(\hat y_{ui} = \mathbf p_u^\top \mathbf q_i\). Para entrenar se forman tríos \((u, i, j)\): \(i\) es un destino que \(u\) visitó y \(j\) uno que no, escogido al azar. La pérdida
+      <div class="math-block">$$\mathcal L = -\ln \sigma\!\left(\hat y_{ui} - \hat y_{uj}\right) + \lambda\left(\lVert\mathbf p_u\rVert^2 + \lVert\mathbf q_i\rVert^2 + \lVert\mathbf q_j\rVert^2\right)$$</div>
+      premia que lo visitado quede por encima de lo no visitado, que es justo lo que mide un top-K (Rendle et al., 2009). El segundo término, la regularización, castiga los vectores grandes para que el modelo no memorice. Tiene \((999 + 1000)\,d\) parámetros entrenables.</li>
+  </ul>
+  <p><strong>Cómo se evalúan, igual para los tres.</strong> Todos se miden con el mismo código (<code>src/evaluacion.py</code>). Para cada usuario se ordenan los <strong>1000 destinos completos</strong>, sin muestrear y sin contar los destinos (IDs) que el usuario ya tiene en lo aprendido: no se le vuelven a recomendar, aunque sí otros IDs del mismo lugar; los empates se rompen al azar; y se busca en qué posición quedó el destino escondido. Como cada usuario tiene un solo destino escondido, HitRate@K y Recall@K coinciden (1 si el destino está entre los K primeros), Precision@K es HitRate@K / K y NDCG@K vale \(1/\log_2(\text{posición} + 2)\) si hay acierto, de modo que premia acertar arriba. La cobertura@K es el porcentaje de los 1000 destinos que aparece en algún top-K. Como el cliente ve <strong>lugares</strong> y no IDs (decisión 1), también medimos por lugar: cada lugar recibe el mejor puntaje de sus IDs, se ordenan los 5 lugares y se mira si el lugar del destino escondido está entre los 3 que vería el cliente (HitRate@3 por lugar, la métrica principal; el azar da 60 %) o si queda primero (HitRate@1 por lugar; el azar da 20 %). Estas métricas se fijaron antes de entrenar la red y se aplican igual a todos los modelos. Cada modelo se corre con 30 semillas. El evaluador se probó con un ejemplo calculado a mano, con empates y con el azar en los datos reales (<code>src/probar_evaluacion.py</code>).</p>
+
+  <h3 id="t4-juguete">6.3 ¿El código funciona? Prueba con datos de respuesta conocida</h3>
+  <p>Si la factorización acierta igual que el azar, puede ser porque los datos no tienen una relación que permita predecir o porque el código tiene un error, y con los datos reales no se distingue. Por eso la probamos primero con datos simulados del mismo tamaño en los que esa relación <strong>sí</strong> existe: 50 grupos de 20 destinos, y cada usuario visita 4 destinos de su grupo. Lo mejor que puede hacer un modelo es adivinar el grupo, lo que da un máximo de HitRate@10 = 10/17 ≈ 59 %. La Tabla 14 muestra el resultado.</p>
+  <p class="caption">Tabla 14. Factorización de matrices con datos simulados (d = 16)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th class="num">λ</th><th class="num">Pérdida final</th><th class="num">HitRate@10</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">—</td><td class="num">—</td><td class="num">0,9 %</td></tr>
+      <tr><td>Popularidad</td><td class="num">—</td><td class="num">—</td><td class="num">0,5 %</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">0,0001</td><td class="num">0,007</td><td class="num">12,8 %</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">0,001</td><td class="num">0,029</td><td class="num">15,2 %</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">0,01</td><td class="num">0,148</td><td class="num">48,4 %</td></tr>
+      <tr><td><strong>Factorización (BPR)</strong></td><td class="num"><strong>0,1</strong></td><td class="num">0,602</td><td class="num"><strong>58,4 %</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia con datos simulados. Evidencia: <code>src/probar_factorizacion.py</code>.</p>
+  <p>Con λ = 0,1 la factorización llega prácticamente al máximo (58,4 % frente a 59 %): <strong>el código aprende cuando hay algo que aprender</strong>. La tabla deja una segunda lección: con poca regularización el modelo memoriza el entrenamiento (pérdida casi 0) y acierta mucho menos. Con solo 2 o 3 interacciones por usuario hace falta regularizar fuerte, y por eso la búsqueda de configuraciones con los datos reales usó λ entre 0,01 y 1.</p>
+
+  <h3 id="t4-ajuste">6.4 Ajuste de la factorización</h3>
+  <p>Probamos 9 configuraciones (dimensión \(d \in \{8, 16, 32\}\) × regularización \(\lambda \in \{0{,}01;\ 0{,}1;\ 1\}\)), cada una con 3 semillas: 27 corridas que, junto con la evaluación final, tardaron 25 segundos en total. Cada corrida entrena hasta 200 épocas con Adam (tasa 0,01, un negativo por cada positivo) y para cuando el NDCG@10 en validación no mejora en 10 épocas. La Tabla 15 muestra los resultados.</p>
+  <p class="caption">Tabla 15. Configuraciones probadas (media de 3 semillas, validación con 326 usuarios)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="num">d</th><th class="num">λ</th><th class="num">NDCG@10</th><th class="num">HitRate@10</th><th class="num">Mejor época (mediana)</th><th class="num">Parámetros</th></tr></thead>
+    <tbody>
+      <tr><td class="num">16</td><td class="num">0,01</td><td class="num">0,95 %</td><td class="num">1,94 %</td><td class="num">5</td><td class="num">31 984</td></tr>
+      <tr><td class="num"><strong>8</strong></td><td class="num"><strong>1</strong></td><td class="num">0,91 %</td><td class="num">1,64 %</td><td class="num">7</td><td class="num">15 992</td></tr>
+      <tr><td class="num">16</td><td class="num">0,1</td><td class="num">0,90 %</td><td class="num">2,15 %</td><td class="num">4</td><td class="num">31 984</td></tr>
+      <tr><td class="num">16</td><td class="num">1</td><td class="num">0,87 %</td><td class="num">1,84 %</td><td class="num">2</td><td class="num">31 984</td></tr>
+      <tr><td class="num">32</td><td class="num">1</td><td class="num">0,76 %</td><td class="num">1,23 %</td><td class="num">4</td><td class="num">63 968</td></tr>
+      <tr><td class="num">8</td><td class="num">0,1</td><td class="num">0,68 %</td><td class="num">1,33 %</td><td class="num">3</td><td class="num">15 992</td></tr>
+      <tr><td class="num">8</td><td class="num">0,01</td><td class="num">0,63 %</td><td class="num">1,74 %</td><td class="num">5</td><td class="num">15 992</td></tr>
+      <tr><td class="num">32</td><td class="num">0,01</td><td class="num">0,62 %</td><td class="num">1,23 %</td><td class="num">3</td><td class="num">63 968</td></tr>
+      <tr><td class="num">32</td><td class="num">0,1</td><td class="num">0,52 %</td><td class="num">1,02 %</td><td class="num">2</td><td class="num">63 968</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea4/RESUMEN_factorizacion.md</code>. En negrita, la configuración elegida.</p>
+  <p>Las mejores épocas son muy tempranas (entre 2 y 7), indicio de que la parada temprana sigue al ruido y no a un aprendizaje real. Ninguna configuración supera al azar en validación: la mejor acierta 6 de 326 casos cuando el azar acertaría 3,3 (prueba binomial unilateral, p-valor = 0,11), y ese p-valor es incluso optimista, porque la misma validación se usó para escoger la época. Por eso, en lugar de quedarnos con la que más brilló por suerte, aplicamos la regla fijada de antemano: elegir la más simple, <strong>d = 8 y λ = 1</strong>, entrenada durante 7 épocas (la mediana de sus mejores épocas).</p>
+
+  <h3 id="t4-resultados">6.5 Resultados</h3>
+  <p>Con la configuración elegida, cada modelo se entrenó con entrenamiento + validación y se midió una sola vez en prueba, con 30 semillas. La Tabla 16 y la Figura 3 muestran los resultados.</p>
+  <p class="caption">Tabla 16. Modelos de referencia en prueba (606 usuarios, 30 semillas, K = 10)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th class="num">HitRate@10</th><th class="num">IC 95 % entre semillas</th><th class="num">NDCG@10</th><th class="num">Cobertura@10</th><th class="num">Aciertos / esperados por azar</th><th class="num">p-valor vs. azar</th><th class="num">Parámetros entrenables</th><th class="num">Lugar@3 (azar 60 %)</th><th class="num">Lugar@1 (azar 20 %)</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">0,91 %</td><td class="num">0,77–1,06</td><td class="num">0,42 %</td><td class="num">99,7 %</td><td class="num">6 / 6,1</td><td class="num">0,57</td><td class="num">0</td><td class="num">59,7 %</td><td class="num">19,3 %</td></tr>
+      <tr><td>Popularidad</td><td class="num">1,16 %</td><td class="num">1,07–1,24</td><td class="num">0,46 %</td><td class="num">1,6 %</td><td class="num">7 / 6,1</td><td class="num">0,41</td><td class="num">0</td><td class="num">58,1 %</td><td class="num">16,1 %</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">0,94 %</td><td class="num">0,83–1,06</td><td class="num">0,43 %</td><td class="num">17,4 %</td><td class="num">5,7 / 6,1</td><td class="num">0,57</td><td class="num">15 992</td><td class="num">60,4 %</td><td class="num">20,4 %</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea4/RESUMEN.md</code> y <code>RESUMEN_factorizacion.md</code>. p-valor: prueba binomial unilateral (H₀: el modelo acierta con la probabilidad del azar; H₁: acierta más). Recall@10 = HitRate@10 y Precision@10 = HitRate@10 / 10. Lugar@3 y Lugar@1: HitRate@3 y HitRate@1 por lugar (media de 30 semillas).</p>
+  <figure>
+    <figcaption>Figura 3. Aciertos y cobertura de los modelos de referencia</figcaption>
+    <img src="../figures/tarea4_referencias.png" alt="A la izquierda, el HitRate de los tres modelos para K de 1 a 20: las tres líneas quedan dentro de la banda gris que produce el azar. A la derecha, la cobertura con K = 10: azar 99,7 %, popularidad 1,6 % y factorización 17,4 %.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Banda gris: 95 % de los aciertos que produciría el azar con 606 usuarios (distribución binomial). Regenerable con <code>src/figuras_tarea4.py</code>.</p>
+  <p><strong>Ningún modelo de referencia acierta más que el azar.</strong> En la Figura 3, las tres líneas quedan dentro de la banda gris para todos los K. En la Tabla 16, la popularidad acierta 7 de 606 casos y la factorización 5,7 en promedio, cuando el azar acertaría 6,1; ningún p-valor se acerca a 0,05. Dicho de otra forma: de los 469 casos en los que acertar era posible (Tabla 13), los modelos aciertan unos 6, los mismos que el azar. Por lugar ocurre lo mismo: ninguno supera el 60 % ni el 20 % del azar (pruebas binomiales con corrección de Bonferroni, m = 2; todos los p-valores corregidos son mayores que 0,4). La popularidad queda incluso un poco por debajo, porque ordena los lugares según su ID más popular (uno de Jaipur City, con 6 interacciones) y pone primero a Jaipur City, que resulta ser el lugar menos frecuente entre los destinos escondidos de prueba (16,2 %). Comparadas entre sí con una prueba pareada por usuario (permutación de signos sobre los mismos 606 usuarios), la factorización y la popularidad tampoco se distinguen (p-valor = 0,57).</p>
+  <div class="callout warn"><p><strong>Una trampa al leer la Tabla 16.</strong> Los intervalos entre semillas del azar (0,77–1,06) y de la popularidad (1,07–1,24) no se solapan, y parecería que la popularidad gana. Pero esos intervalos solo miden cuánto cambia el resultado al cambiar la semilla, que en la popularidad solo decide los desempates. No tienen en cuenta que los 606 usuarios son una muestra: con 606 casos, el error por muestreo es de unos 0,40 puntos porcentuales, más que la diferencia entre los dos modelos (0,25). Por eso toda comparación entre modelos se acompaña de una prueba que trata a los usuarios como muestra.</p></div>
+  <p><strong>Lo que sí los distingue es la cobertura.</strong> La popularidad recomienda a todos casi los mismos 16 destinos (1,6 % del catálogo), la factorización reparte más (17,4 %) y el azar cubre prácticamente todo. Para el negocio, recomendar por popularidad concentraría la demanda en unas pocas rutas sin acertar más; es un insumo para la pregunta de negocio 2.</p>
+  <div class="callout ok"><p><strong>Conclusión de la tarea 4.</strong> Ninguna referencia supera al azar. Como la prueba con datos simulados mostró que el código aprende cuando los datos tienen una relación que permita predecir, la causa son los datos y no la implementación, lo que es coherente con el análisis descriptivo (tarea 2). La red neuronal de la tarea 5 tendrá que compararse contra estos tres modelos con las mismas pruebas, y su ventaja posible está en las variables de contenido, que no dependen de que haya caminos entre usuarios.</p></div>
+</section>
+
+<!-- ======================= 7. CACERÍA ======================= -->
+<section id="caceria">
+  <h2>7. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 17 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+
+  <p class="caption">Tabla 17. Resumen de los hallazgos del módulo 3</p>
   <div class="table-wrap"><table>
     <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
     <tbody>
@@ -570,11 +672,10 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>7. Lo que falta</h2>
+  <h2>8. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
-      <tr><td>Tarea 4 · Modelos de referencia</td><td>Recomendador aleatorio (piso), popularidad y factorización de matrices.</td></tr>
       <tr><td>Tarea 5 · Red neuronal</td><td>Modelo de dos torres o NCF con variables de contenido; justificar la dimensión de los embeddings, los negativos y la pérdida.</td></tr>
       <tr><td>Tarea 6 · Evaluación</td><td>Precision, Recall y NDCG@K; cobertura; grupos de pocas y muchas interacciones; 30 semillas; 5 usuarios de ejemplo; t-SNE.</td></tr>
       <tr><td>P1 · Usuarios nuevos</td><td>Simular el arranque en frío con los 606 usuarios de prueba; comparar ≥ 2 estrategias.</td></tr>
@@ -592,7 +693,8 @@
   <p>Bland, J. M., &amp; Altman, D. G. (1995). Multiple significance tests: The Bonferroni method. <em>BMJ, 310</em>(6973), 170. https://doi.org/10.1136/bmj.310.6973.170</p>
   <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
   <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
-  <div class="callout warn"><p>Las dos primeras referencias (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 6.</p></div>
+  <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the 25th Conference on Uncertainty in Artificial Intelligence (UAI)</em>.</p>
+  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 7.</p></div>
 </section>
 </main>
 </div>

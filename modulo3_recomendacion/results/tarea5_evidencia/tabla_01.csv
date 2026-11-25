@@ -1,0 +1,5 @@
+variable,valores distintos por lugar (mín–máx),¿aporta algo además del lugar?
+Type,1–1,no: la fija el lugar
+State,1–1,no: la fija el lugar
+BestTimeToVisit,1–1,no: la fija el lugar
+Popularity,200–200,sí: cambia entre IDs del mismo lugar

@@ -273,10 +273,16 @@ información disponible), pero no se pueden evaluar: no queda nada que esconderl
   caso de uso (un cliente que inicia sesión y ya ha viajado), y es el esquema habitual en la
   literatura de recomendadores.
 
-**Un hallazgo que sale de la partición.** Uno de cada tres destinos de prueba (33,7 %) es un ID
-que nadie tocó en entrenamiento. Un modelo que solo conoce IDs, como la popularidad o la
-factorización de matrices, no puede recomendar algo que nunca vio, así que su tasa de aciertos
-tiene un techo cercano al 66 %. Un modelo que conoce el contenido («este ID es un Taj Mahal»)
+**Un hallazgo que sale de la partición: los «IDs fríos».** Muchos destinos escondidos son IDs
+que nadie tocó en los datos con los que aprende el modelo. Un modelo que solo conoce IDs (popularidad,
+factorización de matrices) no tiene información sobre ellos y solo los acertaría por casualidad, así
+que su tasa de aciertos tiene un techo que depende del momento [T4-1]:
+- al ajustar (entrenamiento → validación): 34,4 % fríos, techo 65,6 %;
+- en la evaluación final (entrenamiento + validación → prueba): 22,6 % fríos, techo 77,4 %.
+
+⚠️ Corrección (24-nov): antes decía «33,7 %, techo ≈ 66 %». Ese número compara prueba contra
+entrenamiento solo, pero el modelo final aprende con entrenamiento + validación. El 33,7 % sigue
+siendo válido en la Tabla 12, que compara estrategias de partición contra entrenamiento. Un modelo que conoce el contenido («este ID es un Taj Mahal»)
 no tiene ese techo. Es una razón concreta para usar variables de contenido en la red.
 
 **Cómo se usan los conjuntos.** Elegimos la configuración de cada modelo entrenando con
@@ -295,8 +301,75 @@ modelos y las 30 repeticiones con semillas distintas usan exactamente la misma p
   combinación (por ejemplo, Beach + Nature) es una extrapolación del modelo.
 
 ## 5–6. Modelos y evaluación
-- ⏳ Añadir un recomendador **aleatorio** como piso de comparación, además de la popularidad y
-  la factorización de matrices.
+
+### 5.1 Modelos de referencia (tarea 4) — decisiones tomadas, en desarrollo
+> Evidencia: `results/tarea4_evidencia/` (T4-1 a T4-3); detalle en `DECISIONES.md`, paso 7.
+
+**Qué puede lograr cada modelo, antes de entrenarlo.** Para cada usuario evaluado nos preguntamos
+si el modelo puede siquiera darle puntaje al destino escondido [T4-1]:
+
+| Medida | Ajuste (ent → val) | Final (ent+val → prueba) |
+|---|---|---|
+| HitRate@10 esperado del azar | 1,0 % | 1,0 % |
+| Techo de un modelo solo de IDs | 65,6 % | 77,4 % |
+| KNN puede puntuarlo | 0,0 % | 0,2 % |
+
+- **Tres modelos:** azar (piso, ≈ 1 %), popularidad y factorización de matrices. **Sin KNN:** solo
+  puntúa un destino si otro usuario lo comparte con alguno de los del usuario, y aquí eso casi
+  nunca pasa (0–0,2 %).
+- **Popularidad = conteo de interacciones**, con desempate al azar: el top-10 sale de 24 destinos
+  empatados con 4 interacciones [T4-2]. La columna `Popularity` se descarta (H5: ρ = −0,011).
+- **Factorización de matrices con BPR** («el destino visitado debe quedar por encima de uno no
+  visitado»), en PyTorch como el módulo 2; *d* y regularización elegidas en validación.
+- **Evaluación común:** se ordenan los 1000 destinos (sin muestrear), quitando los IDs ya vistos
+  por el usuario; HitRate, Recall, Precision y NDCG con K = 1, 3, 5, 10, 20, y cobertura; 30
+  semillas.
+- 💡 Expectativa para el informe: la factorización de matrices quedará probablemente cerca del
+  azar, porque casi no hay caminos entre usuarios. Es coherente con la tarea 2.
+
+**Resultados de azar y popularidad** (`src/referencias.py`, 30 semillas; `results/tarea4/RESUMEN.md`):
+
+| Momento | Modelo | HitRate@10 | NDCG@10 | Cobertura@10 | Aciertos / esperados por azar | p-valor |
+|---|---|---|---|---|---|---|
+| Ajuste (326) | Azar | 1,06 % | 0,48 % | 96,3 % | 3 / 3,3 | 0,64 |
+| Ajuste (326) | Popularidad | 0,99 % | 0,33 % | 1,8 % | 3 / 3,3 | 0,64 |
+| Final (606) | Azar | 0,91 % | 0,42 % | 99,7 % | 6 / 6,1 | 0,57 |
+| Final (606) | Popularidad | 1,16 % | 0,46 % | 1,6 % | 7 / 6,1 | 0,41 |
+
+- 💡 **La popularidad no supera al azar** (prueba binomial unilateral, p-valor = 0,41): acierta 7
+  de 606 cuando el azar acertaría 6. Es lo que anticipó la tarea 2 (no hay destinos «estrella»).
+- ⚠️ **Trampa a explicar en el informe:** en el momento final los IC 95 % entre semillas no se
+  solapan (azar 0,77–1,06; popularidad 1,07–1,24) y parecería que la popularidad gana. Pero esos
+  intervalos solo miden la variación por semilla (desempates), no que los 606 usuarios son una
+  muestra: el error estándar por muestreo es ≈ 0,40 puntos, mayor que la diferencia (0,25). Por
+  eso se agregó la prueba binomial contra el azar.
+- 💡 **Prueba con datos de juguete** (`src/probar_factorizacion.py`): antes de usar la
+  factorización con los datos reales, se probó con datos fabricados CON señal (cada usuario visita
+  destinos de «su» grupo). Acertó 58,4 % frente a un techo de 59 % y 1 % del azar: el código
+  aprende. Así, si con los datos reales queda igual al azar, la causa son los datos y no el código.
+  Además mostró que hacía falta regularizar mucho más de lo planeado (con λ = 0,0001 memorizaba y
+  acertaba 12,8 %). Buen ejemplo de «verificar con un caso de respuesta conocida».
+- 💡 **Factorización con los datos reales** (`results/tarea4/RESUMEN_factorizacion.md`):
+  9 configuraciones × 3 semillas en validación; ninguna supera al azar (la mejor: 6 de 326 frente
+  a 3,3 esperados, p-valor = 0,11), así que se eligió la más simple (d = 8, λ = 1, 7 épocas).
+  En prueba: HitRate@10 = 0,94 %, 5,7 aciertos frente a 6,1 del azar (p-valor = 0,57) y sin
+  diferencia con la popularidad (prueba pareada, p-valor = 0,57). Cobertura@10 = 17,4 %.
+
+**Tabla para el informe (prueba, 606 usuarios, 30 semillas, K = 10):**
+
+| Modelo | HitRate@10 | NDCG@10 | Cobertura@10 | Aciertos / esperados por azar | p-valor vs azar | Parámetros entrenables |
+|---|---|---|---|---|---|---|
+| Azar | 0,91 % | 0,42 % | 99,7 % | 6 / 6,1 | 0,57 | 0 |
+| Popularidad | 1,16 % | 0,46 % | 1,6 % | 7 / 6,1 | 0,41 | 0 |
+| Factorización (BPR) | 0,94 % | 0,43 % | 17,4 % | 5,7 / 6,1 | 0,57 | 15 992 |
+
+💡 **Conclusión de la tarea 4:** ninguna referencia supera al azar, y como la prueba de juguete
+demostró que el código aprende cuando hay señal, la causa son los datos (coherente con la
+tarea 2). Lo que sí las distingue es la **cobertura**: la popularidad concentra todo en ~16
+destinos; la factorización reparte más; el azar cubre todo.
+- 💡 **Cobertura:** la popularidad recomienda a todos casi los mismos ~16 destinos (cobertura
+  1,6 %), el azar cubre casi todo el catálogo. Dato para la pregunta de negocio 2: la popularidad
+  concentraría la demanda en pocas rutas sin acertar más.
 - 💡 Decisión sobre la granularidad del ítem (ver `DECISIONES.md`, paso 1): explicarla en el
   informe como una decisión de modelado.
 

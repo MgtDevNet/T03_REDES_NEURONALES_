@@ -549,9 +549,11 @@ compararlo, y solo puede preguntarle qué le gusta (contenido) o darle lo más l
 > prueba, esto da el desempeño de cada estrategia para clientes nuevos (pregunta de negocio 1),
 > **sin necesidad de otra partición**.
 >
-> **Ítems fríos en nuestros datos:** con la partición elegida (sección 14), el 33,7 % de los IDs
-> de prueba no tiene ninguna interacción en entrenamiento. La popularidad y la factorización de
-> matrices no pueden acertarlos (techo de HitRate ≈ 66 %); la red con contenido sí puede.
+> **Ítems fríos en nuestros datos:** con la partición elegida (sección 14), al ajustar
+> (entrenamiento → validación) el 34,4 % de los destinos escondidos no tiene ninguna interacción en
+> lo aprendido; en la evaluación final (entrenamiento + validación → prueba), el 22,6 %. La
+> popularidad y la factorización de matrices no tienen información sobre ellos y solo los
+> acertarían por casualidad (techo de HitRate ≈ 66 % y ≈ 77 %); la red con contenido sí puede.
 
 ---
 
