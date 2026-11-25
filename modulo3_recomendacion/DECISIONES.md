@@ -722,3 +722,12 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
   un notebook), así que `experimentos.py` copia el estilo en lugar de importarlo.
 - La curva de aprendizaje de la red muestra la pérdida casi fija en 0,693 = ln 2 (la de una
   moneda al aire): otra forma de ver que casi no hay nada que aprender.
+
+### Figuras comunes (`src/figuras_comunes.py`, 2026-11-25) ✅ hechas
+- Arquitectura (Figura 4 del informe): la suma de parámetros por capa se comprueba contra el modelo
+  guardado (238). Búsqueda de hiperparámetros (Figura 5): factorización (9) y red (24).
+  Curvas de aprendizaje (Figura 6): 60 épocas sin parada temprana, 3 semillas.
+- Hallazgo de las curvas: la pérdida de la factorización con λ = 1 se estanca exactamente en
+  ln 2: los vectores se encogen casi a cero y todos los puntajes quedan ≈ 0 (moneda al aire).
+  La de la red casi no baja de ln 2. Coherente con el hallazgo 8.
+- Los diagramas de caja de las 30 semillas ya estaban (Figura 8).

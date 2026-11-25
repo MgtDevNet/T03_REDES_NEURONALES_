@@ -605,6 +605,12 @@
     <li><strong>Torre del usuario:</strong> las 5 casillas de preferencias → capa oculta de 16 neuronas (ReLU) → \(\mathbf u\). En el ajuste probamos también el perfil completo (preferencias, género, adultos y niños).</li>
     <li><strong>Torre del destino:</strong> un embedding del lugar (5 valores) junto con <code>Popularity</code> estandarizada → capa oculta de 16 neuronas (ReLU) → \(\mathbf v\). No usa el ID, así que puede puntuar también los IDs que nadie tocó al aprender.</li>
   </ul>
+  <p>La Figura 4 muestra la arquitectura elegida en el ajuste (sección 7.4), con los parámetros de cada capa.</p>
+  <figure>
+    <figcaption>Figura 4. Arquitectura de la red de dos torres elegida</figcaption>
+    <img src="../figures/comun_arquitectura.png" alt="Diagrama: a la izquierda, la torre del usuario (5 preferencias, capa oculta de 16 neuronas, vector de 2 dimensiones); a la derecha, la torre del destino (embedding del lugar y Popularity, capa oculta de 16, vector de 2); ambos vectores se combinan con un producto punto y se entrenan con BCE. 238 parámetros entrenables.">
+  </figure>
+  <p class="source">Fuente: elaboración propia. Regenerable con <code>src/figuras_comunes.py</code>, que comprueba que la suma de parámetros coincide con la del modelo guardado.</p>
   <p><strong>Dimensión \(d \in \{2, 4, 8\}\).</strong> Solo hay 3 perfiles de preferencias y 5 lugares: la tabla perfil × lugar tiene a lo sumo rango 3, así que unas pocas dimensiones bastan para representar cualquier relación entre ellos, y más dimensiones solo darían capacidad para sobreajustar.</p>
   <p><strong>Negativos.</strong> Para cada interacción observada se toman \(k \in \{1, 4\}\) destinos que el usuario no tiene, al azar y con la misma probabilidad entre los 1000 IDs. Muestrear según la popularidad, la alternativa habitual, daría prácticamente lo mismo, porque el catálogo es parejo (sección 3.2).</p>
   <p><strong>Pérdida: dos opciones, cada una derivada de un modelo probabilístico.</strong></p>
@@ -633,6 +639,18 @@
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea5/RESUMEN.md</code> (las 24 configuraciones). Validación: 326 usuarios.</p>
   <p>Las diferencias entre opciones son pequeñas, del tamaño del ruido. Lo más consistente es que <strong>solo preferencias</strong> supera al perfil completo, como anticipaba la Tabla 17. Las tres mejores configuraciones empatan en 65,2 % y todas usan \(d = 2\) y solo preferencias; por el orden de la tabla quedó elegida <strong>\(d = 2\), BCE, 1 negativo y solo preferencias</strong>, entrenada 8 épocas, con 238 parámetros entrenables. En validación superaba al azar: 213 de 326 frente a 195,6 esperados (prueba binomial unilateral; H₀: su lugar escondido queda entre los 3 primeros con la probabilidad del azar, 60 %; H₁: con más; p-valor = 0,027).</p>
+  <p>La Figura 5 muestra la búsqueda completa de las dos familias y la Figura 6, cómo aprenden las configuraciones elegidas cuando se entrenan 60 épocas sin parar antes.</p>
+  <figure>
+    <figcaption>Figura 5. Búsqueda de hiperparámetros de la factorización y de la red</figcaption>
+    <img src="../figures/comun_busqueda.png" alt="A la izquierda, un mapa de calor del HitRate@10 de la factorización para cada combinación de d y λ, entre 1,0 % y 2,2 %. A la derecha, las 24 configuraciones de la red con su HitRate@3 por lugar medio y su rango entre semillas, todas entre 61 % y 65 %, por encima de la línea del azar de 60 %; las de solo preferencias tienden a quedar arriba.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Validación, 326 usuarios, 3 semillas por configuración. Regenerable con <code>src/figuras_comunes.py</code>.</p>
+  <figure>
+    <figcaption>Figura 6. Curvas de aprendizaje de las configuraciones elegidas</figcaption>
+    <img src="../figures/comun_curvas.png" alt="Cuatro paneles. La pérdida de la factorización baja rápido y se estanca en ln 2; su NDCG en validación oscila alrededor del azar. La pérdida de la red casi no baja de ln 2; su HitRate@3 por lugar oscila entre 61 % y 65 %, con un pico cerca de la época 10.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Media y rango de 3 semillas; la línea discontinua marca las épocas usadas en el modelo final. Regenerable con <code>src/figuras_comunes.py</code>.</p>
+  <p>Las curvas confirman lo que dicen las tablas. Las dos pérdidas terminan en ln 2 ≈ 0,693, que es la pérdida de adivinar con una moneda al aire: la red casi no baja de ese valor y la factorización llega a él porque la regularización fuerte (λ = 1) encoge sus vectores hasta casi cero, de modo que todos sus puntajes quedan cerca de 0 (sección 6.5). Las métricas de validación oscilan sin una tendencia clara, que es lo esperable cuando casi no hay relación que aprender; el pico de la red alrededor de la época 10 es el que eligió la parada temprana y, como mostró la sección 7.5, no se sostuvo en prueba.</p>
 
   <h3 id="red-resultados">7.5 Resultados</h3>
   <p>La Tabla 19 compara la red con las tres referencias en prueba, con la misma partición, el mismo evaluador y 30 semillas.</p>
@@ -657,11 +675,11 @@
   <h2>8. Evaluación (tarea 6)</h2>
   <p>Precision, Recall, NDCG y cobertura de los cuatro modelos ya están en las Tablas 16 y 19. Aquí se completa la evaluación: cómo les va según cuántas interacciones tiene el usuario, cuánto varían entre semillas, cómo se ven sus recomendaciones y qué aprendieron sus embeddings. Todo se calcula en prueba (606 usuarios) con 30 semillas.</p>
   <figure>
-    <figcaption>Figura 4. Precision, Recall y NDCG en función de K para los cuatro modelos</figcaption>
+    <figcaption>Figura 7. Precision, Recall y NDCG en función de K para los cuatro modelos</figcaption>
     <img src="../figures/tarea6_metricas_k.png" alt="Tres paneles con Precision@K, Recall@K y NDCG@K para K de 1 a 20: las líneas de los cuatro modelos quedan sobre o muy cerca de la curva punteada del azar teórico.">
   </figure>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/figura_metricas_k.py</code>. Azar teórico: Recall@K = K/1000, Precision@K = 1/1000 y NDCG@K = (1/1000)·Σ 1/log₂(r + 1) para r = 1…K.</p>
-  <p>La Figura 4 muestra las tres métricas que pide el enunciado en función de K. Los cuatro modelos siguen la curva del azar. Las diferencias que se ven en Precision con K pequeño parecen grandes por la escala, pero son de uno o dos aciertos entre 606 usuarios (por ejemplo, Precision@1 = 0,1 % equivale a acertar a 0,6 usuarios), del tamaño del ruido; las pruebas de las Tablas 16 y 19 confirman que ningún modelo se distingue del azar por ID.</p>
+  <p>La Figura 7 muestra las tres métricas que pide el enunciado en función de K. Los cuatro modelos siguen la curva del azar. Las diferencias que se ven en Precision con K pequeño parecen grandes por la escala, pero son de uno o dos aciertos entre 606 usuarios (por ejemplo, Precision@1 = 0,1 % equivale a acertar a 0,6 usuarios), del tamaño del ruido; las pruebas de las Tablas 16 y 19 confirman que ningún modelo se distingue del azar por ID.</p>
 
   <h3 id="eval-grupos">8.1 Usuarios con pocas y con muchas interacciones</h3>
   <p>Separamos a los usuarios según cuántas interacciones tienen para aprender: <strong>pocas</strong> (1; 280 usuarios) y <strong>muchas</strong> (2 o más; 326 usuarios). La Tabla 20 muestra el resultado.</p>
@@ -679,9 +697,9 @@
   <p>En ningún grupo hay un modelo que supere al azar (pruebas binomiales contra el 60 %; el p-valor más bajo, sin corregir, es 0,12, el de la red con pocas interacciones). La red rinde algo mejor con pocas interacciones que con muchas, pero la diferencia (2,9 puntos) no es significativa (p-valor = 0,46). Tiene sentido: la red solo usa las preferencias, no el historial, así que tener más interacciones no le da más información.</p>
 
   <h3 id="eval-semillas">8.2 Variación entre las 30 semillas</h3>
-  <p>La Figura 5 muestra cuánto cambia cada métrica al repetir el entrenamiento con 30 semillas distintas.</p>
+  <p>La Figura 8 muestra cuánto cambia cada métrica al repetir el entrenamiento con 30 semillas distintas.</p>
   <figure>
-    <figcaption>Figura 5. Resultados de las 30 semillas por modelo</figcaption>
+    <figcaption>Figura 8. Resultados de las 30 semillas por modelo</figcaption>
     <img src="../figures/tarea6_semillas.png" alt="Diagramas de caja de HitRate@3 por lugar y HitRate@10 por ID para los cuatro modelos en las 30 semillas; todas las cajas cruzan la línea del azar.">
   </figure>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/evaluar_tarea6.py</code>.</p>
@@ -704,9 +722,9 @@
   <p>Acierta en 3 de 5, un número sin valor estadístico con tan pocos usuarios; los ejemplos sirven para ver cómo se comporta la red. Como solo usa las preferencias, recomienda lo mismo a todos los usuarios de un mismo perfil (salvo los IDs que cada uno ya tiene): a los perfiles «Beaches, Historical» les pone primero Goa y el Taj Mahal, y a «Nature, Adventure», Kerala y Leh Ladakh, lo que coincide con lo que dicen preferir. A «City, Historical», en cambio, le pone primero Kerala y deja al Taj Mahal entre los últimos, porque en los datos de entrenamiento ese perfil fue más a Kerala (21,6 %) que al Taj Mahal (18,5 %): <strong>la red sigue a los datos, no a lo que el usuario dice preferir</strong>.</p>
 
   <h3 id="eval-embeddings">8.4 Embeddings de destinos</h3>
-  <p>La Figura 6 muestra los vectores que cada modelo aprendió para los 1000 destinos.</p>
+  <p>La Figura 9 muestra los vectores que cada modelo aprendió para los 1000 destinos.</p>
   <figure>
-    <figcaption>Figura 6. Embeddings de los destinos en la red y en la factorización</figcaption>
+    <figcaption>Figura 9. Embeddings de los destinos en la red y en la factorización</figcaption>
     <img src="../figures/tarea6_embeddings.png" alt="A la izquierda, los vectores 2D de la red: cada lugar forma una curva y tres flechas representan los perfiles de preferencias. A la derecha, la proyección t-SNE de los vectores de la factorización: una nube sin agrupación por lugar.">
   </figure>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/ejemplos_embeddings.py</code>.</p>
@@ -735,7 +753,7 @@
   <p><strong>Respuesta: recomendarle según sus preferencias, no lo más popular.</strong> La regla «lo que más visita la gente con tus gustos» acierta el primer lugar 1 de cada 4 veces, frente a 1 de cada 5 del azar, y esa diferencia es real: acierta a 149 de los 606 clientes cuando el azar acertaría a 121, y si en verdad acertara como el azar (H₀), sería muy raro acertar tantas veces (p-valor corregido = 0,007; H₁: acierta más que el azar). Es la misma relación débil entre preferencias y lugar de las secciones 3.4 y 7.1. En los 3 lugares que ve el cliente, en cambio, ninguna estrategia se distingue del azar: con solo 5 lugares, 3 ya cubren el 60 %. La popularidad es la peor opción, porque le pone a todos Jaipur City primero.</p>
 
   <h3 id="neg-concentracion">9.2 ¿Las recomendaciones amontonan a los clientes?</h3>
-  <p>Si una agencia le dice a todo el mundo «vaya a Jaipur», los vuelos y hoteles de Jaipur se llenan y los demás quedan vacíos. Para medirlo contamos qué porcentaje de los 606 clientes recibiría cada lugar como primera recomendación y lo comparamos con la demanda actual, que es de alrededor del 20 % por lugar (Tabla 23 y Figura 7).</p>
+  <p>Si una agencia le dice a todo el mundo «vaya a Jaipur», los vuelos y hoteles de Jaipur se llenan y los demás quedan vacíos. Para medirlo contamos qué porcentaje de los 606 clientes recibiría cada lugar como primera recomendación y lo comparamos con la demanda actual, que es de alrededor del 20 % por lugar (Tabla 23 y Figura 10).</p>
   <p class="caption">Tabla 23. Concentración de las recomendaciones (prueba, 606 usuarios, 30 semillas)</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Modelo</th><th>Lugar que más clientes recibirían primero</th><th class="num">Capacidad que necesitaría esa ruta</th><th class="num">Gini de las recomendaciones (por ID)</th></tr></thead>
@@ -748,7 +766,7 @@
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Capacidad = % de clientes que reciben ese lugar primero / 20 %. Gini: 0 = las recomendaciones se reparten parejo entre los 1000 IDs; 1 = todas van a uno.</p>
   <figure>
-    <figcaption>Figura 7. Concentración de las recomendaciones y capacidad necesaria por ruta</figcaption>
+    <figcaption>Figura 10. Concentración de las recomendaciones y capacidad necesaria por ruta</figcaption>
     <img src="../figures/negocio_concentracion.png" alt="A la izquierda, el porcentaje acumulado de recomendaciones top-10 según la popularidad de los destinos: la popularidad sube al 100 % de inmediato, la red y el azar suben despacio y la factorización queda por debajo. A la derecha, la capacidad necesaria en la ruta más cargada: popularidad ×5,0, red ×1,7, factorización ×1,1 y azar ×1,0.">
   </figure>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/preguntas_negocio.py</code>.</p>
@@ -956,9 +974,9 @@
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
-      <tr><td>Tarea 5 · Red neuronal</td><td>Figura de la arquitectura y curvas de aprendizaje (figuras comunes).</td></tr>
       <tr><td>Fundamentación matemática</td><td>Adaptar la teoría (factorización de matrices, BCE/BPR, métricas) al modelo final.</td></tr>
-      <tr><td>Figuras comunes</td><td>Arquitectura, curvas de aprendizaje, búsqueda de hiperparámetros, diagramas de caja de las 30 semillas.</td></tr>
+      <tr><td>Bibliografía</td><td>Verificar en la fuente primaria las referencias y la información de la página de Kaggle (fecha de la versión, cita del autor).</td></tr>
+      <tr><td>Integración</td><td>Pasar esta sección al informe común del equipo y armar la página del módulo 3 en la app con <code>src/predict.py</code>.</td></tr>
     </tbody>
   </table></div>
 </section>
