@@ -1,0 +1,21 @@
+modelo,lugar,% de clientes que lo reciben 1.º,% que lo reciben entre sus 3,factor de capacidad (1.º / 20 %)
+Azar,Goa Beaches,20.3,60.3,1.02
+Azar,Jaipur City,20.1,60.3,1.01
+Azar,Kerala Backwaters,19.8,59.9,0.99
+Azar,Leh Ladakh,19.7,59.5,0.98
+Azar,Taj Mahal,20.0,60.0,1.0
+Popularidad,Goa Beaches,0.1,50.4,0.01
+Popularidad,Jaipur City,99.5,99.7,4.97
+Popularidad,Kerala Backwaters,0.2,49.0,0.01
+Popularidad,Leh Ladakh,0.1,50.6,0.0
+Popularidad,Taj Mahal,0.1,50.3,0.01
+Factorización (BPR),Goa Beaches,18.4,56.5,0.92
+Factorización (BPR),Jaipur City,22.1,62.7,1.11
+Factorización (BPR),Kerala Backwaters,18.5,56.5,0.93
+Factorización (BPR),Leh Ladakh,20.1,63.1,1.0
+Factorización (BPR),Taj Mahal,20.8,61.3,1.04
+Red de dos torres,Goa Beaches,15.8,49.4,0.79
+Red de dos torres,Jaipur City,5.6,59.9,0.28
+Red de dos torres,Kerala Backwaters,34.1,66.1,1.7
+Red de dos torres,Leh Ladakh,28.6,73.0,1.43
+Red de dos torres,Taj Mahal,15.9,51.5,0.8

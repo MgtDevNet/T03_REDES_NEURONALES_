@@ -659,3 +659,40 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
   lugar forma una curva (por diseño: la torre del destino solo recibe el lugar y Popularity, que
   mueve el punto a lo largo de la curva). La factorización (d = 8, t-SNE) no muestra ninguna
   estructura por lugar, coherente con que no aprendió nada útil.
+
+---
+
+## Paso 10 — Preguntas de negocio (`src/preguntas_negocio.py`, 2026-11-25) ✅ calculadas
+
+### P1. Usuarios nuevos (606 de prueba simulados como nuevos; 5 pliegues; 30 semillas)
+- Para cada pliegue se borra TODO el historial de esos usuarios del entrenamiento (verificado:
+  0 interacciones aprendidas) y se les recomienda solo con su perfil.
+- Lugar@3 / Lugar@1: azar 60,1 / 19,8 %; popularidad 58,9 / 17,7 %; **regla «lo que más visita tu
+  perfil» 60,7 / 24,6 %**; red 61,5 / 21,9 %.
+- En la métrica principal (Lugar@3) ninguna supera al azar. En Lugar@1, la regla del perfil sí
+  (149 frente a 121,2 esperados; p-valor corregido = 0,007; sigue < 0,05 aun corrigiendo por las
+  3 estrategias). Red − popularidad en Lugar@3: +2,6 puntos, p-valor pareado = 0,12.
+- Respuesta: a un cliente nuevo, recomendarle según sus preferencias (lo que más visitan los de
+  su perfil), no lo más popular; la ventaja es pequeña.
+
+### P2. Concentración (modelos finales, 606 usuarios, 30 semillas)
+- % de clientes que recibirían cada lugar como 1.ª recomendación: popularidad → Jaipur City
+  99,5 % (×5,0 la demanda actual); red → Kerala 34,1 % (×1,7) y Leh Ladakh 28,6 % (×1,4), Jaipur
+  solo 5,6 %; factorización y azar ≈ 20 % cada uno (×1,0–1,1).
+- Gini de las recomendaciones top-10 por ID: azar 0,04; factorización 0,58; red 0,92; popularidad
+  0,99. Figura `figures/negocio_concentracion.png`.
+- ⚠️ **La cobertura de la factorización no significa que «reparta mejor».** Con λ = 1, cada
+  aparición de un destino en el entrenamiento encoge su vector: norma media 0,06 en los destinos
+  sin interacciones frente a 0,009 en el de 6. Resultado: el 71 % de su top-10 son destinos fríos
+  (24,5 % del catálogo). Recomienda justo lo que menos conoce. Corregir la interpretación de la
+  cobertura en la sección 6.5 del informe.
+
+### P3. Campaña de un solo destino en noviembre (red guardada; 999 clientes)
+- En temporada en noviembre: Taj Mahal, Goa, Jaipur y Kerala (Leh Ladakh no: abril–junio).
+- La red pone primero a Kerala para «City, Historical» y «Nature, Adventure» (666 clientes) y a
+  Goa para «Beaches, Historical» (333). A Taj Mahal y Jaipur no los pone primero para nadie.
+- **Kerala a esos 666 clientes:** tasa en entrenamiento 21,9 % → ≈ 146 conversiones esperadas,
+  frente a ≈ 133 si se mostrara a 666 clientes al azar (+13). Comprobación en prueba: 103 de 399
+  = 25,8 % (IC 95 %: 21,8–30,3 %), por encima del 20 %.
+- Goa a «Beaches, Historical»: 20,8 % en entrenamiento, pero 16,9 % en prueba (12,4–22,6 %): no
+  se confirma.

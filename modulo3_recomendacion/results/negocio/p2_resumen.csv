@@ -1,0 +1,5 @@
+modelo,Gini de las recomendaciones top-10 por ID,% de las recomendaciones que va al 10 % de destinos más populares,cobertura@10 (%),máximo factor de capacidad por lugar
+Azar,0.043,9.9,100.0,1.02
+Popularidad,0.985,100.0,1.6,4.97
+Factorización (BPR),0.577,1.2,91.3,1.11
+Red de dos torres,0.923,14.1,21.4,1.7

@@ -1,0 +1,5 @@
+estrategia,Lugar@3 (%),Lugar@1 (%),HitRate@10 (%),lugar@3: aciertos / esperados,lugar@3: p-valor corregido (m = 2),lugar@1: aciertos / esperados,lugar@1: p-valor corregido (m = 2)
+Azar,60.1,19.8,1.0,364 / 363.6,1.0,120 / 121.2,1.0
+Popularidad,58.9,17.7,0.64,357 / 363.6,1.0,107 / 121.2,1.0
+Regla: lo que más visita tu perfil,60.7,24.6,1.36,368 / 363.6,0.748,149 / 121.2,0.007
+Red de dos torres,61.5,21.9,0.95,373 / 363.6,0.461,133 / 121.2,0.252

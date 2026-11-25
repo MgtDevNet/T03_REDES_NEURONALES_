@@ -156,8 +156,15 @@
         <li><a href="#eval-embeddings">8.4 Embeddings de destinos</a></li>
       </ul>
     </li>
-    <li><a href="#caceria">9. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">10. Lo que falta</a></li>
+    <li><a href="#negocio">9. Preguntas de negocio</a>
+      <ul>
+        <li><a href="#neg-nuevos">9.1 Clientes nuevos</a></li>
+        <li><a href="#neg-concentracion">9.2 Concentración de la demanda</a></li>
+        <li><a href="#neg-campana">9.3 Campaña de un destino</a></li>
+      </ul>
+    </li>
+    <li><a href="#caceria">10. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">11. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -180,11 +187,11 @@
       <tr><td>Análisis descriptivo</td><td>Tarea 2 + figura de cola larga</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Partición</td><td>Tarea 3</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 7 hallazgos</span></td></tr>
+      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 8 hallazgos</span></td></tr>
       <tr><td>Modelos de referencia</td><td>Tarea 4 + figura de resultados</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Preguntas de negocio</td><td>P1, P2, P3</td><td><span class="pill no">Pendiente</span></td></tr>
+      <tr><td>Preguntas de negocio</td><td>P1, P2, P3 + figura de concentración</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill wip">Teoría escrita; falta adaptarla</span></td></tr>
     </tbody>
   </table></div>
@@ -564,7 +571,7 @@
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Banda gris: 95 % de los aciertos que produciría el azar con 606 usuarios (distribución binomial). Regenerable con <code>src/figuras_tarea4.py</code>.</p>
   <p><strong>Ningún modelo de referencia acierta más que el azar.</strong> En la Figura 3, las tres líneas quedan dentro de la banda gris para todos los K. En la Tabla 16, la popularidad acierta 7 de 606 casos y la factorización 5,7 en promedio, cuando el azar acertaría 6,1; ningún p-valor se acerca a 0,05. Dicho de otra forma: de los 469 casos en los que acertar era posible (Tabla 13), los modelos aciertan unos 6, los mismos que el azar. Por lugar ocurre lo mismo: ninguno supera el 60 % ni el 20 % del azar (pruebas binomiales con corrección de Bonferroni, m = 2; todos los p-valores corregidos son mayores que 0,4). La popularidad queda incluso un poco por debajo, porque ordena los lugares según su ID más popular (uno de Jaipur City, con 6 interacciones) y pone primero a Jaipur City, que resulta ser el lugar menos frecuente entre los destinos escondidos de prueba (16,2 %). Comparadas entre sí con una prueba pareada por usuario (permutación de signos sobre los mismos 606 usuarios), la factorización y la popularidad tampoco se distinguen (p-valor = 0,57).</p>
   <div class="callout warn"><p><strong>Una trampa al leer la Tabla 16.</strong> Los intervalos entre semillas del azar (0,77–1,06) y de la popularidad (1,07–1,24) no se solapan, y parecería que la popularidad gana. Pero esos intervalos solo miden cuánto cambia el resultado al cambiar la semilla, que en la popularidad solo decide los desempates. No tienen en cuenta que los 606 usuarios son una muestra: con 606 casos, el error por muestreo es de unos 0,40 puntos porcentuales, más que la diferencia entre los dos modelos (0,25). Por eso toda comparación entre modelos se acompaña de una prueba que trata a los usuarios como muestra.</p></div>
-  <p><strong>Lo que sí los distingue es la cobertura.</strong> La popularidad recomienda a todos casi los mismos 16 destinos (1,6 % del catálogo), la factorización reparte más (17,4 %) y el azar cubre prácticamente todo. Para el negocio, recomendar por popularidad concentraría la demanda en unas pocas rutas sin acertar más; es un insumo para la pregunta de negocio 2.</p>
+  <p><strong>Lo que sí los distingue es la cobertura.</strong> La popularidad recomienda a todos casi los mismos 16 destinos (1,6 % del catálogo) y el azar cubre prácticamente todo. La factorización cubre el 17,4 %, pero no porque reparta mejor: la regularización fuerte encoge más los vectores de los destinos que más aparecen al entrenar, así que el 71 % de su top-10 son destinos que nunca vio (frente al 24,5 % del catálogo; <code>src/diagnostico_factorizacion.py</code>). Para el negocio, recomendar por popularidad concentraría la demanda en unas pocas rutas sin acertar más; es un insumo para la pregunta de negocio 2.</p>
   <div class="callout ok"><p><strong>Conclusión de la tarea 4.</strong> Ninguna referencia supera al azar. Como la prueba con datos simulados mostró que el código aprende cuando los datos tienen una relación que permita predecir, la causa son los datos y no la implementación, lo que es coherente con el análisis descriptivo (tarea 2). La red neuronal de la tarea 5 tendrá que compararse contra estos tres modelos con las mismas pruebas, y su ventaja posible está en las variables de contenido, que no dependen de que haya caminos entre usuarios.</p></div>
 </section>
 
@@ -701,12 +708,72 @@
   <p><strong>Factorización (derecha).</strong> Sus vectores tienen 8 dimensiones y se proyectan con t-SNE. No aparece ninguna agrupación por lugar: los destinos de los cinco lugares se mezclan en una sola nube. Es coherente con que no encontró ninguna relación en los datos (sección 6).</p>
 </section>
 
-<!-- ======================= 9. CACERÍA ======================= -->
-<section id="caceria">
-  <h2>9. Cacería de la alucinación (aporte del módulo 3)</h2>
-  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 22 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+<!-- ======================= 9. PREGUNTAS DE NEGOCIO ======================= -->
+<section id="negocio">
+  <h2>9. Preguntas de negocio</h2>
+  <p>Las tres respuestas se calculan con <code>src/preguntas_negocio.py</code> (evidencia: <code>results/negocio/RESUMEN.md</code>). Como los datos casi no tienen relaciones que permitan predecir, las diferencias son pequeñas; lo que sí cambia mucho entre modelos es cómo reparten a los clientes.</p>
 
-  <p class="caption">Tabla 22. Resumen de los hallazgos del módulo 3</p>
+  <h3 id="neg-nuevos">9.1 ¿Qué recomendar a un cliente nuevo?</h3>
+  <p>Es como un mesero que atiende a alguien que entra por primera vez: puede recomendarle «lo que más se pide» o preguntarle qué le gusta. Para comparar esas estrategias simulamos que los 606 usuarios de prueba eran nuevos: los repartimos en 5 grupos y, para cada grupo, <strong>borramos todo su historial del entrenamiento</strong>, de modo que el modelo nunca los vio y solo conoce lo que pondrían en el formulario de la app. Luego miramos si el lugar al que realmente fueron aparece entre los recomendados (Tabla 22).</p>
+  <p class="caption">Tabla 22. Estrategias para clientes nuevos (606 usuarios simulados como nuevos, 30 semillas)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Estrategia</th><th class="num">Su lugar está entre los 3 recomendados (azar 60 %)</th><th class="num">p-valor corregido</th><th class="num">…y es el primero (azar 20 %)</th><th class="num">p-valor corregido</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">60,1 %</td><td class="num">1,00</td><td class="num">19,8 %</td><td class="num">1,00</td></tr>
+      <tr><td>Popularidad: «lo que más se pide»</td><td class="num">58,9 %</td><td class="num">1,00</td><td class="num">17,7 %</td><td class="num">1,00</td></tr>
+      <tr><td><strong>Regla: «lo que más visita la gente con tus gustos»</strong></td><td class="num">60,7 %</td><td class="num">0,75</td><td class="num"><strong>24,6 %</strong></td><td class="num"><strong>0,007</strong></td></tr>
+      <tr><td>Red de dos torres (solo preferencias)</td><td class="num">61,5 %</td><td class="num">0,46</td><td class="num">21,9 %</td><td class="num">0,25</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Prueba binomial unilateral para cada estrategia y cada columna. H₀: la estrategia acierta con la probabilidad del azar (60 % entre los 3; 20 % el primero). H₁: acierta más. p-valor corregido con Bonferroni (m = 2, una prueba por columna).</p>
+  <p><strong>Respuesta: recomendarle según sus preferencias, no lo más popular.</strong> La regla «lo que más visita la gente con tus gustos» acierta el primer lugar 1 de cada 4 veces, frente a 1 de cada 5 del azar, y esa diferencia es real: acierta a 149 de los 606 clientes cuando el azar acertaría a 121, y si en verdad acertara como el azar (H₀), sería muy raro acertar tantas veces (p-valor corregido = 0,007; H₁: acierta más que el azar). Es la misma relación débil entre preferencias y lugar de las secciones 3.4 y 7.1. En los 3 lugares que ve el cliente, en cambio, ninguna estrategia se distingue del azar: con solo 5 lugares, 3 ya cubren el 60 %. La popularidad es la peor opción, porque le pone a todos Jaipur City primero.</p>
+
+  <h3 id="neg-concentracion">9.2 ¿Las recomendaciones amontonan a los clientes?</h3>
+  <p>Si una agencia le dice a todo el mundo «vaya a Jaipur», los vuelos y hoteles de Jaipur se llenan y los demás quedan vacíos. Para medirlo contamos qué porcentaje de los 606 clientes recibiría cada lugar como primera recomendación y lo comparamos con la demanda actual, que es de alrededor del 20 % por lugar (Tabla 23 y Figura 6).</p>
+  <p class="caption">Tabla 23. Concentración de las recomendaciones (prueba, 606 usuarios, 30 semillas)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th>Lugar que más clientes recibirían primero</th><th class="num">Capacidad que necesitaría esa ruta</th><th class="num">Gini de las recomendaciones (por ID)</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td>todos ≈ 20 %</td><td class="num">×1,0</td><td class="num">0,04</td></tr>
+      <tr><td><strong>Popularidad</strong></td><td><strong>Jaipur City: 99,5 %</strong></td><td class="num"><strong>×5,0</strong></td><td class="num">0,99</td></tr>
+      <tr><td>Factorización (BPR)</td><td>Jaipur City: 22,1 %</td><td class="num">×1,1</td><td class="num">0,58</td></tr>
+      <tr><td>Red de dos torres</td><td>Kerala Backwaters: 34,1 % (y Leh Ladakh 28,6 %)</td><td class="num">×1,7</td><td class="num">0,92</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Capacidad = % de clientes que reciben ese lugar primero / 20 %. Gini: 0 = las recomendaciones se reparten parejo entre los 1000 IDs; 1 = todas van a uno.</p>
+  <figure>
+    <figcaption>Figura 6. Concentración de las recomendaciones y capacidad necesaria por ruta</figcaption>
+    <img src="../figures/negocio_concentracion.png" alt="A la izquierda, el porcentaje acumulado de recomendaciones top-10 según la popularidad de los destinos: la popularidad sube al 100 % de inmediato, la red y el azar suben despacio y la factorización queda por debajo. A la derecha, la capacidad necesaria en la ruta más cargada: popularidad ×5,0, red ×1,7, factorización ×1,1 y azar ×1,0.">
+  </figure>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Regenerable con <code>src/preguntas_negocio.py</code>.</p>
+  <p><strong>Respuesta: sí, la popularidad muchísimo y la red bastante.</strong> Si la empresa siguiera la recomendación por popularidad, prácticamente todos los clientes irían primero a Jaipur City: esa ruta necesitaría 5 veces su capacidad actual y las demás quedarían casi vacías. La red concentra menos, pero manda a un tercio de los clientes a Kerala (un 70 % más de cupos) y casi deja de recomendar Jaipur (5,6 %), porque recomienda lo mismo a todos los clientes de un mismo perfil. La factorización parece repartir bien, pero no por buenas razones (sección 6.5). En la práctica, antes de seguir cualquiera de estas recomendaciones habría que ponerles un límite por ruta, por ejemplo no enviar a un lugar más clientes de los que caben.</p>
+
+  <h3 id="neg-campana">9.3 Si solo pudiéramos promocionar un destino este mes, ¿a quién y cuántos irían?</h3>
+  <p>No se le muestra el anuncio de la playa a quien odia la playa: se le muestra a quien tiene más probabilidad de ir. Llamamos <strong>conversión</strong> a que un cliente que vio la promoción haga su próximo viaje a ese lugar; en adelante hablamos simplemente de <strong>viajes</strong>. Seguimos tres pasos:</p>
+  <ul>
+    <li><strong>Qué destino.</strong> Estamos en noviembre. Según <code>BestTimeToVisit</code> están en temporada el Taj Mahal, Goa, Jaipur y Kerala; Leh Ladakh no (abril a junio).</li>
+    <li><strong>A quién.</strong> A los clientes a quienes la red guardada (la de la app) les recomienda ese lugar en primer lugar.</li>
+    <li><strong>Cuántos.</strong> Clientes del grupo × proporción de los viajes de ese grupo que fueron a ese lugar en los datos de entrenamiento. Después lo comprobamos en prueba.</li>
+  </ul>
+  <p class="caption">Tabla 24. Destinos en temporada que la red recomienda primero a algún grupo (999 clientes)</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Destino</th><th>Grupo (perfil de preferencias)</th><th class="num">Clientes</th><th class="num">Tasa en entrenamiento</th><th class="num">Viajes esperados</th><th class="num">Si se mostrara a un grupo al azar</th><th class="num">Comprobación en prueba (IC 95 %)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Kerala Backwaters</strong></td><td>Nature, Adventure + City, Historical</td><td class="num">666</td><td class="num">21,9 %</td><td class="num"><strong>≈ 146</strong></td><td class="num">≈ 133</td><td class="num">25,8 % (21,8–30,3 %)</td></tr>
+      <tr><td>Goa Beaches</td><td>Beaches, Historical</td><td class="num">333</td><td class="num">20,8 %</td><td class="num">≈ 69</td><td class="num">≈ 65</td><td class="num">16,9 % (12,4–22,6 %)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/negocio/RESUMEN.md</code>. El Taj Mahal y Jaipur están en temporada, pero la red no los pone primero para ningún perfil. «Grupo al azar»: el mismo número de clientes con la tasa de todos los clientes (19,9 % para Kerala y 19,5 % para Goa).</p>
+  <p><strong>Respuesta: promocionar Kerala Backwaters a los clientes de los perfiles «Nature, Adventure» y «City, Historical».</strong> Son 666 clientes y esperaríamos unos 146 viajes a Kerala, unos 13 más que si el anuncio se mostrara a 666 clientes al azar. En prueba se confirma: el 25,8 % de ese grupo fue a Kerala, y el intervalo de confianza (21,8–30,3 %) queda por encima del 20 %. Goa para «Beaches, Historical», en cambio, no se confirma en prueba (16,9 %).</p>
+  <div class="callout warn"><p><strong>Supuestos.</strong> (1) Un viaje cuenta si el próximo viaje del cliente es a ese lugar. (2) El anuncio no cambia lo que la gente haría de todos modos: estimamos quién tiene más propensión a ir, no cuántos viajes adicionales genera la campaña. (3) Cada cliente hace un viaje en el mes. (4) El público son los 999 clientes del conjunto. (5) Los datos son sintéticos, así que las cifras ilustran el método, no la demanda real.</p></div>
+</section>
+
+<!-- ======================= 10. CACERÍA ======================= -->
+<section id="caceria">
+  <h2>10. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 25 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+
+  <p class="caption">Tabla 25. Resumen de los hallazgos del módulo 3</p>
   <div class="table-wrap"><table>
     <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
     <tbody>
@@ -717,6 +784,7 @@
       <tr><td>5</td><td>Hipótesis enunciadas con dirección («más») contrastadas con pruebas sin dirección</td><td>Matemáticas (estadística)</td><td><span class="pill wip">Media</span></td></tr>
       <tr><td>6</td><td>Afirmaciones del informe que no coincidían con sus propias tablas</td><td>Datos del mundo real (resultados del trabajo)</td><td><span class="pill wip">Media</span></td></tr>
       <tr><td>7</td><td>«Confirmar con 30 semillas» como si bastara para comparar modelos</td><td>Conceptos (estadística)</td><td><span class="pill no">Alta</span></td></tr>
+      <tr><td>8</td><td>La cobertura de la factorización interpretada como una virtud («reparte más»)</td><td>Conceptos (interpretación de un resultado)</td><td><span class="pill wip">Media</span></td></tr>
     </tbody>
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23 al 25-nov-2026.</p>
@@ -848,6 +916,24 @@
     </dl>
   </div>
 
+  <div class="finding">
+    <h4>Hallazgo 8. La cobertura de la factorización interpretada como una virtud</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>escribela pues a partir de ella es que lo revisaré, te preguntaré y si es necesario para que hagamos cambios</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd>En la sección 6.5 escribió:<blockquote>La popularidad recomienda a todos casi los mismos 16 destinos (1,6 % del catálogo), la factorización reparte más (17,4 %) y el azar cubre prácticamente todo.</blockquote></dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Al responder la pregunta de negocio 2, la factorización mostró un patrón raro: solo el 1,2 % de sus recomendaciones iba al 10 % de destinos más populares, mucho menos que el azar (9,9 %). Un modelo que «reparte bien» no debería evitar lo popular.</dd>
+      <dt>Evidencia</dt>
+      <dd>Con λ = 1, cada aparición de un destino en el entrenamiento suma un castigo a su vector, así que los destinos más vistos terminan con los vectores más pequeños: norma media 0,060 en los 245 destinos sin interacciones y 0,009 en el que tiene 6. Por eso el 71 % del top-10 son destinos que el modelo nunca vio, que son solo el 24,5 % del catálogo (<code>src/diagnostico_factorizacion.py</code>).</dd>
+      <dt>Corrección</dt>
+      <dd>«La factorización cubre el 17,4 %, pero no porque reparta mejor: […] el 71 % de su top-10 son destinos que nunca vio».</dd>
+      <dt>Lección</dt>
+      <dd>Antes de interpretar una métrica como buena, hay que mirar por qué el modelo produce ese número. Una cobertura alta puede venir de recomendar justo lo que el modelo menos conoce.</dd>
+    </dl>
+  </div>
+
   <h3>Verificaciones hechas que no encontraron error</h3>
   <p>El enunciado pide documentar también las verificaciones. Estas confirmaron lo que había dicho la IA:</p>
   <ul>
@@ -860,14 +946,11 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>10. Lo que falta</h2>
+  <h2>11. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
       <tr><td>Tarea 5 · Red neuronal</td><td>Figura de la arquitectura y curvas de aprendizaje (figuras comunes).</td></tr>
-      <tr><td>P1 · Usuarios nuevos</td><td>Simular el arranque en frío con los 606 usuarios de prueba; comparar ≥ 2 estrategias.</td></tr>
-      <tr><td>P2 · Concentración</td><td>Gini de las recomendaciones (por ID y por lugar) y efecto en la capacidad de las rutas.</td></tr>
-      <tr><td>P3 · Campaña</td><td>Grupo objetivo y conversiones esperadas, con los supuestos explícitos.</td></tr>
       <tr><td>Fundamentación matemática</td><td>Adaptar la teoría (factorización de matrices, BCE/BPR, métricas) al modelo final.</td></tr>
       <tr><td>Figuras comunes</td><td>Arquitectura, curvas de aprendizaje, búsqueda de hiperparámetros, diagramas de caja de las 30 semillas.</td></tr>
     </tbody>
@@ -881,7 +964,7 @@
   <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
   <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
   <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the 25th Conference on Uncertainty in Artificial Intelligence (UAI)</em>.</p>
-  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 9.</p></div>
+  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 10.</p></div>
 </section>
 </main>
 </div>

@@ -367,7 +367,8 @@ si el modelo puede siquiera darle puntaje al destino escondido [T4-1]:
 💡 **Conclusión de la tarea 4:** ninguna referencia supera al azar, y como la prueba de juguete
 demostró que el código aprende cuando hay señal, la causa son los datos (coherente con la
 tarea 2). Lo que sí las distingue es la **cobertura**: la popularidad concentra todo en ~16
-destinos; la factorización reparte más; el azar cubre todo.
+destinos; la factorización cubre más, pero porque el 71 % de su top-10 son destinos que nunca vio
+(hallazgo 8); el azar cubre todo.
 - 💡 **Cobertura:** la popularidad recomienda a todos casi los mismos ~16 destinos (cobertura
   1,6 %), el azar cubre casi todo el catálogo. Dato para la pregunta de negocio 2: la popularidad
   concentraría la demanda en pocas rutas sin acertar más.
@@ -406,7 +407,20 @@ destinos; la factorización reparte más; el azar cubre todo.
 - Embeddings: red (d = 2) sin proyectar, una curva por lugar (por diseño); factorización con t-SNE,
   sin estructura.
 
-## Preguntas de negocio
+## Preguntas de negocio — ✅ borrador en el informe (sección 9)
+> Evidencia: `results/negocio/RESUMEN.md`; detalle en `DECISIONES.md`, paso 10.
+- **P1, clientes nuevos** (606 de prueba simulados como nuevos, borrando su historial): recomendar
+  según sus preferencias. La regla «lo que más visita la gente con tus gustos» acierta el primer
+  lugar el 24,6 % (azar 20 %; p-valor corregido = 0,007; H₀: acierta como el azar). Entre los 3
+  lugares, ninguna estrategia supera al azar. La popularidad es la peor (pone Jaipur primero).
+- **P2, concentración:** la popularidad manda al 99,5 % de los clientes a Jaipur primero (×5 la
+  capacidad); la red, un 34 % a Kerala (×1,7). La factorización «reparte» porque recomienda lo que
+  nunca vio (hallazgo 8). Sugerencia: poner un límite de clientes por ruta.
+- **P3, campaña en noviembre:** Kerala para «Nature, Adventure» + «City, Historical» (666 clientes):
+  ≈ 146 viajes esperados frente a ≈ 133 con un grupo al azar; en prueba, 25,8 % (IC 21,8–30,3 %).
+  «Conversión» = el próximo viaje del cliente es a ese lugar (en el texto se dice «viajes»).
+  Supuestos explícitos en el informe.
+
 - ⏳ P1 (usuarios nuevos): 💡 explicar el arranque en frío con la analogía del bibliotecario
   (teoría, sección 13). Simulación: a los 606 usuarios de prueba se les oculta el historial y se
   recomienda solo con el perfil; el ejemplo es la usuaria 1. Estrategias para comparar:
@@ -414,7 +428,7 @@ destinos; la factorización reparte más; el azar cubre todo.
   sin ID.
 - ⏳ P2 (concentración), P3 (campaña).
 
-## Cacería de la alucinación — ✅ BORRADOR (7 hallazgos del módulo 3)
+## Cacería de la alucinación — ✅ BORRADOR (8 hallazgos del módulo 3)
 
 > ⚠️ **Definición correcta (enunciado, pp. 9–10):** errores que generó **una IA** durante el
 > trabajo, no errores de los datos. Cada hallazgo debe incluir: prompt literal, respuesta de la IA,
@@ -453,6 +467,10 @@ Redacción completa, con los prompts literales, en `informe/index.html`, secció
    diferencias pequeñas se confirmaban con 30 semillas; las semillas no miden el muestreo de
    usuarios (error ≈ 0,40 puntos frente a una diferencia de 0,25 entre popularidad y azar;
    binomial p-valor = 0,41). Corrección: semillas + pruebas que tratan a los usuarios como muestra.
+8. **Cobertura de la factorización como virtud (Conceptos, media):** la sección 6.5 decía «la
+   factorización reparte más (17,4 %)». Con λ = 1 los destinos más vistos tienen vectores más
+   pequeños, y el 71 % de su top-10 son destinos nunca vistos (24,5 % del catálogo). Detectado al
+   responder la pregunta 2 (solo 1,2 % de sus recomendaciones a lo popular).
 
 - ✅ Verificaciones sin error: el 40 % esperado (recalculado: 40,1 %), Poisson como referencia,
   partición sin fugas.

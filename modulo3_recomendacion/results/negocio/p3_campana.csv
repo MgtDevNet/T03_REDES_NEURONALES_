@@ -1,0 +1,6 @@
+lugar,temporada,¿en temporada en noviembre?,clientes del grupo (la red se lo recomienda 1.º),perfiles del grupo,tasa en entrenamiento (%),tasa en todos los clientes (%),conversiones esperadas en el grupo,conversiones si se mostrara a un grupo al azar del mismo tamaño,comprobación en prueba: aciertos / usuarios,comprobación en prueba: tasa (%) e IC 95 %
+Goa Beaches,Nov-Mar,sí,333,"Beaches, Historical (333)",20.8,19.5,69.1,64.8,35 / 207,16.9 (12.4–22.6)
+Jaipur City,Oct-Mar,sí,0,,,,,,,
+Kerala Backwaters,Sep-Mar,sí,666,"Nature, Adventure (333); City, Historical (333)",21.9,19.9,145.6,132.5,103 / 399,25.8 (21.8–30.3)
+Leh Ladakh,Apr-Jun,no,0,,,,,,,
+Taj Mahal,Nov-Feb,sí,0,,,,,,,
