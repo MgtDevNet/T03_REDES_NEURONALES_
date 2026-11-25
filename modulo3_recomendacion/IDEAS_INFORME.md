@@ -486,7 +486,13 @@ Redacción completa, con los prompts literales, en `informe/index.html`, secció
 - 💡 Riesgo si se implementara: recomendar siempre los mismos destinos podría saturar rutas
   (conexión con el módulo 1) y reducir la diversidad de lo que ven los clientes.
 
-## Fundamentación matemática
-- ✅ Borrador en `teoria/01_fundamentos_sistemas_recomendacion.md` (factorización de matrices,
-  derivación de BCE y BPR, NCF y dos torres, métricas). Falta adaptarlo al formato del informe una
-  vez elegido el modelo final.
+## Fundamentación matemática — ✅ borrador en el informe (sección 10)
+- 10.1 Factorización: R ≈ PQᵀ, s = p_u · q_i, 1999·d parámetros.
+- 10.2 Dos torres: u = W₂ ReLU(W₁x + b₁) + b₂; v = V₂ ReLU(V₁[e_lugar; z] + c₁) + c₂; s = u · v
+  (238 parámetros con d = 2). La factorización es el caso en que cada torre es una tabla por ID.
+- 10.3 BCE: Bernoulli con P(y = 1) = σ(s) y negativos muestreados → −log verosimilitud. BPR:
+  P(i ≻ j) = σ(s_ui − s_uj) + previa normal → MAP con λ = 1/(2σ²). La regularización se aplica por
+  trío (como Rendle et al.), causa del hallazgo 8. Con puntajes ≈ 0, ambas pérdidas valen ln 2.
+- 10.4 Precision, Recall, NDCG (IDCG = 1 con un relevante), cobertura y métricas por lugar.
+- En 7.2 se dejó solo la justificación corta de la pérdida, con referencia a 10.3.
+- La versión larga, con más explicación, sigue en `teoria/01_fundamentos_sistemas_recomendacion.md`.

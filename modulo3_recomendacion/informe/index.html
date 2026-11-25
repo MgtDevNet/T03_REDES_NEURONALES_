@@ -163,8 +163,9 @@
         <li><a href="#neg-campana">9.3 Campaña de un destino</a></li>
       </ul>
     </li>
-    <li><a href="#caceria">10. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">11. Lo que falta</a></li>
+    <li><a href="#fundamentacion">10. Fundamentación matemática</a></li>
+    <li><a href="#caceria">11. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">12. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -192,7 +193,7 @@
       <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3 + figura de concentración</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill wip">Teoría escrita; falta adaptarla</span></td></tr>
+      <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill ok">Borrador listo</span></td></tr>
     </tbody>
   </table></div>
 </section>
@@ -511,7 +512,7 @@
     <li><strong>Popularidad.</strong> El puntaje de un destino es su número de interacciones en lo aprendido, y a todos los usuarios se les recomienda lo mismo. No usamos la columna <code>Popularity</code> del conjunto, porque no tiene relación con las interacciones (hipótesis 5, Tabla 10).</li>
     <li><strong>Factorización de matrices con BPR.</strong> Cada usuario \(u\) y cada destino \(i\) tienen un vector de \(d\) números que se aprende, y el puntaje es su producto punto, \(\hat y_{ui} = \mathbf p_u^\top \mathbf q_i\). Para entrenar se forman tríos \((u, i, j)\): \(i\) es un destino que \(u\) visitó y \(j\) uno que no, escogido al azar. La pérdida
       <div class="math-block">$$\mathcal L = -\ln \sigma\!\left(\hat y_{ui} - \hat y_{uj}\right) + \lambda\left(\lVert\mathbf p_u\rVert^2 + \lVert\mathbf q_i\rVert^2 + \lVert\mathbf q_j\rVert^2\right)$$</div>
-      premia que lo visitado quede por encima de lo no visitado, que es justo lo que mide un top-K (Rendle et al., 2009). El segundo término, la regularización, castiga los vectores grandes para que el modelo no memorice. Tiene \((999 + 1000)\,d\) parámetros entrenables.</li>
+      premia que lo visitado quede por encima de lo no visitado, que es justo lo que mide un top-K (Rendle et al., 2009). El segundo término, la regularización, castiga los vectores grandes para que el modelo no memorice. Tiene \((999 + 1000)\,d\) parámetros entrenables. La formulación completa y la derivación de la pérdida están en la sección 10.</li>
   </ul>
   <p><strong>Cómo se evalúan, igual para los tres.</strong> Todos se miden con el mismo código (<code>src/evaluacion.py</code>). Para cada usuario se ordenan los <strong>1000 destinos completos</strong>, sin muestrear y sin contar los destinos (IDs) que el usuario ya tiene en lo aprendido: no se le vuelven a recomendar, aunque sí otros IDs del mismo lugar; los empates se rompen al azar; y se busca en qué posición quedó el destino escondido. Como cada usuario tiene un solo destino escondido, HitRate@K y Recall@K coinciden (1 si el destino está entre los K primeros), Precision@K es HitRate@K / K y NDCG@K vale \(1/\log_2(\text{posición} + 2)\) si hay acierto, de modo que premia acertar arriba. La cobertura@K es el porcentaje de los 1000 destinos que aparece en algún top-K. Como el cliente ve <strong>lugares</strong> y no IDs (decisión 1), también medimos por lugar: cada lugar recibe el mejor puntaje de sus IDs, se ordenan los 5 lugares y se mira si el lugar del destino escondido está entre los 3 que vería el cliente (HitRate@3 por lugar, la métrica principal; el azar da 60 %) o si queda primero (HitRate@1 por lugar; el azar da 20 %). Estas métricas se fijaron antes de entrenar la red y se aplican igual a todos los modelos. Cada modelo se corre con 30 semillas. El evaluador se probó con un ejemplo calculado a mano, con empates y con el azar en los datos reales (<code>src/probar_evaluacion.py</code>).</p>
 
@@ -613,13 +614,7 @@
   <p class="source">Fuente: elaboración propia. Regenerable con <code>src/figuras_comunes.py</code>, que comprueba que la suma de parámetros coincide con la del modelo guardado.</p>
   <p><strong>Dimensión \(d \in \{2, 4, 8\}\).</strong> Solo hay 3 perfiles de preferencias y 5 lugares: la tabla perfil × lugar tiene a lo sumo rango 3, así que unas pocas dimensiones bastan para representar cualquier relación entre ellos, y más dimensiones solo darían capacidad para sobreajustar.</p>
   <p><strong>Negativos.</strong> Para cada interacción observada se toman \(k \in \{1, 4\}\) destinos que el usuario no tiene, al azar y con la misma probabilidad entre los 1000 IDs. Muestrear según la popularidad, la alternativa habitual, daría prácticamente lo mismo, porque el catálogo es parejo (sección 3.2).</p>
-  <p><strong>Pérdida: dos opciones, cada una derivada de un modelo probabilístico.</strong></p>
-  <ul>
-    <li><strong>BCE con negativos.</strong> Cada par (usuario, destino) se trata como una moneda: \(P(y = 1) = \sigma(s)\), con \(y = 1\) si lo visitó y \(y = 0\) si es un negativo. La verosimilitud es \(\prod \sigma(s)^{y}\,(1-\sigma(s))^{1-y}\), y minimizar su logaritmo negativo da
-      <div class="math-block">$$\mathcal L_{\text{BCE}} = -\left[\,y \ln \sigma(s) + (1-y)\ln\left(1-\sigma(s)\right)\right].$$</div></li>
-    <li><strong>BPR.</strong> Se modela la probabilidad de que el usuario prefiera el destino visitado \(i\) sobre un negativo \(j\) como \(\sigma(s_{ui} - s_{uj})\), y su logaritmo negativo es la pérdida de la factorización (sección 6.2):
-      <div class="math-block">$$\mathcal L_{\text{BPR}} = -\ln \sigma\left(s_{ui} - s_{uj}\right).$$</div></li>
-  </ul>
+  <p><strong>Pérdida.</strong> Comparamos dos, cada una derivada de un modelo probabilístico (sección 10.3): <strong>BCE con negativos</strong>, que trata cada par (usuario, destino) como una moneda «visitó / no visitó», y <strong>BPR</strong>, que modela la probabilidad de preferir el destino visitado sobre uno no visitado.</p>
   <p>BCE intenta acertar cada par por separado; BPR solo pide ordenar bien. Las dos entran en el ajuste. El resto se fija: Adam con tasa 0,01 y decaimiento de pesos 10⁻⁴, lotes de 256 y hasta 200 épocas, con parada cuando HitRate@3 por lugar en validación no mejora en 10 épocas.</p>
 
   <h3 id="red-simulados">7.3 Prueba con datos simulados</h3>
@@ -792,9 +787,40 @@
   <div class="callout warn"><p><strong>Supuestos.</strong> (1) Un viaje cuenta si el próximo viaje del cliente es a ese lugar. (2) El anuncio no cambia lo que la gente haría de todos modos: estimamos quién tiene más propensión a ir, no cuántos viajes adicionales genera la campaña. (3) Cada cliente hace un viaje en el mes. (4) El público son los 999 clientes del conjunto. (5) Los datos son sintéticos, así que las cifras ilustran el método, no la demanda real.</p></div>
 </section>
 
-<!-- ======================= 10. CACERÍA ======================= -->
+<!-- ======================= 10. FUNDAMENTACIÓN ======================= -->
+<section id="fundamentacion">
+  <h2>10. Fundamentación matemática</h2>
+  <p>Notación: \(\mathcal U\) son los 999 usuarios y \(\mathcal I\) los 1000 destinos; \(\mathcal D^+\) es el conjunto de pares \((u, i)\) observados en lo aprendido; \(\sigma(x) = 1/(1 + e^{-x})\) es la función sigmoide.</p>
+
+  <h3>10.1 Factorización de matrices</h3>
+  <p>La matriz de interacciones \(R \in \{0,1\}^{|\mathcal U| \times |\mathcal I|}\) se aproxima por el producto de dos matrices delgadas, \(R \approx P Q^\top\), con \(P \in \mathbb R^{|\mathcal U| \times d}\) y \(Q \in \mathbb R^{|\mathcal I| \times d}\). Cada usuario tiene un vector \(\mathbf p_u\) (fila de \(P\)), cada destino un vector \(\mathbf q_i\), y el puntaje es</p>
+  <div class="math-block">$$s_{ui} = \mathbf p_u^\top \mathbf q_i = \sum_{f=1}^{d} p_{uf}\, q_{if}, \qquad \text{parámetros: } (|\mathcal U| + |\mathcal I|)\,d = 1999\,d.$$</div>
+
+  <h3>10.2 Red de dos torres</h3>
+  <p>Cada torre es una red con una capa oculta de \(h = 16\) neuronas y activación ReLU. La del usuario recibe sus preferencias \(\mathbf x_u \in \{0,1\}^5\); la del destino recibe el embedding de su lugar \(\mathbf e_{\ell(i)} \in \mathbb R^{d}\) junto con su <code>Popularity</code> estandarizada \(z_i\):</p>
+  <div class="math-block">$$\mathbf u = W_2\,\mathrm{ReLU}(W_1 \mathbf x_u + \mathbf b_1) + \mathbf b_2, \qquad \mathbf v_i = V_2\,\mathrm{ReLU}\!\left(V_1 [\mathbf e_{\ell(i)};\, z_i] + \mathbf c_1\right) + \mathbf c_2, \qquad s_{ui} = \mathbf u^\top \mathbf v_i .$$</div>
+  <p>Con \(d = 2\): \(W_1 \in \mathbb R^{16 \times 5}\), \(W_2 \in \mathbb R^{2 \times 16}\), \(V_1 \in \mathbb R^{16 \times 3}\), \(V_2 \in \mathbb R^{2 \times 16}\) y la tabla de embeddings de \(5 \times 2\): 238 parámetros en total (Figura 4). La factorización es el caso particular en que cada torre es solo una tabla de vectores indexada por el ID.</p>
+
+  <h3>10.3 Derivación de las pérdidas</h3>
+  <p><strong>BCE con muestreo de negativos.</strong> Se supone que cada par es una variable de Bernoulli: \(y_{ui} = 1\) si el usuario interactuó con el destino, con \(P(y_{ui} = 1) = \sigma(s_{ui})\). Como no observamos los «no», para cada par observado \((u, i) \in \mathcal D^+\) se toman \(k\) destinos \(j\) al azar que el usuario no tiene y se tratan como \(y_{uj} = 0\) (conjunto \(\mathcal D^-\)). Suponiendo independencia, la verosimilitud es</p>
+  <div class="math-block">$$\mathcal L(\theta) = \prod_{(u,i) \in \mathcal D^+} \sigma(s_{ui}) \prod_{(u,j) \in \mathcal D^-} \bigl(1 - \sigma(s_{uj})\bigr),$$</div>
+  <p>y maximizarla equivale a minimizar su logaritmo negativo, que es la entropía cruzada binaria:</p>
+  <div class="math-block">$$-\ln \mathcal L(\theta) = -\sum_{(u,i) \in \mathcal D^+} \ln \sigma(s_{ui}) \;-\; \sum_{(u,j) \in \mathcal D^-} \ln\bigl(1 - \sigma(s_{uj})\bigr).$$</div>
+  <p><strong>BPR.</strong> Se modela la preferencia por pares: la probabilidad de que el usuario \(u\) prefiera el destino visitado \(i\) sobre uno no visitado \(j\) es \(P(i \succ_u j) = \sigma(s_{ui} - s_{uj})\). Si además se pone sobre los parámetros una distribución previa normal, \(\theta \sim \mathcal N(0, \sigma_\theta^2 I)\), el máximo a posteriori minimiza</p>
+  <div class="math-block">$$-\ln p(\theta \mid \mathcal D) = -\sum_{(u,i,j)} \ln \sigma(s_{ui} - s_{uj}) \;+\; \lambda \lVert \theta \rVert^2 + \text{cte.}, \qquad \lambda = \frac{1}{2\sigma_\theta^2}.$$</div>
+  <p>El segundo término es la regularización de la factorización (sección 6.2): pedir \(\lambda\) grande equivale a creer de antemano que los vectores son pequeños (Rendle et al., 2009). En la práctica, como en Rendle et al., el término se aplica en cada trío a los tres vectores que intervienen, \(\lambda(\lVert\mathbf p_u\rVert^2 + \lVert\mathbf q_i\rVert^2 + \lVert\mathbf q_j\rVert^2)\); por eso un destino que aparece en muchos tríos se regulariza más, que es la causa del efecto descrito en la sección 6.5. En la red, el decaimiento de pesos de Adam cumple el mismo papel. Si todos los puntajes quedan cerca de 0, \(\sigma(s) \approx 1/2\) y cada término de las dos pérdidas vale \(\ln 2 \approx 0{,}693\), la pérdida de adivinar con una moneda al aire; es lo que muestran las curvas de la Figura 6.</p>
+
+  <h3>10.4 Métricas</h3>
+  <p>Para cada usuario evaluado \(u\), sea \(L_u(K)\) su lista de los \(K\) primeros destinos (sin los que ya tiene en lo aprendido) y \(\mathcal R_u\) sus destinos relevantes, aquí el destino escondido, así que \(|\mathcal R_u| = 1\). Con \(\mathrm{rel}_r = 1\) si el destino en la posición \(r\) es relevante:</p>
+  <div class="math-block">$$\text{Precision@}K = \frac{|L_u(K) \cap \mathcal R_u|}{K}, \qquad \text{Recall@}K = \frac{|L_u(K) \cap \mathcal R_u|}{|\mathcal R_u|}, \qquad \text{NDCG@}K = \frac{\sum_{r=1}^{K} \mathrm{rel}_r / \log_2(r + 1)}{\text{IDCG@}K}.$$</div>
+  <p>Cada métrica se promedia sobre los usuarios. Con un solo relevante, \(\text{IDCG@}K = 1\), Recall@K coincide con HitRate@K, Precision@K = Recall@K / K, y NDCG@K vale \(1/\log_2(r+1)\) si el destino escondido quedó en la posición \(r \le K\) y 0 si no. La cobertura mide qué parte del catálogo llega a recomendarse:</p>
+  <div class="math-block">$$\text{Cobertura@}K = \frac{\bigl|\bigcup_{u} L_u(K)\bigr|}{|\mathcal I|}.$$</div>
+  <p>Las métricas por lugar aplican la misma idea a los 5 lugares: el puntaje de un lugar es el máximo de los puntajes de sus IDs, y HitRate@K por lugar vale 1 si el lugar del destino escondido está entre los \(K\) primeros lugares.</p>
+</section>
+
+<!-- ======================= 11. CACERÍA ======================= -->
 <section id="caceria">
-  <h2>10. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <h2>11. Cacería de la alucinación (aporte del módulo 3)</h2>
   <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 25 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
 
   <p class="caption">Tabla 25. Resumen de los hallazgos del módulo 3</p>
@@ -970,11 +996,10 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>11. Lo que falta</h2>
+  <h2>12. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
-      <tr><td>Fundamentación matemática</td><td>Adaptar la teoría (factorización de matrices, BCE/BPR, métricas) al modelo final.</td></tr>
       <tr><td>Bibliografía</td><td>Verificar en la fuente primaria las referencias y la información de la página de Kaggle (fecha de la versión, cita del autor).</td></tr>
       <tr><td>Integración</td><td>Pasar esta sección al informe común del equipo y armar la página del módulo 3 en la app con <code>src/predict.py</code>.</td></tr>
     </tbody>
@@ -988,7 +1013,7 @@
   <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
   <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
   <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the 25th Conference on Uncertainty in Artificial Intelligence (UAI)</em>.</p>
-  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 10.</p></div>
+  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 11.</p></div>
 </section>
 </main>
 </div>
