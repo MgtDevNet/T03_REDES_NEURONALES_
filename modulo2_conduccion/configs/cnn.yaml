@@ -1,0 +1,48 @@
+# Punto 5: redes neuronales (train_cnn.py y evaluate_cnn.py). Rutas relativas a modulo2_conduccion/
+seed: 42
+device: auto              # cuda si hay GPU; si no, cpu
+threads: 2
+workers: 2                # en Windows, si da problemas, usar 0
+batch_size: 64
+patience: 6               # épocas sin mejora del F1 macro de validación
+startup_trials: 8         # trials aleatorios antes de que TPE empiece a modelar
+limit_per_class_split: 0  # 0 = todas las imágenes
+cache_dir: data/processed/img256          # caché local (no se sube a git)
+demo_cache_dir: data/processed/demo_img256
+export_demo_per_class_split: 8            # muestra versionada para el modo demo
+
+scratch:                  # (a) CNN desde cero
+  trials: 25
+  epochs: 40
+  size: 160
+  lr: [1.0e-4, 3.0e-3]
+  widths: [16, 32, 48]    # filtros del primer bloque (se duplican por bloque)
+  depth: [3, 5]           # número de bloques convolucionales
+
+transfer:                 # (b) ajuste fino
+  trials: 20
+  epochs: 15
+  size: 224
+  lr: [1.0e-5, 3.0e-3]
+  archs: [mobilenet_v3_small, mobilenet_v3_large, efficientnet_b0]
+  backbone_mult: [0.01, 1.0]   # tasa del backbone = lr × backbone_mult
+
+search_space:
+  weight_decay: [1.0e-6, 5.0e-2]
+  optimizers: [adamw, sgd]
+  dropout: [0.0, 0.5]
+  aug: [light, strong]
+  label_smoothing: [0.0, 0.15]
+  class_weights: [false, true]
+
+final_seeds: 30           # configuración final con 30 semillas (reglas del equipo)
+
+alert:                    # pregunta de negocio 1
+  classes: [texting_phone, talking_phone, other_activities]   # giro y conducción segura: sin alerta
+  cost_missed: 3          # costo relativo de una distracción no detectada
+  cost_false_alarm: 1     # costo relativo de una falsa alarma
+  threshold_step: 0.01
+
+gradcam_mean_per_class: 40
+sanity_images: 20
+boxes: data/processed/cajas_conductor.csv  # opcional: cajas del conductor anotadas a mano
