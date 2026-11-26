@@ -1,0 +1,7 @@
+# Dependencias de la app (Streamlit). Cada módulo agrega aquí lo que necesite su predict.py.
+# PyTorch solo-CPU (más liviano para servidores gratuitos):
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit==1.66.1
+pandas==3.1.1
+numpy==2.3.5
+torch==2.8.0
