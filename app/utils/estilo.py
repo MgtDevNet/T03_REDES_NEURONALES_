@@ -1,4 +1,4 @@
-"""Identidad visual de la app «Rumbo»: nombre, logo, imágenes, estilos y créditos.
+"""Identidad visual de la app «TravesIA»: nombre, logo, imágenes, estilos y créditos.
 
 Las imágenes están en app/assets/img/ (descargadas una vez de Wikimedia Commons, con licencia
 libre; ver app/assets/CREDITOS.md), así que la app no depende de internet.
@@ -11,7 +11,8 @@ import streamlit as st
 
 APP = Path(__file__).resolve().parents[1]
 ASSETS = APP / "assets"
-NOMBRE = "Rumbo"
+NOMBRE = "TravesIA"
+NOMBRE_HTML = 'Traves<span style="color:#f97366">IA</span>'  # la «IA» resaltada en coral
 LEMA = "Viaja con inteligencia"
 LOGO = ASSETS / "logo.svg"
 

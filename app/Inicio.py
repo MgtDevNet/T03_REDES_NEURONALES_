@@ -1,4 +1,4 @@
-"""Página de inicio de Rumbo, la app del Trabajo 3.
+"""Página de inicio de TravesIA, la app del Trabajo 3.
 
 Levantar localmente, desde la raíz del repositorio:
     streamlit run app/Inicio.py
@@ -6,17 +6,17 @@ Levantar localmente, desde la raíz del repositorio:
 
 import streamlit as st
 
-from utils.estilo import LEMA, NOMBRE, configurar_pagina, creditos, portada, tarjeta
+from utils.estilo import LEMA, NOMBRE, NOMBRE_HTML, configurar_pagina, creditos, portada, tarjeta
 from utils.modulos import ENLACES, estado_modulo
 
 configurar_pagina("Inicio")
 
-portada(f"{NOMBRE}", f"{LEMA}. Pronosticamos cuántos viajarán, cuidamos a quien conduce "
+portada(NOMBRE_HTML, f"{LEMA}. Pronosticamos cuántos viajarán, cuidamos a quien conduce "
         "y te recomendamos tu próximo destino.", "kerala")
 
-st.markdown("### ¿Qué es Rumbo?")
+st.markdown(f"### ¿Qué es {NOMBRE}?")
 st.write(
-    "Rumbo es el sistema inteligente de una empresa de transporte intermunicipal de pasajeros. "
+    f"{NOMBRE} es el sistema inteligente de una empresa de transporte intermunicipal de pasajeros. "
     "Reúne en un solo lugar tres herramientas construidas con redes neuronales para resolver tres "
     "retos de la empresa: saber cuántas personas viajarán y con qué buses y conductores atenderlas, "
     "detectar a tiempo cuándo un conductor maneja distraído, y ofrecer a cada cliente destinos de "
@@ -57,7 +57,7 @@ for col, (titulo, texto) in zip(pasos, textos):
 
 st.markdown("### Sobre el proyecto")
 st.write(
-    "Rumbo es el Trabajo 3 del curso *Redes neuronales y algoritmos bioinspirados* de la Universidad Nacional "
+    f"{NOMBRE} es el Trabajo 3 del curso *Redes neuronales y algoritmos bioinspirados* de la Universidad Nacional "
     "de Colombia, Facultad de Minas (semestre 2026-02). Todos los modelos están guardados en el repositorio: "
     "la app los usa directamente, sin volver a entrenarlos."
 )
