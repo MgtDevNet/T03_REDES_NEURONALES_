@@ -5,6 +5,13 @@ Aman Mehra, Kaggle: https://www.kaggle.com/datasets/amanmehra23/travel-recommend
 
 Ver el enunciado completo en `docs/instrucciones_trabajo_3.pdf` (páginas 5–7).
 
+## Datos
+
+Los 4 CSV originales (≈ 178 KB) están versionados en `data/raw/`, copiados sin cambios del zip
+de Kaggle (Mehra, 2024, versión 1 del 23-ene-2024), para que todo corra sin internet. Se agregaron
+con `git add -f` porque el `.gitignore` del equipo excluye `data/raw/` en general.
+`src/preprocesar.py` genera `data/processed/` a partir de ellos.
+
 ## Entorno
 
 Python **3.12** con las mismas versiones que el módulo 2. Desde la raíz del repo `T03`:
