@@ -6,10 +6,11 @@ Se activa cuando exista modulo1_demanda/src/predict.py con la función `predecir
 
 import streamlit as st
 
+from utils.estilo import configurar_pagina, creditos, portada
 from utils.modulos import estado_modulo
 
-st.set_page_config(page_title="Demanda y operación", page_icon="🚌", layout="wide")
-st.title("1. Pronóstico de demanda y planeación de la operación")
+configurar_pagina("Demanda y operación")
+portada("Demanda y operación", "Cuántos pasajeros viajarán y con qué buses y conductores atenderlos.", "terminal")
 
 listo, mensaje = estado_modulo(1)
 if not listo:
@@ -19,6 +20,7 @@ if not listo:
         "el pronóstico a 30 días con su banda de incertidumbre, la flota y los conductores "
         "requeridos, y cómo cambian al modificar la ocupación objetivo y el cuantil usado."
     )
+    creditos(["terminal"])
     st.stop()
 
 st.warning("El módulo 1 ya tiene su predict.py, pero esta página todavía no muestra sus resultados.")

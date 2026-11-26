@@ -9,10 +9,11 @@ import json
 import pandas as pd
 import streamlit as st
 
+from utils.estilo import IMAGEN_DE_LUGAR, configurar_pagina, creditos, portada, tarjeta
 from utils.modulos import RAIZ, estado_modulo
 
-st.set_page_config(page_title="Recomendación de destinos", page_icon="🚌", layout="wide")
-st.title("3. Recomendación de destinos de viaje")
+configurar_pagina("Destinos para ti")
+portada("Destinos para ti", "Tu próximo viaje a India, elegido según lo que te gusta.", "leh_ladakh")
 
 listo, mensaje = estado_modulo(3)
 if not listo:
@@ -45,14 +46,12 @@ def perfil_en_datos(tipos):
 
 
 def mostrar_recomendaciones(recs):
-    columnas = st.columns(len(recs))
+    columnas = st.columns(len(recs), gap="small")
     for col, (_, r) in zip(columnas, recs.iterrows()):
-        with col, st.container(border=True):
-            st.markdown(f"**{r.posicion}. {r.lugar}**")
-            st.write(f"{TIPO_ES.get(r.tipo, r.tipo)} · {r.estado}")
-            st.caption(f"Mejor época: {r.mejor_epoca}")
-            if r.ya_visitado:
-                st.markdown("🔁 *Ya lo visitaste, ¿vuelves?*")
+        with col:
+            tarjeta(IMAGEN_DE_LUGAR[r.lugar], f"{r.posicion}. {r.lugar}",
+                    f"{TIPO_ES.get(r.tipo, r.tipo)} · {r.estado}<br>Mejor época: {r.mejor_epoca}",
+                    "🔁 Ya lo visitaste, ¿vuelves?" if r.ya_visitado else None, "vuelve")
 
 
 st.write(
@@ -70,7 +69,7 @@ with cliente:
     prefs = " y ".join(TIPO_ES[ETIQUETA_A_TIPO[x.strip()]] for x in p.Preferences.split(","))
     st.markdown(f"**Perfil:** le gusta {prefs} · {GENERO_ES.get(p.Gender, p.Gender)} · "
                 f"{p.NumberOfAdults} adulto(s) y {p.NumberOfChildren} niño(s)")
-    izq, der = st.columns([1, 1.4])
+    izq, der = st.columns([1, 2.2], gap="large")
     with izq:
         st.markdown("**Su historial**")
         h = historial(int(user_id))
@@ -106,6 +105,8 @@ with nuevo:
                                         "adultos": adultos, "ninos": ninos}, k=k)
         st.markdown(f"**Te recomendamos estos {k} lugares**")
         mostrar_recomendaciones(recs)
+
+creditos(["leh_ladakh", "taj_mahal", "goa", "jaipur", "kerala"])
 
 with st.expander("¿Cómo funciona y qué tan bueno es?"):
     st.markdown(

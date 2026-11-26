@@ -1,0 +1,11 @@
+# Tema visual de la app (claro). Streamlit lo lee desde la raíz del repositorio.
+[theme]
+base = "light"
+primaryColor = "#0e9f8e"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#eef7f5"
+textColor = "#1f2a30"
+font = "sans serif"
+
+[server]
+headless = true
