@@ -163,9 +163,10 @@
         <li><a href="#neg-campana">9.3 Campaña de un destino</a></li>
       </ul>
     </li>
-    <li><a href="#fundamentacion">10. Fundamentación matemática</a></li>
-    <li><a href="#caceria">11. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">12. Lo que falta</a></li>
+    <li><a href="#discusion">10. Discusión</a></li>
+    <li><a href="#fundamentacion">11. Fundamentación matemática</a></li>
+    <li><a href="#caceria">12. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">13. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -193,6 +194,7 @@
       <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3 + figura de concentración</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Discusión y aprendizajes</td><td>Discusión del módulo</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill ok">Borrador listo</span></td></tr>
     </tbody>
   </table></div>
@@ -512,7 +514,7 @@
     <li><strong>Popularidad.</strong> El puntaje de un destino es su número de interacciones en lo aprendido, y a todos los usuarios se les recomienda lo mismo. No usamos la columna <code>Popularity</code> del conjunto, porque no tiene relación con las interacciones (hipótesis 5, Tabla 10).</li>
     <li><strong>Factorización de matrices con BPR.</strong> Cada usuario \(u\) y cada destino \(i\) tienen un vector de \(d\) números que se aprende, y el puntaje es su producto punto, \(\hat y_{ui} = \mathbf p_u^\top \mathbf q_i\). Para entrenar se forman tríos \((u, i, j)\): \(i\) es un destino que \(u\) visitó y \(j\) uno que no, escogido al azar. La pérdida
       <div class="math-block">$$\mathcal L = -\ln \sigma\!\left(\hat y_{ui} - \hat y_{uj}\right) + \lambda\left(\lVert\mathbf p_u\rVert^2 + \lVert\mathbf q_i\rVert^2 + \lVert\mathbf q_j\rVert^2\right)$$</div>
-      premia que lo visitado quede por encima de lo no visitado, que es justo lo que mide un top-K (Rendle et al., 2009). El segundo término, la regularización, castiga los vectores grandes para que el modelo no memorice. Tiene \((999 + 1000)\,d\) parámetros entrenables. La formulación completa y la derivación de la pérdida están en la sección 10.</li>
+      premia que lo visitado quede por encima de lo no visitado, que es justo lo que mide un top-K (Rendle et al., 2009). El segundo término, la regularización, castiga los vectores grandes para que el modelo no memorice. Tiene \((999 + 1000)\,d\) parámetros entrenables. La formulación completa y la derivación de la pérdida están en la sección 11.</li>
   </ul>
   <p><strong>Cómo se evalúan, igual para los tres.</strong> Todos se miden con el mismo código (<code>src/evaluacion.py</code>). Para cada usuario se ordenan los <strong>1000 destinos completos</strong>, sin muestrear y sin contar los destinos (IDs) que el usuario ya tiene en lo aprendido: no se le vuelven a recomendar, aunque sí otros IDs del mismo lugar; los empates se rompen al azar; y se busca en qué posición quedó el destino escondido. Como cada usuario tiene un solo destino escondido, HitRate@K y Recall@K coinciden (1 si el destino está entre los K primeros), Precision@K es HitRate@K / K y NDCG@K vale \(1/\log_2(\text{posición} + 2)\) si hay acierto, de modo que premia acertar arriba. La cobertura@K es el porcentaje de los 1000 destinos que aparece en algún top-K. Como el cliente ve <strong>lugares</strong> y no IDs (decisión 1), también medimos por lugar: cada lugar recibe el mejor puntaje de sus IDs, se ordenan los 5 lugares y se mira si el lugar del destino escondido está entre los 3 que vería el cliente (HitRate@3 por lugar, la métrica principal; el azar da 60 %) o si queda primero (HitRate@1 por lugar; el azar da 20 %). Estas métricas se fijaron antes de entrenar la red y se aplican igual a todos los modelos. Cada modelo se corre con 30 semillas. El evaluador se probó con un ejemplo calculado a mano, con empates y con el azar en los datos reales (<code>src/probar_evaluacion.py</code>).</p>
 
@@ -614,7 +616,7 @@
   <p class="source">Fuente: elaboración propia. Regenerable con <code>src/figuras_comunes.py</code>, que comprueba que la suma de parámetros coincide con la del modelo guardado.</p>
   <p><strong>Dimensión \(d \in \{2, 4, 8\}\).</strong> Solo hay 3 perfiles de preferencias y 5 lugares: la tabla perfil × lugar tiene a lo sumo rango 3, así que unas pocas dimensiones bastan para representar cualquier relación entre ellos, y más dimensiones solo darían capacidad para sobreajustar.</p>
   <p><strong>Negativos.</strong> Para cada interacción observada se toman \(k \in \{1, 4\}\) destinos que el usuario no tiene, al azar y con la misma probabilidad entre los 1000 IDs. Muestrear según la popularidad, la alternativa habitual, daría prácticamente lo mismo, porque el catálogo es parejo (sección 3.2).</p>
-  <p><strong>Pérdida.</strong> Comparamos dos, cada una derivada de un modelo probabilístico (sección 10.3): <strong>BCE con negativos</strong>, que trata cada par (usuario, destino) como una moneda «visitó / no visitó», y <strong>BPR</strong>, que modela la probabilidad de preferir el destino visitado sobre uno no visitado.</p>
+  <p><strong>Pérdida.</strong> Comparamos dos, cada una derivada de un modelo probabilístico (sección 11.3): <strong>BCE con negativos</strong>, que trata cada par (usuario, destino) como una moneda «visitó / no visitó», y <strong>BPR</strong>, que modela la probabilidad de preferir el destino visitado sobre uno no visitado.</p>
   <p>BCE intenta acertar cada par por separado; BPR solo pide ordenar bien. Las dos entran en el ajuste. El resto se fija: Adam con tasa 0,01 y decaimiento de pesos 10⁻⁴, lotes de 256 y hasta 200 épocas, con parada cuando HitRate@3 por lugar en validación no mejora en 10 épocas.</p>
 
   <h3 id="red-simulados">7.3 Prueba con datos simulados</h3>
@@ -642,10 +644,10 @@
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Validación, 326 usuarios, 3 semillas por configuración. Regenerable con <code>src/figuras_comunes.py</code>.</p>
   <figure>
     <figcaption>Figura 6. Curvas de aprendizaje de las configuraciones elegidas</figcaption>
-    <img src="../figures/comun_curvas.png" alt="Cuatro paneles. La pérdida de la factorización baja rápido y se estanca en ln 2; su NDCG en validación oscila alrededor del azar. La pérdida de la red casi no baja de ln 2; su HitRate@3 por lugar oscila entre 61 % y 65 %, con un pico cerca de la época 10.">
+    <img src="../figures/comun_curvas.png" alt="Cuatro paneles. En la factorización, las pérdidas de entrenamiento y validación bajan juntas y se estancan en ln 2; su NDCG en validación oscila alrededor del azar. En la red, la pérdida de entrenamiento baja despacio y la de validación se queda en ln 2 y sube al final; su HitRate@3 por lugar oscila entre 61 % y 65 %, con un pico cerca de la época 10.">
   </figure>
-  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Media y rango de 3 semillas; la línea discontinua marca las épocas usadas en el modelo final. Regenerable con <code>src/figuras_comunes.py</code>.</p>
-  <p>Las curvas confirman lo que dicen las tablas. Las dos pérdidas terminan en ln 2 ≈ 0,693, que es la pérdida de adivinar con una moneda al aire: la red casi no baja de ese valor y la factorización llega a él porque la regularización fuerte (λ = 1) encoge sus vectores hasta casi cero, de modo que todos sus puntajes quedan cerca de 0 (sección 6.5). Las métricas de validación oscilan sin una tendencia clara, que es lo esperable cuando casi no hay relación que aprender; el pico de la red alrededor de la época 10 es el que eligió la parada temprana y, como mostró la sección 7.5, no se sostuvo en prueba.</p>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Media y rango de 3 semillas; la línea vertical discontinua marca dónde actuó la parada temprana (épocas usadas en el modelo final). Regenerable con <code>src/figuras_comunes.py</code>.</p>
+  <p>Las curvas confirman lo que dicen las tablas. Las pérdidas terminan en ln 2 ≈ 0,693, que es la pérdida de adivinar con una moneda al aire. En la factorización, la de entrenamiento y la de validación bajan juntas hasta ese valor y se quedan ahí: la regularización fuerte (λ = 1) encoge sus vectores hasta casi cero, de modo que todos sus puntajes quedan cerca de 0 (sección 6.5); no aprende, pero tampoco sobreajusta. En la red, la pérdida de entrenamiento baja despacio mientras la de validación se queda en ln 2 y sube después de la época 45: es la señal del sobreajuste, el modelo empieza a memorizar el entrenamiento y empeora con usuarios que no vio. La parada temprana actuó mucho antes (época 8). Las métricas de validación oscilan sin una tendencia clara, que es lo esperable cuando casi no hay relación que aprender; el pico de la red alrededor de la época 10 es el que eligió la parada temprana y, como mostró la sección 7.5, no se sostuvo en prueba.</p>
 
   <h3 id="red-resultados">7.5 Resultados</h3>
   <p>La Tabla 19 compara la red con las tres referencias en prueba, con la misma partición, el mismo evaluador y 30 semillas.</p>
@@ -661,6 +663,31 @@
   </table></div>
   <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/tarea5/RESUMEN.md</code> y las de la Tabla 16.</p>
   <p>La red es la que más se aleja del azar en las dos métricas por lugar, pero por poco: en la métrica principal acierta 375 de 606 casos cuando el azar acertaría 363,6 (p-valor corregido = 0,37), y en HitRate@1 por lugar, 134 frente a 121,2 (p-valor corregido = 0,21). Por ID tampoco se distingue del azar (7 aciertos frente a 6,1; p-valor = 0,41). Frente a la factorización, la diferencia pareada en Lugar@3 es de +1,4 puntos (p-valor = 0,20). <strong>No hay evidencia suficiente para afirmar que la red supera al azar</strong>, aunque va en la dirección que predecía la Tabla 17. Su cobertura es baja (2,5 %): con solo 3 perfiles de preferencias, recomienda casi lo mismo a todos los usuarios del mismo perfil.</p>
+  <p>El enunciado pide además la variabilidad de las 30 semillas (Tabla 20) y el presupuesto de búsqueda de cada familia de modelos (Tabla 21).</p>
+  <p class="caption">Tabla 20. Resultados de las 30 semillas en prueba: media ± desviación estándar (mínimo–máximo), en %</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th class="num">Lugar@3 (azar 60 %)</th><th class="num">Lugar@1 (azar 20 %)</th><th class="num">HitRate@10</th><th class="num">NDCG@10</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">59,7 ± 2,0 (56,1–63,7)</td><td class="num">19,3 ± 1,7 (14,2–21,6)</td><td class="num">0,91 ± 0,38 (0,33–1,49)</td><td class="num">0,42 ± 0,20 (0,10–0,74)</td></tr>
+      <tr><td>Popularidad</td><td class="num">58,1 ± 1,8 (54,3–61,6)</td><td class="num">16,1 ± 0,1 (16,0–16,3)</td><td class="num">1,16 ± 0,22 (0,50–1,65)</td><td class="num">0,46 ± 0,09 (0,19–0,62)</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">60,5 ± 2,4 (55,3–64,7)</td><td class="num">20,4 ± 1,3 (18,2–24,6)</td><td class="num">0,94 ± 0,31 (0,17–1,49)</td><td class="num">0,43 ± 0,16 (0,05–0,73)</td></tr>
+      <tr><td>Red de dos torres</td><td class="num">61,8 ± 2,5 (55,6–66,5)</td><td class="num">22,2 ± 2,6 (17,3–25,7)</td><td class="num">1,11 ± 0,27 (0,66–1,82)</td><td class="num">0,52 ± 0,17 (0,29–0,86)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de Mehra (2024). Evidencia: <code>results/experimentos/completo/final_resumen.csv</code>, generado con <code>python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/completo.yaml</code>.</p>
+  <p>Entre semillas, la métrica principal de cada modelo varía unos 2 a 2,5 puntos, lo mismo que separa a la red del azar, y los rangos de los cuatro modelos se solapan. En la popularidad la semilla solo decide los desempates, por eso su Lugar@1 casi no cambia.</p>
+  <p class="caption">Tabla 21. Presupuesto de búsqueda y complejidad de cada modelo</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modelo</th><th class="num">Configuraciones probadas</th><th class="num">Corridas de ajuste (× 3 semillas)</th><th class="num">Tiempo de ajuste</th><th class="num">Tiempo por entrenamiento final</th><th class="num">Parámetros entrenables</th></tr></thead>
+    <tbody>
+      <tr><td>Azar</td><td class="num">1 (sin hiperparámetros)</td><td class="num">0</td><td class="num">0 s</td><td class="num">≈ 0 s</td><td class="num">0</td></tr>
+      <tr><td>Popularidad</td><td class="num">1 (sin hiperparámetros)</td><td class="num">0</td><td class="num">0 s</td><td class="num">≈ 0 s</td><td class="num">0</td></tr>
+      <tr><td>Factorización (BPR)</td><td class="num">9 (\(d\) × λ)</td><td class="num">27</td><td class="num">23 s</td><td class="num">0,03 s</td><td class="num">15 992</td></tr>
+      <tr><td>Red de dos torres</td><td class="num">24 (\(d\) × pérdida × negativos × variables)</td><td class="num">72</td><td class="num">64 s</td><td class="num">0,1 s</td><td class="num">238</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia. Evidencia: <code>results/tarea4/RESUMEN_factorizacion.md</code> y <code>results/tarea5/RESUMEN.md</code>. CPU de un portátil, un hilo; los tiempos varían unos segundos entre ejecuciones.</p>
+  <p>La red tuvo el mayor presupuesto de búsqueda: 24 configuraciones frente a 9 de la factorización y una sola de las referencias sin hiperparámetros. Si hubiera ganado, habría que matizarlo por esa ventaja; como no supera al azar, el presupuesto refuerza la conclusión. Todo el ajuste de los cuatro modelos tarda menos de dos minutos, así que el costo de cómputo no es una razón para preferir uno u otro.</p>
   <div class="callout warn"><p><strong>La maldición del ganador.</strong> En validación, la red elegida «superaba al azar» (p-valor = 0,027), y en prueba no se confirma. No es una contradicción: esa configuración era la mejor de 24 medidas sobre los mismos 326 usuarios, y la parada temprana también usó esa validación, así que su resultado allí estaba inflado por la propia selección. Por eso la prueba se mira una sola vez y es la que manda.</p></div>
   <div class="callout ok"><p><strong>Conclusión de la tarea 5.</strong> La red de dos torres con preferencias es la que mejor se ajusta a lo que hay en los datos y la única que personaliza la recomendación para un perfil nuevo, pero su ventaja sobre el azar es demasiado pequeña para afirmarse con 606 usuarios. Como la prueba con datos simulados mostró que la red aprende cuando la relación existe, el límite está en los datos: en ellos, lo único que permite predecir el lugar es una relación débil con las preferencias.</p></div>
 </section>
@@ -677,8 +704,8 @@
   <p>La Figura 7 muestra las tres métricas que pide el enunciado en función de K. Los cuatro modelos siguen la curva del azar. Las diferencias que se ven en Precision con K pequeño parecen grandes por la escala, pero son de uno o dos aciertos entre 606 usuarios (por ejemplo, Precision@1 = 0,1 % equivale a acertar a 0,6 usuarios), del tamaño del ruido; las pruebas de las Tablas 16 y 19 confirman que ningún modelo se distingue del azar por ID.</p>
 
   <h3 id="eval-grupos">8.1 Usuarios con pocas y con muchas interacciones</h3>
-  <p>Separamos a los usuarios según cuántas interacciones tienen para aprender: <strong>pocas</strong> (1; 280 usuarios) y <strong>muchas</strong> (2 o más; 326 usuarios). La Tabla 20 muestra el resultado.</p>
-  <p class="caption">Tabla 20. Desempeño según el número de interacciones del usuario (prueba, media de 30 semillas)</p>
+  <p>Separamos a los usuarios según cuántas interacciones tienen para aprender: <strong>pocas</strong> (1; 280 usuarios) y <strong>muchas</strong> (2 o más; 326 usuarios). La Tabla 22 muestra el resultado.</p>
+  <p class="caption">Tabla 22. Desempeño según el número de interacciones del usuario (prueba, media de 30 semillas)</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Modelo</th><th class="num">Lugar@3, pocas</th><th class="num">Lugar@3, muchas</th><th class="num">Lugar@1, pocas</th><th class="num">Lugar@1, muchas</th><th class="num">HitRate@10, pocas</th><th class="num">HitRate@10, muchas</th></tr></thead>
     <tbody>
@@ -701,8 +728,8 @@
   <p>La red tiene la mediana más alta en la métrica principal, pero todas las cajas cruzan la línea del azar. Además, las cajas solo muestran la variación entre semillas, con los mismos 606 usuarios siempre; no incluyen la incertidumbre de que esos usuarios son una muestra, que es la que miden las pruebas de las Tablas 16 y 19 (hallazgo 7).</p>
 
   <h3 id="eval-ejemplos">8.3 Usuarios de ejemplo</h3>
-  <p>La Tabla 21 muestra qué le recomendaría la red guardada (la que usa la app) a cinco usuarios de prueba con perfiles distintos, elegidos con reglas fijas: el de menor ID de cada perfil de preferencias sin niños, el de menor ID que viaja con niños y el que más interacciones tiene para aprender.</p>
-  <p class="caption">Tabla 21. Recomendaciones de la red para cinco usuarios de prueba</p>
+  <p>La Tabla 23 muestra qué le recomendaría la red guardada (la que usa la app) a cinco usuarios de prueba con perfiles distintos, elegidos con reglas fijas: el de menor ID de cada perfil de preferencias sin niños, el de menor ID que viaja con niños y el que más interacciones tiene para aprender.</p>
+  <p class="caption">Tabla 23. Recomendaciones de la red para cinco usuarios de prueba</p>
   <div class="table-wrap"><table>
     <thead><tr><th class="num">Usuario</th><th>Perfil</th><th>Historial (lo aprendido)</th><th>La red le recomienda</th><th>Lugar escondido</th><th>¿Acierta?</th></tr></thead>
     <tbody>
@@ -733,8 +760,8 @@
   <p>Las tres respuestas se calculan con <code>src/preguntas_negocio.py</code> (evidencia: <code>results/negocio/RESUMEN.md</code>). Como los datos casi no tienen relaciones que permitan predecir, las diferencias son pequeñas; lo que sí cambia mucho entre modelos es cómo reparten a los clientes.</p>
 
   <h3 id="neg-nuevos">9.1 ¿Qué recomendar a un cliente nuevo?</h3>
-  <p>Es como un mesero que atiende a alguien que entra por primera vez: puede recomendarle «lo que más se pide» o preguntarle qué le gusta. Para comparar esas estrategias simulamos que los 606 usuarios de prueba eran nuevos: los repartimos en 5 grupos y, para cada grupo, <strong>borramos todo su historial del entrenamiento</strong>, de modo que el modelo nunca los vio y solo conoce lo que pondrían en el formulario de la app. Luego miramos si el lugar al que realmente fueron aparece entre los recomendados (Tabla 22).</p>
-  <p class="caption">Tabla 22. Estrategias para clientes nuevos (606 usuarios simulados como nuevos, 30 semillas)</p>
+  <p>Es como un mesero que atiende a alguien que entra por primera vez: puede recomendarle «lo que más se pide» o preguntarle qué le gusta. Para comparar esas estrategias simulamos que los 606 usuarios de prueba eran nuevos: los repartimos en 5 grupos y, para cada grupo, <strong>borramos todo su historial del entrenamiento</strong>, de modo que el modelo nunca los vio y solo conoce lo que pondrían en el formulario de la app. Luego miramos si el lugar al que realmente fueron aparece entre los recomendados (Tabla 24).</p>
+  <p class="caption">Tabla 24. Estrategias para clientes nuevos (606 usuarios simulados como nuevos, 30 semillas)</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Estrategia</th><th class="num">Su lugar está entre los 3 recomendados (azar 60 %)</th><th class="num">p-valor corregido</th><th class="num">…y es el primero (azar 20 %)</th><th class="num">p-valor corregido</th></tr></thead>
     <tbody>
@@ -748,8 +775,8 @@
   <p><strong>Respuesta: recomendarle según sus preferencias, no lo más popular.</strong> La regla «lo que más visita la gente con tus gustos» acierta el primer lugar 1 de cada 4 veces, frente a 1 de cada 5 del azar, y esa diferencia es real: acierta a 149 de los 606 clientes cuando el azar acertaría a 121, y si en verdad acertara como el azar (H₀), sería muy raro acertar tantas veces (p-valor corregido = 0,007; H₁: acierta más que el azar). Es la misma relación débil entre preferencias y lugar de las secciones 3.4 y 7.1. En los 3 lugares que ve el cliente, en cambio, ninguna estrategia se distingue del azar: con solo 5 lugares, 3 ya cubren el 60 %. La popularidad es la peor opción, porque le pone a todos Jaipur City primero.</p>
 
   <h3 id="neg-concentracion">9.2 ¿Las recomendaciones amontonan a los clientes?</h3>
-  <p>Si una agencia le dice a todo el mundo «vaya a Jaipur», los vuelos y hoteles de Jaipur se llenan y los demás quedan vacíos. Para medirlo contamos qué porcentaje de los 606 clientes recibiría cada lugar como primera recomendación y lo comparamos con la demanda actual, que es de alrededor del 20 % por lugar (Tabla 23 y Figura 10).</p>
-  <p class="caption">Tabla 23. Concentración de las recomendaciones (prueba, 606 usuarios, 30 semillas)</p>
+  <p>Si una agencia le dice a todo el mundo «vaya a Jaipur», los vuelos y hoteles de Jaipur se llenan y los demás quedan vacíos. Para medirlo contamos qué porcentaje de los 606 clientes recibiría cada lugar como primera recomendación y lo comparamos con la demanda actual, que es de alrededor del 20 % por lugar (Tabla 25 y Figura 10).</p>
+  <p class="caption">Tabla 25. Concentración de las recomendaciones (prueba, 606 usuarios, 30 semillas)</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Modelo</th><th>Lugar que más clientes recibirían primero</th><th class="num">Capacidad que necesitaría esa ruta</th><th class="num">Gini de las recomendaciones (por ID)</th></tr></thead>
     <tbody>
@@ -774,8 +801,8 @@
     <li><strong>A quién.</strong> A los clientes a quienes la red guardada (la de la app) les recomienda ese lugar en primer lugar.</li>
     <li><strong>Cuántos.</strong> Clientes del grupo × proporción de los viajes de ese grupo que fueron a ese lugar en los datos de entrenamiento. Después lo comprobamos en prueba.</li>
   </ul>
-  <p>La Tabla 24 muestra el resultado para los destinos en temporada que la red recomienda primero a algún grupo de clientes.</p>
-  <p class="caption">Tabla 24. Destinos en temporada que la red recomienda primero a algún grupo (999 clientes)</p>
+  <p>La Tabla 26 muestra el resultado para los destinos en temporada que la red recomienda primero a algún grupo de clientes.</p>
+  <p class="caption">Tabla 26. Destinos en temporada que la red recomienda primero a algún grupo (999 clientes)</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Destino</th><th>Grupo (perfil de preferencias)</th><th class="num">Clientes</th><th class="num">Tasa en entrenamiento</th><th class="num">Viajes esperados</th><th class="num">Si se mostrara a un grupo al azar</th><th class="num">Comprobación en prueba (IC 95 %)</th></tr></thead>
     <tbody>
@@ -788,21 +815,48 @@
   <div class="callout warn"><p><strong>Supuestos.</strong> (1) Un viaje cuenta si el próximo viaje del cliente es a ese lugar. (2) El anuncio no cambia lo que la gente haría de todos modos: estimamos quién tiene más propensión a ir, no cuántos viajes adicionales genera la campaña. (3) Cada cliente hace un viaje en el mes. (4) El público son los 999 clientes del conjunto. (5) Los datos son sintéticos, así que las cifras ilustran el método, no la demanda real.</p></div>
 </section>
 
-<!-- ======================= 10. FUNDAMENTACIÓN ======================= -->
+<!-- ======================= 10. DISCUSIÓN ======================= -->
+<section id="discusion">
+  <h2>10. Discusión</h2>
+  <h3>10.1 ¿Qué aportó la red frente a los modelos de referencia?</h3>
+  <ul>
+    <li><strong>Métricas.</strong> En prueba, ningún modelo supera al azar con evidencia suficiente. La red es la que más se aleja de él en las métricas por lugar (61,8 % frente a 60 % en Lugar@3; 22,2 % frente a 20 % en Lugar@1), pero la diferencia no es significativa (Tabla 19); por ID, ninguno se distingue del azar (Figura 7).</li>
+    <li><strong>Variabilidad entre semillas.</strong> La métrica principal cambia 2 a 2,5 puntos de una semilla a otra, lo mismo que separa a la red del azar, y los rangos de los cuatro modelos se solapan (Tabla 20 y Figura 8).</li>
+    <li><strong>Costo de cómputo.</strong> Despreciable para todos: el ajuste completo tarda menos de dos minutos (Tabla 21). La red tiene 238 parámetros, 67 veces menos que la factorización.</li>
+    <li><strong>Interpretabilidad.</strong> La red es la más fácil de explicar: sus vectores se pueden dibujar sin proyectar y se lee directamente qué lugar prefiere cada perfil (Figura 9). Los vectores de la factorización no tienen estructura, y la popularidad es transparente pero no personaliza.</li>
+    <li><strong>Negocio.</strong> La red es la única que personaliza la recomendación para un cliente nuevo y funciona sin ID, que es lo que necesita la app. A cambio, concentra la demanda (Kerala recibiría 1,7 veces la actual; sección 9.2), así que habría que ponerle límites por ruta. Una regla simple, «lo que más visita la gente con tus gustos», rinde igual o mejor con clientes nuevos (sección 9.1).</li>
+  </ul>
+  <p><strong>En resumen:</strong> con estos datos la red no aporta una mejora demostrable en aciertos, porque los datos casi no contienen una relación que aprender (secciones 1.3 y 3). Lo que sí aporta es la capacidad de recomendar a perfiles nuevos y una lectura clara de lo que aprendió. Con datos reales, en los que las preferencias sí guiaran los viajes, sería la arquitectura con más posibilidades: la prueba con datos simulados mostró que en ese caso alcanza casi el máximo posible (sección 7.3).</p>
+
+  <h3>10.2 Aprendizajes</h3>
+  <ol>
+    <li><strong>Mirar los datos antes de modelar.</strong> El análisis descriptivo anticipó lo que todos los modelos confirmaron después: los datos son sintéticos y se comportan como un sorteo.</li>
+    <li><strong>Comparar siempre contra el azar,</strong> no solo entre modelos. Sin esa referencia, un HitRate de 1,1 % no dice nada.</li>
+    <li><strong>Elegir la métrica que corresponde a la decisión de negocio y fijarla antes de entrenar.</strong> Medir solo por ID habría ocultado la única relación que hay (por lugar); fijarla antes evita buscar la métrica que «salga bien».</li>
+    <li><strong>Las semillas no bastan para comparar modelos.</strong> La incertidumbre por la muestra de usuarios es mayor que la de las semillas; hacen falta pruebas que traten a los usuarios como muestra (hallazgo 7).</li>
+    <li><strong>Elegir entre muchas configuraciones infla el resultado de validación.</strong> La red «superaba al azar» en validación y no en prueba: por eso la prueba se mira una sola vez.</li>
+    <li><strong>Probar el código con datos de respuesta conocida</strong> permite distinguir «los datos no tienen relación» de «el código tiene un error».</li>
+    <li><strong>Con muy pocos datos por usuario, la regularización decide.</strong> Sin ella los modelos memorizan; con demasiada aparecen efectos raros, como la cobertura engañosa de la factorización (hallazgo 8).</li>
+    <li><strong>La complejidad hay que justificarla.</strong> Una regla de una línea igualó a la red con clientes nuevos.</li>
+    <li><strong>Verificar todo lo que propone la IA.</strong> Cifras, interpretaciones y referencias se comprobaron con scripts o fuentes primarias, y así aparecieron los 9 hallazgos de la sección 12.</li>
+  </ol>
+</section>
+
+<!-- ======================= 11. FUNDAMENTACIÓN ======================= -->
 <section id="fundamentacion">
-  <h2>10. Fundamentación matemática</h2>
+  <h2>11. Fundamentación matemática</h2>
   <p>Notación: \(\mathcal U\) son los 999 usuarios y \(\mathcal I\) los 1000 destinos; \(\mathcal D^+\) es el conjunto de pares \((u, i)\) observados en lo aprendido; \(\sigma(x) = 1/(1 + e^{-x})\) es la función sigmoide.</p>
 
-  <h3>10.1 Factorización de matrices</h3>
+  <h3>11.1 Factorización de matrices</h3>
   <p>La matriz de interacciones \(R \in \{0,1\}^{|\mathcal U| \times |\mathcal I|}\) se aproxima por el producto de dos matrices delgadas, \(R \approx P Q^\top\), con \(P \in \mathbb R^{|\mathcal U| \times d}\) y \(Q \in \mathbb R^{|\mathcal I| \times d}\). Cada usuario tiene un vector \(\mathbf p_u\) (fila de \(P\)), cada destino un vector \(\mathbf q_i\), y el puntaje es</p>
   <div class="math-block">$$s_{ui} = \mathbf p_u^\top \mathbf q_i = \sum_{f=1}^{d} p_{uf}\, q_{if}, \qquad \text{parámetros: } (|\mathcal U| + |\mathcal I|)\,d = 1999\,d.$$</div>
 
-  <h3>10.2 Red de dos torres</h3>
+  <h3>11.2 Red de dos torres</h3>
   <p>Cada torre es una red con una capa oculta de \(h = 16\) neuronas y activación ReLU. La del usuario recibe sus preferencias \(\mathbf x_u \in \{0,1\}^5\); la del destino recibe el embedding de su lugar \(\mathbf e_{\ell(i)} \in \mathbb R^{d}\) junto con su <code>Popularity</code> estandarizada \(z_i\):</p>
   <div class="math-block">$$\mathbf u = W_2\,\mathrm{ReLU}(W_1 \mathbf x_u + \mathbf b_1) + \mathbf b_2, \qquad \mathbf v_i = V_2\,\mathrm{ReLU}\!\left(V_1 [\mathbf e_{\ell(i)};\, z_i] + \mathbf c_1\right) + \mathbf c_2, \qquad s_{ui} = \mathbf u^\top \mathbf v_i .$$</div>
   <p>Con \(d = 2\): \(W_1 \in \mathbb R^{16 \times 5}\), \(W_2 \in \mathbb R^{2 \times 16}\), \(V_1 \in \mathbb R^{16 \times 3}\), \(V_2 \in \mathbb R^{2 \times 16}\) y la tabla de embeddings de \(5 \times 2\): 238 parámetros en total (Figura 4). La factorización es el caso particular en que cada torre es solo una tabla de vectores indexada por el ID.</p>
 
-  <h3>10.3 Derivación de las pérdidas</h3>
+  <h3>11.3 Derivación de las pérdidas</h3>
   <p><strong>BCE con muestreo de negativos.</strong> Se supone que cada par es una variable de Bernoulli: \(y_{ui} = 1\) si el usuario interactuó con el destino, con \(P(y_{ui} = 1) = \sigma(s_{ui})\). Como no observamos los «no», para cada par observado \((u, i) \in \mathcal D^+\) se toman \(k\) destinos \(j\) al azar que el usuario no tiene y se tratan como \(y_{uj} = 0\) (conjunto \(\mathcal D^-\)). Suponiendo independencia, la verosimilitud es</p>
   <div class="math-block">$$\mathcal L(\theta) = \prod_{(u,i) \in \mathcal D^+} \sigma(s_{ui}) \prod_{(u,j) \in \mathcal D^-} \bigl(1 - \sigma(s_{uj})\bigr),$$</div>
   <p>y maximizarla equivale a minimizar su logaritmo negativo, que es la entropía cruzada binaria:</p>
@@ -811,7 +865,7 @@
   <div class="math-block">$$-\ln p(\theta \mid \mathcal D) = -\sum_{(u,i,j)} \ln \sigma(s_{ui} - s_{uj}) \;+\; \lambda \lVert \theta \rVert^2 + \text{cte.}, \qquad \lambda = \frac{1}{2\sigma_\theta^2}.$$</div>
   <p>El segundo término es la regularización de la factorización (sección 6.2): pedir \(\lambda\) grande equivale a creer de antemano que los vectores son pequeños (Rendle et al., 2009). En la práctica, como en Rendle et al., el término se aplica en cada trío a los tres vectores que intervienen, \(\lambda(\lVert\mathbf p_u\rVert^2 + \lVert\mathbf q_i\rVert^2 + \lVert\mathbf q_j\rVert^2)\); por eso un destino que aparece en muchos tríos se regulariza más, que es la causa del efecto descrito en la sección 6.5. En la red, el decaimiento de pesos de Adam cumple el mismo papel. Si todos los puntajes quedan cerca de 0, \(\sigma(s) \approx 1/2\) y cada término de las dos pérdidas vale \(\ln 2 \approx 0{,}693\), la pérdida de adivinar con una moneda al aire; es lo que muestran las curvas de la Figura 6.</p>
 
-  <h3>10.4 Métricas</h3>
+  <h3>11.4 Métricas</h3>
   <p>Para cada usuario evaluado \(u\), sea \(L_u(K)\) su lista de los \(K\) primeros destinos (sin los que ya tiene en lo aprendido) y \(\mathcal R_u\) sus destinos relevantes, aquí el destino escondido, así que \(|\mathcal R_u| = 1\). Con \(\mathrm{rel}_r = 1\) si el destino en la posición \(r\) es relevante:</p>
   <div class="math-block">$$\text{Precision@}K = \frac{|L_u(K) \cap \mathcal R_u|}{K}, \qquad \text{Recall@}K = \frac{|L_u(K) \cap \mathcal R_u|}{|\mathcal R_u|}, \qquad \text{NDCG@}K = \frac{\sum_{r=1}^{K} \mathrm{rel}_r / \log_2(r + 1)}{\text{IDCG@}K}.$$</div>
   <p>Cada métrica se promedia sobre los usuarios. Con un solo relevante, \(\text{IDCG@}K = 1\), Recall@K coincide con HitRate@K, Precision@K = Recall@K / K, y NDCG@K vale \(1/\log_2(r+1)\) si el destino escondido quedó en la posición \(r \le K\) y 0 si no. La cobertura mide qué parte del catálogo llega a recomendarse:</p>
@@ -819,12 +873,12 @@
   <p>Las métricas por lugar aplican la misma idea a los 5 lugares: el puntaje de un lugar es el máximo de los puntajes de sus IDs, y HitRate@K por lugar vale 1 si el lugar del destino escondido está entre los \(K\) primeros lugares.</p>
 </section>
 
-<!-- ======================= 11. CACERÍA ======================= -->
+<!-- ======================= 12. CACERÍA ======================= -->
 <section id="caceria">
-  <h2>11. Cacería de la alucinación (aporte del módulo 3)</h2>
-  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 25 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+  <h2>12. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 27 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
 
-  <p class="caption">Tabla 25. Resumen de los hallazgos del módulo 3</p>
+  <p class="caption">Tabla 27. Resumen de los hallazgos del módulo 3</p>
   <div class="table-wrap"><table>
     <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
     <tbody>
@@ -1016,7 +1070,7 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>12. Lo que falta</h2>
+  <h2>13. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>

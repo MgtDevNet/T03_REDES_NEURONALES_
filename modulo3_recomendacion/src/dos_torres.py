@@ -98,6 +98,13 @@ class DosTorres:
         positivos = np.unique(u_all * N_DESTINOS + i_all)
         k = self.negativos
 
+        if validacion is not None:  # pérdida de validación: negativos fijos, con su propio generador
+            uv = validacion.UserID.to_numpy() - 1
+            iv = validacion.DestinationID.to_numpy() - 1
+            todos_pos = np.union1d(positivos, uv * N_DESTINOS + iv)
+            jv = muestrear_negativos(np.repeat(uv, k), todos_pos, N_DESTINOS, np.random.default_rng(10_000 + self.semilla))
+            self._val = tuple(torch.as_tensor(x) for x in (uv, iv, jv))
+
         mejor, sin_mejora, mejores_pesos = -1.0, 0, None
         for epoca in range(1, self.epocas + 1):
             self.red.train()
@@ -124,6 +131,7 @@ class DosTorres:
                 total += perdida.item() * len(idx)
             fila = {"epoca": epoca, "perdida": total / len(orden)}
             if validacion is not None:
+                fila["perdida_val"] = self._perdida_val()
                 r = evaluar(self.puntuar, aprende, validacion, semilla=self.semilla, ks=(10,))[0].iloc[0]
                 fila[metrica + "_val"] = r[metrica]
                 if r[metrica] > mejor:
@@ -139,6 +147,20 @@ class DosTorres:
         else:
             self.mejor_epoca = self.epocas
         return self
+
+    @torch.no_grad()
+    def _perdida_val(self):
+        """Misma pérdida que en el entrenamiento (BCE o BPR), sobre los pares de validación."""
+        self.red.eval()
+        u, i, j = self._val
+        k = self.negativos
+        s_pos = self._puntajes_pares(u, i)
+        s_neg = self._puntajes_pares(u.repeat_interleave(k), j)
+        if self.perdida == "bce":
+            logits = torch.cat([s_pos, s_neg])
+            y = torch.cat([torch.ones_like(s_pos), torch.zeros_like(s_neg)])
+            return float(nn.functional.binary_cross_entropy_with_logits(logits, y))
+        return float(-nn.functional.logsigmoid(s_pos.repeat_interleave(k) - s_neg).mean())
 
     @torch.no_grad()
     def puntuar_variables(self, x_usuario):

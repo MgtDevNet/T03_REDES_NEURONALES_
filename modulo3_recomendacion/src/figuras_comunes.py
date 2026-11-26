@@ -157,10 +157,10 @@ def curvas():
     filas = []
     for s in range(SEMILLAS):
         fm = FactorizacionBPR(d=fm_dec["d"], lam=fm_dec["lambda"], epocas=EPOCAS, semilla=s).ajustar(aprende, validacion=val, paciencia=10 ** 6)
-        filas += [{"modelo": "Factorización", "semilla": s, "epoca": h["epoca"], "perdida": h["perdida"], "metrica": h["NDCG@10_val"]} for h in fm.historia]
+        filas += [{"modelo": "Factorización", "semilla": s, "epoca": h["epoca"], "perdida": h["perdida"], "perdida_val": h["perdida_val"], "metrica": h["NDCG@10_val"]} for h in fm.historia]
         red = DosTorres(d=red_dec["d"], perdida=red_dec["perdida"], negativos=red_dec["negativos"], usuario=red_dec["usuario"],
                         epocas=EPOCAS, semilla=s).ajustar(aprende, validacion=val, paciencia=10 ** 6)
-        filas += [{"modelo": "Red", "semilla": s, "epoca": h["epoca"], "perdida": h["perdida"], "metrica": h["HitRate_lugar@3_val"]} for h in red.historia]
+        filas += [{"modelo": "Red", "semilla": s, "epoca": h["epoca"], "perdida": h["perdida"], "perdida_val": h["perdida_val"], "metrica": h["HitRate_lugar@3_val"]} for h in red.historia]
     t = pd.DataFrame(filas)
     t.to_csv(RES / "tarea6" / "curvas_aprendizaje.csv", index=False)
     return t, fm_dec["epocas"], red_dec["epocas"]
@@ -171,13 +171,17 @@ def figura_curvas(t, ep_fm, ep_red):
     ndcg_azar = 100 / 1000 * sum(1 / np.log2(r + 1) for r in range(1, 11))  # NDCG@10 esperado del azar
     for fila, (modelo, met, ep, azar, color) in enumerate((("Factorización", "NDCG@10 en validación (%)", ep_fm, ndcg_azar, AGUA),
                                                            ("Red", "HitRate@3 por lugar en validación (%)", ep_red, 60, AMARILLO))):
-        g = t[t.modelo == modelo].groupby("epoca")[["perdida", "metrica"]].agg(["mean", "min", "max"])
-        for col, (campo, titulo, escala) in enumerate((("perdida", "Pérdida de entrenamiento", 1), ("metrica", met, 100))):
+        g = t[t.modelo == modelo].groupby("epoca")[["perdida", "perdida_val", "metrica"]].agg(["mean", "min", "max"])
+        for col, (campo, titulo, escala) in enumerate((("perdida", "Pérdida de entrenamiento y validación", 1), ("metrica", met, 100))):
             ax = axes[fila, col]
             ax.fill_between(g.index, escala * g[(campo, "min")], escala * g[(campo, "max")], color=color, alpha=0.2, lw=0)
-            ax.plot(g.index, escala * g[(campo, "mean")], color=color, lw=2)
+            ax.plot(g.index, escala * g[(campo, "mean")], color=color, lw=2, label="entrenamiento" if campo == "perdida" else None)
+            if campo == "perdida":
+                ax.fill_between(g.index, g[("perdida_val", "min")], g[("perdida_val", "max")], color=GRIS_REF, alpha=0.15, lw=0)
+                ax.plot(g.index, g[("perdida_val", "mean")], color=GRIS_REF, lw=1.8, ls="--", label="validación")
+                ax.legend(fontsize=8.5, loc="upper right")
             ax.axvline(ep, ls="--", color="#0b0b0b", lw=1)
-            ax.text(ep + 0.8, ax.get_ylim()[1], f"épocas usadas: {ep}", va="top", fontsize=8.5)
+            ax.text(ep + 0.8, ax.get_ylim()[1], f"parada temprana: época {ep}", va="top", fontsize=8.5)
             if campo == "perdida":
                 ax.axhline(np.log(2), ls=":", color=GRIS_REF)
                 ax.text(EPOCAS, np.log(2), "ln 2 (moneda al aire)", ha="right", va="bottom", fontsize=8.5, color=GRIS_REF)

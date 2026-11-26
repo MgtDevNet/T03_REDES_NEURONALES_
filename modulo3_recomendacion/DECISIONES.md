@@ -749,3 +749,15 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
   por lugar desde el YAML.
 - Corregido durante la prueba: al reconstruir la configuración elegida, pandas convertía `d = 8`
   en `8.0` y PyTorch lo rechazaba; ahora cada valor vuelve al tipo original de la rejilla.
+
+### Bloque A del enunciado (2026-11-26) ✅ hecho
+- **Pérdida de validación por época** en `factorizacion.py` y `dos_torres.py` (negativos de
+  validación fijos con su propio generador, sin gradientes). Verificado: el entrenamiento y todas
+  las métricas salen idénticos. Figura 6 actualizada: en la red, la pérdida de validación se
+  queda en ln 2 y sube después de la época 45 (sobreajuste); la parada temprana actuó en la 8.
+- **Tabla 20**: media ± desviación (mín.–máx.) de las 30 semillas para Lugar@3, Lugar@1,
+  HitRate@10 y NDCG@10 (de `results/experimentos/completo/final_resumen.csv`).
+- **Tabla 21**: presupuesto de búsqueda (configuraciones, corridas, tiempos) y parámetros.
+- **Sección 10. Discusión**: aporte de la red frente a las referencias (métricas, variabilidad,
+  cómputo, interpretabilidad, negocio) y 9 aprendizajes. Fundamentación pasa a la 11, cacería a
+  la 12. Tablas 20–25 renumeradas a 22–27.

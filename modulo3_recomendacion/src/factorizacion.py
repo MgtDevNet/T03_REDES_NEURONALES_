@@ -71,6 +71,13 @@ class FactorizacionBPR:
         i_all = aprende.DestinationID.to_numpy() - 1
         positivos = np.unique(u_all * self.n_destinos + i_all)
 
+        if validacion is not None:  # pérdida de validación: negativos fijos, con su propio generador
+            uv = validacion.UserID.to_numpy() - 1
+            iv = validacion.DestinationID.to_numpy() - 1
+            todos_pos = np.union1d(positivos, uv * self.n_destinos + iv)
+            jv = muestrear_negativos(uv, todos_pos, self.n_destinos, np.random.default_rng(10_000 + self.semilla))
+            self._val = tuple(torch.as_tensor(x) for x in (uv, iv, jv))
+
         mejor, sin_mejora, mejores_pesos = -1.0, 0, None
         for epoca in range(1, self.epocas + 1):
             self.modelo.train()
@@ -93,6 +100,7 @@ class FactorizacionBPR:
             fila = {"epoca": epoca, "perdida": total / len(orden)}
 
             if validacion is not None:
+                fila["perdida_val"] = self._perdida_val()
                 ndcg = evaluar(self.puntuar, aprende, validacion, semilla=self.semilla, ks=(10,))[0].NDCG.iloc[0]
                 fila["NDCG@10_val"] = ndcg
                 if ndcg > mejor:
@@ -109,6 +117,15 @@ class FactorizacionBPR:
         else:
             self.mejor_epoca = self.epocas
         return self
+
+    @torch.no_grad()
+    def _perdida_val(self):
+        """Misma pérdida que en el entrenamiento (BPR + regularización), sobre los pares de validación."""
+        u, i, j = self._val
+        pu, qi, qj = self.modelo.P(u), self.modelo.Q(i), self.modelo.Q(j)
+        x = (pu * qi).sum(1) - (pu * qj).sum(1)
+        reg = self.lam * (pu.pow(2).sum(1) + qi.pow(2).sum(1) + qj.pow(2).sum(1))
+        return float((-nn.functional.logsigmoid(x) + reg).mean())
 
     @torch.no_grad()
     def puntuar(self, usuarios):
