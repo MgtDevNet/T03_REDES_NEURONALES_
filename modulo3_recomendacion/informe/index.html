@@ -165,8 +165,15 @@
     </li>
     <li><a href="#discusion">10. Discusión</a></li>
     <li><a href="#fundamentacion">11. Fundamentación matemática</a></li>
-    <li><a href="#caceria">12. Cacería de la alucinación</a></li>
-    <li><a href="#pendiente">13. Lo que falta</a></li>
+    <li><a href="#comunes">12. Aporte a las secciones comunes</a>
+      <ul>
+        <li><a href="#comun-fundamentacion">12.1 Fundamentación común</a></li>
+        <li><a href="#comun-etica">12.2 Ética</a></li>
+        <li><a href="#comun-ia">12.3 Uso de IA</a></li>
+      </ul>
+    </li>
+    <li><a href="#caceria">13. Cacería de la alucinación</a></li>
+    <li><a href="#pendiente">14. Lo que falta</a></li>
     <li><a href="#referencias">Referencias</a></li>
   </ol>
 </nav>
@@ -196,6 +203,7 @@
       <tr><td>Preguntas de negocio</td><td>P1, P2, P3 + figura de concentración</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Discusión y aprendizajes</td><td>Discusión del módulo</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Fundamentación matemática</td><td>Del módulo</td><td><span class="pill ok">Borrador listo</span></td></tr>
+      <tr><td>Fundamentación común, ética y uso de IA</td><td>Secciones comunes (aporte del módulo 3)</td><td><span class="pill wip">Borrador; falta unir con el equipo</span></td></tr>
     </tbody>
   </table></div>
 </section>
@@ -838,7 +846,7 @@
     <li><strong>Probar el código con datos de respuesta conocida</strong> permite distinguir «los datos no tienen relación» de «el código tiene un error».</li>
     <li><strong>Con muy pocos datos por usuario, la regularización decide.</strong> Sin ella los modelos memorizan; con demasiada aparecen efectos raros, como la cobertura engañosa de la factorización (hallazgo 8).</li>
     <li><strong>La complejidad hay que justificarla.</strong> Una regla de una línea igualó a la red con clientes nuevos.</li>
-    <li><strong>Verificar todo lo que propone la IA.</strong> Cifras, interpretaciones y referencias se comprobaron con scripts o fuentes primarias, y así aparecieron los 9 hallazgos de la sección 12.</li>
+    <li><strong>Verificar todo lo que propone la IA.</strong> Cifras, interpretaciones y referencias se comprobaron con scripts o fuentes primarias, y así aparecieron los 9 hallazgos de la sección 13.</li>
   </ol>
 </section>
 
@@ -873,12 +881,61 @@
   <p>Las métricas por lugar aplican la misma idea a los 5 lugares: el puntaje de un lugar es el máximo de los puntajes de sus IDs, y HitRate@K por lugar vale 1 si el lugar del destino escondido está entre los \(K\) primeros lugares.</p>
 </section>
 
-<!-- ======================= 12. CACERÍA ======================= -->
-<section id="caceria">
-  <h2>12. Cacería de la alucinación (aporte del módulo 3)</h2>
-  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 27 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+<!-- ======================= 12. SECCIONES COMUNES ======================= -->
+<section id="comunes">
+  <h2>12. Aporte del módulo 3 a las secciones comunes</h2>
+  <p>El informe del equipo tiene tres secciones comunes a los módulos: la fundamentación matemática común, la ética y el uso de IA. Aquí está lo que corresponde al módulo 3, escrito para unirse después con lo de los otros módulos.</p>
 
-  <p class="caption">Tabla 27. Resumen de los hallazgos del módulo 3</p>
+  <h3 id="comun-fundamentacion">12.1 Fundamentación común: lo que usa la red del módulo 3</h3>
+  <p><strong>Neurona artificial.</strong> Una neurona recibe un vector \(\mathbf x\), calcula una combinación lineal con sus pesos \(\mathbf w\) y su sesgo \(b\), y le aplica una función de activación \(f\): \(y = f(\mathbf w^\top \mathbf x + b)\). Una capa con \(h\) neuronas es \(\mathbf y = f(W\mathbf x + \mathbf b)\), con \(W \in \mathbb R^{h \times n}\).</p>
+  <p><strong>Funciones de activación usadas.</strong></p>
+  <div class="math-block">$$\mathrm{ReLU}(z) = \max(0, z), \quad \mathrm{ReLU}'(z) = \begin{cases} 1 & z > 0 \\ 0 & z \le 0 \end{cases} \qquad\qquad \sigma(z) = \frac{1}{1 + e^{-z}}, \quad \sigma'(z) = \sigma(z)\,\bigl(1 - \sigma(z)\bigr).$$</div>
+  <p>ReLU va en la capa oculta de cada torre; la sigmoide convierte el puntaje \(s\) en la probabilidad \(\sigma(s)\) de la pérdida (sección 11.3). Las capas de salida de las torres son lineales.</p>
+  <p><strong>Backpropagation.</strong> Es la regla de la cadena aplicada desde la pérdida hacia atrás, capa por capa. En la torre del usuario, con \(\mathbf z_1 = W_1 \mathbf x + \mathbf b_1\), \(\mathbf a_1 = \mathrm{ReLU}(\mathbf z_1)\), \(\mathbf u = W_2 \mathbf a_1 + \mathbf b_2\), \(s = \mathbf u^\top \mathbf v\) y la pérdida BCE de un par \(\mathcal L = -[y \ln \sigma(s) + (1-y) \ln(1 - \sigma(s))]\):</p>
+  <div class="math-block">$$\frac{\partial \mathcal L}{\partial s} = \sigma(s) - y, \qquad \frac{\partial \mathcal L}{\partial \mathbf u} = (\sigma(s) - y)\,\mathbf v, \qquad \frac{\partial \mathcal L}{\partial W_2} = \frac{\partial \mathcal L}{\partial \mathbf u}\,\mathbf a_1^\top,$$</div>
+  <div class="math-block">$$\frac{\partial \mathcal L}{\partial \mathbf z_1} = \left(W_2^\top \frac{\partial \mathcal L}{\partial \mathbf u}\right) \odot \mathrm{ReLU}'(\mathbf z_1), \qquad \frac{\partial \mathcal L}{\partial W_1} = \frac{\partial \mathcal L}{\partial \mathbf z_1}\,\mathbf x^\top .$$</div>
+  <p>La torre del destino es simétrica (con \(\partial \mathcal L / \partial \mathbf v = (\sigma(s) - y)\,\mathbf u\)), y el gradiente que llega a su entrada actualiza la fila del embedding del lugar correspondiente. Los gradientes se promedian sobre el lote. PyTorch los calcula automáticamente con <code>loss.backward()</code>.</p>
+  <p><strong>Optimizador Adam.</strong> Con el gradiente \(\mathbf g_t\) del paso \(t\), Adam mantiene un promedio móvil del gradiente y de su cuadrado, corrige su sesgo inicial y da un paso de tamaño adaptado a cada parámetro:</p>
+  <div class="math-block">$$\mathbf m_t = \beta_1 \mathbf m_{t-1} + (1 - \beta_1)\,\mathbf g_t, \quad \mathbf v_t = \beta_2 \mathbf v_{t-1} + (1 - \beta_2)\,\mathbf g_t^2, \quad \hat{\mathbf m}_t = \frac{\mathbf m_t}{1 - \beta_1^t}, \quad \hat{\mathbf v}_t = \frac{\mathbf v_t}{1 - \beta_2^t}, \quad \theta_t = \theta_{t-1} - \eta\,\frac{\hat{\mathbf m}_t}{\sqrt{\hat{\mathbf v}_t} + \epsilon}.$$</div>
+  <p>Usamos \(\eta = 0{,}01\) y los valores por defecto de PyTorch, \(\beta_1 = 0{,}9\), \(\beta_2 = 0{,}999\) y \(\epsilon = 10^{-8}\).</p>
+  <p><strong>Regularización.</strong></p>
+  <ul>
+    <li><strong>Penalización L2 / decaimiento de pesos.</strong> Se suma \(\lambda \lVert\theta\rVert^2\) a la pérdida, lo que equivale a una distribución previa normal sobre los parámetros (sección 11.3). En la factorización se aplica por trío, a los vectores que intervienen (\(\lambda\) entre 0,01 y 1). En la red se usa el <code>weight_decay</code> de Adam (\(10^{-4}\)), que suma \(\lambda\theta\) al gradiente antes de calcular \(\mathbf m_t\) y \(\mathbf v_t\).</li>
+    <li><strong>Parada temprana.</strong> Después de cada época se mide la métrica en validación; si no mejora en 10 épocas seguidas, se detiene el entrenamiento y se recuperan los pesos de la mejor época. Las épocas así elegidas se fijan para el entrenamiento final (Figura 6).</li>
+  </ul>
+
+  <h3 id="comun-etica">12.2 Ética</h3>
+  <ul>
+    <li><strong>Manejo de datos.</strong> El conjunto es público (Kaggle) y lo citamos. Su licencia es contradictoria: los metadatos dicen MIT, la descripción dice CC0 y, a la vez, «free to use for non-commercial purposes». Lo usamos solo con fines académicos. Los nombres y correos de los usuarios, que son ficticios, se eliminan en el preprocesamiento.</li>
+    <li><strong>Privacidad de los usuarios.</strong> La app no tiene registro ni base de datos: un usuario existente se elige de una lista y un perfil nuevo vive solo durante la sesión, sin guardarse. En un sistema real, el historial de viajes y la composición del grupo (por ejemplo, si viajan niños) son datos personales: habría que pedir consentimiento informado, explicar para qué se usan y guardar solo lo necesario.</li>
+    <li><strong>Sesgos del conjunto.</strong> Los datos son sintéticos: cualquier patrón que aprenda un modelo es un artefacto del generador y no dice nada de viajeros reales. Además el catálogo tiene solo 5 lugares de India, solo 3 combinaciones de preferencias y el género es binario. El caso de «City, Historical», a quien la red le recomienda primero Kerala porque así está en los datos (sección 8.3), muestra que el modelo reproduce lo que hay en los datos aunque contradiga lo que el usuario dice preferir.</li>
+    <li><strong>Riesgos si se implementara.</strong> (1) <em>Concentración de la demanda:</em> seguir la popularidad enviaría a casi todos a Jaipur (5 veces la capacidad actual) y la red a Kerala (1,7 veces), con rutas saturadas y peor servicio (sección 9.2). (2) <em>Recomendaciones poco útiles:</em> con aciertos casi iguales al azar, el cliente aprendería a ignorarlas, justo el riesgo que plantea el enunciado. (3) <em>Burbuja:</em> la red recomienda lo mismo a todos los de un perfil. (4) <em>Extrapolación:</em> con combinaciones de preferencias que no están en los datos, el resultado puede no tener sentido (Beach + Nature deja a Goa de último). (5) <em>Campañas mal evaluadas:</em> la estimación de la sección 9.3 mide propensión, no el efecto del anuncio.</li>
+    <li><strong>Mitigaciones propuestas.</strong> Límites de clientes por ruta y diversidad en las listas; avisar en la app cuando un perfil es una combinación nueva; medir el efecto real de las recomendaciones y las campañas con pruebas A/B antes de confiar en ellas; y reentrenar y auditar el modelo con datos reales.</li>
+  </ul>
+
+  <h3 id="comun-ia">12.3 Uso de IA</h3>
+  <p>En el módulo 3 usamos Claude (en Claude Code) como asistente durante todo el desarrollo: para estudiar la teoría, escribir los scripts, correr los análisis y redactar borradores del informe. Las decisiones las tomamos nosotros, y cada cifra quedó en un script versionado que se puede volver a correr. La Tabla 27 resume los prompts que más influyeron en el resultado.</p>
+  <p class="caption">Tabla 27. Prompts principales del módulo 3 y su impacto</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Prompt (literal)</th><th>Impacto en el resultado</th></tr></thead>
+    <tbody>
+      <tr><td>«Quiero que empezemos paso a paso, además, cabe recalcar que apenas estoy aprendiendo por lo que quiero que seas muy explícito con cada decisión y cosa que hagas…»</td><td>Fijó la forma de trabajo: un paso a la vez, cada decisión explicada y registrada en <code>DECISIONES.md</code>, y una carpeta de teoría para estudiar.</td></tr>
+      <tr><td>«como se sabe que las notas se reparten casi por igual entre 1 y 5?, donde se vió su correlación con popularity? hiciste un análisis descriptivo y no me mostraste?»</td><td>Destapó que la IA daba cifras sin mostrar de dónde salían. Desde ahí, todo análisis queda en un script con sus tablas de evidencia (hallazgos 1 y 2).</td></tr>
+      <tr><td>«recomiendas ese plan? con respecto a lo que se quiere hacer»</td><td>Llevó a probar cada modelo con datos simulados de respuesta conocida antes de usarlo, y a fijar el criterio de selección antes de ver los resultados.</td></tr>
+      <tr><td>«puedes verificar los datos del informe que llevamos hasta el momento? que no este nada mal o malas interpretaciones, etc»</td><td>Generó <code>src/verificar_informe.py</code>, que comprueba 37 cifras del informe, y encontró errores de interpretación de la IA (hallazgos 6 y 7).</td></tr>
+      <tr><td>«puedes revisar nuevamente las instrucciones del trabajo para el módulo 3 y revisar que no falte nada?»</td><td>Encontró requisitos que faltaban: un solo comando, archivo de configuración, demo, mínimo y máximo de las semillas, pérdida de validación y discusión.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del módulo 3 (23 al 26-nov-2026).</p>
+  <p><strong>Impacto.</strong> La IA aceleró mucho el trabajo: escribió el código, las pruebas y los borradores, y propuso verificaciones útiles, como las pruebas con datos simulados y las pruebas estadísticas contra el azar. Pero también se equivocó con seguridad: conclusiones prematuras, cifras incompletas, interpretaciones exageradas y una referencia imprecisa. Los 9 hallazgos de la sección 13 se detectaron porque exigimos evidencia para cada afirmación, revisamos el informe completo con un script y verificamos las referencias en fuentes primarias. La lección es que la IA es útil para producir, pero lo que produce hay que comprobarlo.</p>
+</section>
+
+<!-- ======================= 13. CACERÍA ======================= -->
+<section id="caceria">
+  <h2>13. Cacería de la alucinación (aporte del módulo 3)</h2>
+  <p>El enunciado pide documentar hallazgos en los que <strong>una herramienta de IA</strong> generó algo incorrecto, impreciso, desactualizado o subóptimo durante el trabajo. Para cada hallazgo se reportan el prompt literal, la respuesta, cómo se sospechó, la evidencia, la corrección y la lección aprendida. La Tabla 28 resume los hallazgos del módulo 3, todos de la IA usada en el desarrollo (Claude, en Claude Code).</p>
+
+  <p class="caption">Tabla 28. Resumen de los hallazgos del módulo 3</p>
   <div class="table-wrap"><table>
     <thead><tr><th>#</th><th>Hallazgo</th><th>Categoría del enunciado</th><th>Gravedad</th></tr></thead>
     <tbody>
@@ -1070,7 +1127,7 @@
 
 <!-- ======================= 7. PENDIENTE ======================= -->
 <section id="pendiente">
-  <h2>13. Lo que falta</h2>
+  <h2>14. Lo que falta</h2>
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>

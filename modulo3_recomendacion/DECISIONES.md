@@ -761,3 +761,11 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
 - **Sección 10. Discusión**: aporte de la red frente a las referencias (métricas, variabilidad,
   cómputo, interpretabilidad, negocio) y 9 aprendizajes. Fundamentación pasa a la 11, cacería a
   la 12. Tablas 20–25 renumeradas a 22–27.
+
+### Bloque C: aporte a las secciones comunes (2026-11-26) ✅ borrador
+- La carpeta `reporte/` del equipo sigue vacía y en `main` nadie ha escrito estas secciones, así
+  que el aporte del módulo 3 queda en el informe del módulo (sección 12) para unirlo después:
+  12.1 Fundamentación común (neurona, ReLU, sigmoide, backpropagation de la torre, Adam con sus
+  valores, L2 / weight decay y parada temprana); 12.2 Ética (datos, licencia contradictoria,
+  privacidad, sesgos, riesgos y mitigaciones); 12.3 Uso de IA (Tabla 27 con 5 prompts literales
+  y su impacto). Cacería pasa a la 13 (Tabla 28).
