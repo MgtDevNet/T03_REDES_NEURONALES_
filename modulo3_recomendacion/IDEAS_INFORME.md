@@ -152,6 +152,10 @@ menos de 3 lugares para mostrar.
 - Cliente nuevo: solo lo que indicó en el formulario (preferencias y tamaño del grupo). Ese caso
   se trata en la pregunta de negocio 1.
 
+- 💡 (26-nov) Argumento de negocio para no excluir lugares visitados: con menos de 3 opciones
+  (23 % de los usuarios si se excluyeran) aumenta el riesgo de que ninguna interese y el cliente
+  se vaya; un lugar ya conocido mantiene siempre 3 opciones. Agregado al informe (sección 2).
+
 ## 3. Análisis descriptivo (tarea 2) — ✅ BORRADOR LISTO
 
 > Borrador en lenguaje sencillo. Evidencia: `results/descriptivo/RESUMEN.md` (tablas 1–4) y las
