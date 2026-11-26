@@ -15,3 +15,10 @@ dependa de internet. El logo (`logo.svg`) es de elaboración propia.
 | `conductor.jpg` | [Buenos Aires - A 1955 Colectivo - 6126](https://commons.wikimedia.org/wiki/File:Buenos_Aires_-_A_1955_Colectivo_-_6126.jpg) | Jorge Royan | CC BY-SA 3.0 |
 
 Las imágenes se usan reducidas, sin otras modificaciones, y se atribuyen en la app.
+
+## Mapa
+
+`india.geojson`: contorno de India extraído de *Natural Earth* (Admin 0 – Countries, escala 1:50m),
+de dominio público (https://www.naturalearthdata.com/), descargado de
+https://github.com/nvkelso/natural-earth-vector. Los límites son aproximados y solo ilustrativos.
+Las coordenadas de los 5 destinos son las de cada lugar (Agra, Palolem, Jaipur, Alappuzha y Leh).

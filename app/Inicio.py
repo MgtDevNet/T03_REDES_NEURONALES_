@@ -12,7 +12,7 @@ from datetime import date
 import streamlit as st
 
 from utils.estilo import (DESTINOS, LEMA, MESES_ES, NOMBRE, NOMBRE_HTML, configurar_pagina, creditos, en_temporada,
-                          imagen_base64, portada, tarjeta, temporada_es)
+                          galeria, imagen_base64, mapa_destinos, portada, tarjeta, temporada_es)
 from utils.modulos import ENLACES, estado_modulo
 
 configurar_pagina("Inicio")
@@ -49,6 +49,11 @@ st.markdown(
     '<div class="rumbo-cifra"><b>3</b><span>herramientas con inteligencia artificial</span></div>'
     '</div>', unsafe_allow_html=True)
 
+# ----------------------------------------------------------------------- galería
+st.markdown("### Inspírate")
+galeria()
+st.caption("Desliza hacia el lado para ver todos los destinos.")
+
 # ----------------------------------------------------------------------- promoción del mes
 st.markdown(
     f'<div class="rumbo-promo"><img src="data:image/jpeg;base64,{imagen_base64("kerala")}" alt="Kerala Backwaters">'
@@ -77,6 +82,24 @@ for pestana, tipo in zip(st.tabs(tipos), tipos):
                     tarjeta(d["img"], nombre, f'{d["texto"]}<br><small>Mejor época: {temporada_es(d["temporada"])}'
                             '</small>', "En temporada" if temporada else "Fuera de temporada",
                             "lista" if temporada else "obra")
+
+# ----------------------------------------------------------------------- mapa
+st.markdown("### Nuestros destinos en el mapa")
+st.pydeck_chart(mapa_destinos(), height=520)
+st.caption("Pasa el cursor sobre un punto para ver su tipo y su mejor época. Contorno de India: Natural Earth "
+           "(dominio público), límites aproximados.")
+
+# ----------------------------------------------------------------------- viaja seguro
+listo2, _ = estado_modulo(2)
+st.markdown(
+    f'<div class="rumbo-seguro"><img src="data:image/jpeg;base64,{imagen_base64("conductor")}" alt="Puesto del conductor">'
+    f'<div class="cuerpo"><span class="rumbo-etiqueta {"lista" if listo2 else "obra"}">'
+    f'{"Disponible" if listo2 else "Próximamente"}</span><h2>Viaja seguro</h2>'
+    '<p>Tu viaje empieza mucho antes de llegar al destino. Nuestros buses tendrán una cámara que reconoce cuándo un '
+    'conductor maneja distraído (si escribe en el celular, habla por teléfono o mira hacia atrás) y genera una alerta '
+    'a tiempo.</p><p>Lo construye el módulo 2 de TravesIA con una red neuronal entrenada con fotos de conductores.</p>'
+    '</div></div>', unsafe_allow_html=True)
+st.page_link("pages/2_Conduccion_distractiva.py", label="Conoce cómo funciona", icon="🛡️", disabled=not listo2)
 
 # ----------------------------------------------------------------------- qué es y módulos
 st.markdown(f"### ¿Qué es {NOMBRE}?")

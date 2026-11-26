@@ -36,15 +36,15 @@ MESES_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "ago
             "noviembre", "diciembre"]
 # Fichas de los 5 lugares del catálogo (tipo, estado y temporada salen de destinos.csv).
 DESTINOS = {
-    "Taj Mahal": {"img": "taj_mahal", "tipo": "Histórico", "estado": "Uttar Pradesh", "temporada": "Nov-Feb",
+    "Taj Mahal": {"lat": 27.1751, "lon": 78.0421, "img": "taj_mahal", "tipo": "Histórico", "estado": "Uttar Pradesh", "temporada": "Nov-Feb",
                   "texto": "El mausoleo de mármol blanco más famoso del mundo, en la ciudad de Agra."},
-    "Goa Beaches": {"img": "goa", "tipo": "Playa", "estado": "Goa", "temporada": "Nov-Mar",
+    "Goa Beaches": {"lat": 15.01, "lon": 74.0233, "img": "goa", "tipo": "Playa", "estado": "Goa", "temporada": "Nov-Mar",
                     "texto": "Playas de arena dorada y palmeras en la costa occidental de India."},
-    "Jaipur City": {"img": "jaipur", "tipo": "Ciudad", "estado": "Rajasthan", "temporada": "Oct-Mar",
+    "Jaipur City": {"lat": 26.9124, "lon": 75.7873, "img": "jaipur", "tipo": "Ciudad", "estado": "Rajasthan", "temporada": "Oct-Mar",
                     "texto": "La «ciudad rosa», con palacios como el Hawa Mahal y mercados llenos de color."},
-    "Kerala Backwaters": {"img": "kerala", "tipo": "Naturaleza", "estado": "Kerala", "temporada": "Sep-Mar",
+    "Kerala Backwaters": {"lat": 9.4981, "lon": 76.3388, "img": "kerala", "tipo": "Naturaleza", "estado": "Kerala", "temporada": "Sep-Mar",
                           "texto": "Canales y lagunas entre palmeras que se recorren en casas flotantes."},
-    "Leh Ladakh": {"img": "leh_ladakh", "tipo": "Aventura", "estado": "Jammu and Kashmir", "temporada": "Apr-Jun",
+    "Leh Ladakh": {"lat": 34.1526, "lon": 77.5771, "img": "leh_ladakh", "tipo": "Aventura", "estado": "Jammu and Kashmir", "temporada": "Apr-Jun",
                    "texto": "Montañas del Himalaya y lagos de altura como el Pangong, para los más aventureros."},
 }
 
@@ -104,6 +104,22 @@ CSS = """
 .rumbo-pie b {color: #fff;}
 .rumbo-pie a {color: #8fe3d6; text-decoration: none;}
 .rumbo-pie .col {display: inline-block; vertical-align: top; width: 32%; min-width: 200px; margin-bottom: .6rem;}
+.rumbo-galeria {display: flex; gap: .9rem; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: .5rem;
+                margin-bottom: 1.4rem;}
+.rumbo-galeria figure {flex: 0 0 360px; height: 230px; margin: 0; position: relative; border-radius: 16px; overflow: hidden;
+                       scroll-snap-align: start;}
+.rumbo-galeria img {width: 100%; height: 100%; object-fit: cover; transition: transform .4s;}
+.rumbo-galeria figure:hover img {transform: scale(1.05);}
+.rumbo-galeria figcaption {position: absolute; left: 0; right: 0; bottom: 0; padding: .7rem .9rem; color: #fff;
+                           background: linear-gradient(0deg, rgba(8,47,58,.85), rgba(8,47,58,0)); font-weight: 600;}
+.rumbo-galeria figcaption span {display: block; font-weight: 400; font-size: .85rem; opacity: .9;}
+.rumbo-seguro {display: flex; border-radius: 18px; overflow: hidden; background: #eef7f5; border: 1px solid #cfe7e2;
+               margin: .4rem 0 1.4rem 0;}
+.rumbo-seguro img {width: 40%; object-fit: cover; min-height: 220px;}
+.rumbo-seguro .cuerpo {padding: 1.3rem 1.6rem;}
+.rumbo-seguro h2 {margin: .2rem 0 .5rem 0; font-size: 1.55rem;}
+.rumbo-seguro p {color: #4a5a61; margin: 0 0 .5rem 0;}
+@media (max-width: 700px) {.rumbo-seguro {flex-direction: column;} .rumbo-seguro img {width: 100%;}}
 @media (max-width: 700px) {.rumbo-promo {flex-direction: column;} .rumbo-promo img {width: 100%;}
                            .rumbo-hero h1 {font-size: 2rem;}}
 </style>
@@ -146,3 +162,38 @@ def creditos(claves):
               for c in claves]
     st.markdown('<p class="rumbo-credito">Fotos de Wikimedia Commons: ' + " · ".join(partes) + ".</p>",
                 unsafe_allow_html=True)
+
+
+def mapa_destinos():
+    """Mapa de India con los 5 destinos, dibujado sin mapa base (no depende de internet).
+
+    Contorno: Natural Earth 1:50m (dominio público), guardado en app/assets/india.geojson.
+    """
+    import json
+
+    import pydeck as pdk
+
+    india = json.loads((ASSETS / "india.geojson").read_text(encoding="utf-8"))
+    puntos = [{"nombre": n, "lat": d["lat"], "lon": d["lon"], "tipo": d["tipo"],
+               "temporada": temporada_es(d["temporada"])} for n, d in DESTINOS.items()]
+    capas = [
+        pdk.Layer("GeoJsonLayer", india, stroked=True, filled=True, get_fill_color=[222, 241, 237],
+                  get_line_color=[14, 116, 144], line_width_min_pixels=1.2),
+        pdk.Layer("ScatterplotLayer", puntos, get_position=["lon", "lat"], get_radius=45000,
+                  get_fill_color=[249, 115, 102], get_line_color=[255, 255, 255], stroked=True,
+                  line_width_min_pixels=2, pickable=True),
+        pdk.Layer("TextLayer", puntos, get_position=["lon", "lat"], get_text="nombre", get_size=15,
+                  get_color=[15, 61, 74], get_pixel_offset=[0, -22], font_weight=600),
+    ]
+    vista = pdk.ViewState(latitude=22.5, longitude=79.5, zoom=3.6, pitch=0)
+    return pdk.Deck(layers=capas, initial_view_state=vista, map_style=None, map_provider=None,
+                    tooltip={"html": "<b>{nombre}</b><br>{tipo}<br>Mejor época: {temporada}"})
+
+
+def galeria():
+    """Franja de fotos que se desliza de lado (los 5 destinos)."""
+    figuras = "".join(
+        f'<figure><img src="data:image/jpeg;base64,{imagen_base64(d["img"])}" alt="{n}">'
+        f'<figcaption>{n}<span>{d["tipo"]} · {d["estado"]}</span></figcaption></figure>'
+        for n, d in DESTINOS.items())
+    st.markdown(f'<div class="rumbo-galeria">{figuras}</div>', unsafe_allow_html=True)
