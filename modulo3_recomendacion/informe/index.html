@@ -188,7 +188,7 @@
       <tr><td>Análisis descriptivo</td><td>Tarea 2 + figura de cola larga</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Partición</td><td>Tarea 3</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Preprocesamiento</td><td>Metodología</td><td><span class="pill ok">Borrador listo</span></td></tr>
-      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 8 hallazgos</span></td></tr>
+      <tr><td>Cacería de la alucinación</td><td>Sección común (aporte del módulo 3)</td><td><span class="pill wip">En curso: 9 hallazgos</span></td></tr>
       <tr><td>Modelos de referencia</td><td>Tarea 4 + figura de resultados</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Red neuronal de dos torres</td><td>Tarea 5</td><td><span class="pill ok">Borrador listo</span></td></tr>
       <tr><td>Evaluación</td><td>Tarea 6</td><td><span class="pill ok">Borrador listo</span></td></tr>
@@ -774,6 +774,7 @@
     <li><strong>A quién.</strong> A los clientes a quienes la red guardada (la de la app) les recomienda ese lugar en primer lugar.</li>
     <li><strong>Cuántos.</strong> Clientes del grupo × proporción de los viajes de ese grupo que fueron a ese lugar en los datos de entrenamiento. Después lo comprobamos en prueba.</li>
   </ul>
+  <p>La Tabla 24 muestra el resultado para los destinos en temporada que la red recomienda primero a algún grupo de clientes.</p>
   <p class="caption">Tabla 24. Destinos en temporada que la red recomienda primero a algún grupo (999 clientes)</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Destino</th><th>Grupo (perfil de preferencias)</th><th class="num">Clientes</th><th class="num">Tasa en entrenamiento</th><th class="num">Viajes esperados</th><th class="num">Si se mostrara a un grupo al azar</th><th class="num">Comprobación en prueba (IC 95 %)</th></tr></thead>
@@ -835,9 +836,10 @@
       <tr><td>6</td><td>Afirmaciones del informe que no coincidían con sus propias tablas</td><td>Datos del mundo real (resultados del trabajo)</td><td><span class="pill wip">Media</span></td></tr>
       <tr><td>7</td><td>«Confirmar con 30 semillas» como si bastara para comparar modelos</td><td>Conceptos (estadística)</td><td><span class="pill no">Alta</span></td></tr>
       <tr><td>8</td><td>La cobertura de la factorización interpretada como una virtud («reparte más»)</td><td>Conceptos (interpretación de un resultado)</td><td><span class="pill wip">Media</span></td></tr>
+      <tr><td>9</td><td>Referencia con año y conferencia imprecisos (Probabilistic Matrix Factorization)</td><td>Bibliografía</td><td><span class="pill wip">Baja</span></td></tr>
     </tbody>
   </table></div>
-  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23 al 25-nov-2026.</p>
+  <p class="source">Fuente: elaboración propia a partir de la conversación de desarrollo del 23 al 26-nov-2026.</p>
 
   <div class="finding">
     <h4>Hallazgo 1. Conclusión estadística prematura sobre preferencias y visitas</h4>
@@ -984,6 +986,24 @@
     </dl>
   </div>
 
+  <div class="finding">
+    <h4>Hallazgo 9. Referencia con año y conferencia imprecisos</h4>
+    <dl>
+      <dt>Prompt (literal)</dt>
+      <dd><blockquote>Quiero que empezemos paso a paso, además, cabe recalcar que apenas estoy aprendiendo por lo que quiero que seas muy explícito con cada decisión y cosa que hagas pues nunca he trabajado en un sistema de recomendación, podemos subir a esa misma carpeta de modulo3_recomendacion una parte de teoría para  yo ir allí y leer todo lo referente a al fundamentación matemática, que se usa para un sistema de recomendación, como hacerlo y que se relacione con este trabajo. descargué el zip con los datos y está en modulo3_recomendacion/data/raw</blockquote></dd>
+      <dt>Respuesta de la IA</dt>
+      <dd>En las referencias de la teoría escribió:<blockquote>Salakhutdinov, R., &amp; Mnih, A. (2008). <em>Probabilistic Matrix Factorization.</em> NeurIPS.</blockquote></dd>
+      <dt>Cómo se sospechó</dt>
+      <dd>Antes de entregar se verificó cada referencia en su fuente primaria. Varias venían sin volumen, páginas ni DOI.</dd>
+      <dt>Evidencia</dt>
+      <dd>El sitio oficial de los proceedings (proceedings.neurips.cc) incluye el artículo en <em>Advances in Neural Information Processing Systems 20</em>, es decir, la conferencia NIPS de 2007. El nombre «NeurIPS» se adoptó en 2018, y la página lista a los autores como «Andriy Mnih, Ruslan Salakhutdinov». Las demás referencias coincidieron con Crossref, arXiv y Kaggle; a la de Rendle et al. le faltaban las páginas (452–461).</dd>
+      <dt>Corrección</dt>
+      <dd>«Mnih, A., &amp; Salakhutdinov, R. (2007). Probabilistic matrix factorization. En <em>Advances in Neural Information Processing Systems 20</em> (NIPS 2007).» Se completaron volumen, páginas y DOI de todas las referencias.</dd>
+      <dt>Lección</dt>
+      <dd>Las referencias que propone una IA pueden parecer correctas y tener detalles inventados o mezclados (año, nombre del congreso, orden de los autores). Hay que confirmarlas en una fuente primaria, como el DOI en Crossref o la página oficial del congreso.</dd>
+    </dl>
+  </div>
+
   <h3>Verificaciones hechas que no encontraron error</h3>
   <p>El enunciado pide documentar también las verificaciones. Estas confirmaron lo que había dicho la IA:</p>
   <ul>
@@ -1000,7 +1020,6 @@
   <div class="table-wrap"><table>
     <thead><tr><th>Sección</th><th>Contenido pendiente</th></tr></thead>
     <tbody>
-      <tr><td>Bibliografía</td><td>Verificar en la fuente primaria las referencias y la información de la página de Kaggle (fecha de la versión, cita del autor).</td></tr>
       <tr><td>Integración</td><td>Pasar esta sección al informe común del equipo y armar la página del módulo 3 en la app con <code>src/predict.py</code>.</td></tr>
     </tbody>
   </table></div>
@@ -1012,8 +1031,8 @@
   <p>Bland, J. M., &amp; Altman, D. G. (1995). Multiple significance tests: The Bonferroni method. <em>BMJ, 310</em>(6973), 170. https://doi.org/10.1136/bmj.310.6973.170</p>
   <p>He, X., Liao, L., Zhang, H., Nie, L., Hu, X., &amp; Chua, T.-S. (2017). Neural collaborative filtering. En <em>Proceedings of the 26th International Conference on World Wide Web</em> (pp. 173–182). https://doi.org/10.1145/3038912.3052569</p>
   <p>Mehra, A. (2024). <em>Travel recommendation dataset</em> [Conjunto de datos]. Kaggle. https://www.kaggle.com/datasets/amanmehra23/travel-recommendation-dataset</p>
-  <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the 25th Conference on Uncertainty in Artificial Intelligence (UAI)</em>.</p>
-  <div class="callout warn"><p>Las referencias de Bland y Altman (1995), He et al. (2017) y Rendle et al. (2009) (volumen, páginas y DOI) deben verificarse en la fuente primaria antes de la entrega, como se indica en la sección 11.</p></div>
+  <p>Rendle, S., Freudenthaler, C., Gantner, Z., &amp; Schmidt-Thieme, L. (2009). BPR: Bayesian personalized ranking from implicit feedback. En <em>Proceedings of the Twenty-Fifth Conference on Uncertainty in Artificial Intelligence (UAI 2009)</em> (pp. 452–461). https://arxiv.org/abs/1205.2618</p>
+  <p class="source">Referencias verificadas el 25-nov-2026 en la fuente primaria: Crossref (DOI de Bland y Altman y de He et al.), arXiv (Rendle et al.) y la API de Kaggle (Mehra: versión 1, del 23 de enero de 2024, y las citas de su descripción).</p>
 </section>
 </main>
 </div>

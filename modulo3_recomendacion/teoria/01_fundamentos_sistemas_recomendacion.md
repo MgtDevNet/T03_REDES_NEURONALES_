@@ -747,25 +747,35 @@ Lo que el enunciado exige para todos los módulos, aplicado aquí:
 
 ## 21. Referencias
 
-- Koren, Y., Bell, R., & Volinsky, C. (2009). *Matrix Factorization Techniques for Recommender
-  Systems.* IEEE Computer, 42(8), 30–37.
-- Hu, Y., Koren, Y., & Volinsky, C. (2008). *Collaborative Filtering for Implicit Feedback
-  Datasets.* ICDM.
-- Rendle, S., Freudenthaler, C., Gantner, Z., & Schmidt-Thieme, L. (2009). *BPR: Bayesian
-  Personalized Ranking from Implicit Feedback.* UAI.
-- He, X., Liao, L., Zhang, H., Nie, L., Hu, X., & Chua, T.-S. (2017). *Neural Collaborative
-  Filtering.* WWW.
-- Covington, P., Adams, J., & Sargin, E. (2016). *Deep Neural Networks for YouTube
-  Recommendations.* RecSys. (Origen popular del enfoque de dos torres o recuperación por
-  candidatos.)
-- Järvelin, K., & Kekäläinen, J. (2002). *Cumulated Gain-Based Evaluation of IR Techniques.* ACM
-  TOIS. (Define DCG/NDCG.)
-- Bland, J. M., & Altman, D. G. (1995). *Multiple significance tests: the Bonferroni method.*
-  BMJ, 310, 170. (Explicación breve de Bonferroni.)
-- Salakhutdinov, R., & Mnih, A. (2008). *Probabilistic Matrix Factorization.* NeurIPS.
-  (Interpretación probabilística de la factorización de matrices.)
-- Ricci, F., Rokach, L., & Shapira, B. (eds.) (2022). *Recommender Systems Handbook*, 3.ª ed.
-  Springer. (Libro de referencia general.)
+> Verificadas el 25-nov-2026 en la fuente primaria: Crossref (DOI), arXiv, el sitio de los
+> proceedings de NeurIPS y la API de Kaggle.
+
+- Bland, J. M., & Altman, D. G. (1995). Multiple significance tests: The Bonferroni method.
+  *BMJ, 310*(6973), 170. https://doi.org/10.1136/bmj.310.6973.170 (Explicación breve de Bonferroni.)
+- Covington, P., Adams, J., & Sargin, E. (2016). Deep neural networks for YouTube recommendations.
+  En *Proceedings of the 10th ACM Conference on Recommender Systems* (pp. 191–198). ACM.
+  https://doi.org/10.1145/2959100.2959190 (Origen popular del enfoque de dos torres.)
+- He, X., Liao, L., Zhang, H., Nie, L., Hu, X., & Chua, T.-S. (2017). Neural collaborative
+  filtering. En *Proceedings of the 26th International Conference on World Wide Web* (pp. 173–182).
+  https://doi.org/10.1145/3038912.3052569
+- Hu, Y., Koren, Y., & Volinsky, C. (2008). Collaborative filtering for implicit feedback datasets.
+  En *2008 Eighth IEEE International Conference on Data Mining* (pp. 263–272). IEEE.
+  https://doi.org/10.1109/ICDM.2008.22
+- Järvelin, K., & Kekäläinen, J. (2002). Cumulated gain-based evaluation of IR techniques. *ACM
+  Transactions on Information Systems, 20*(4), 422–446. https://doi.org/10.1145/582415.582418
+  (Define DCG/NDCG.)
+- Koren, Y., Bell, R., & Volinsky, C. (2009). Matrix factorization techniques for recommender
+  systems. *Computer, 42*(8), 30–37. https://doi.org/10.1109/MC.2009.263
+- Mnih, A., & Salakhutdinov, R. (2007). Probabilistic matrix factorization. En *Advances in Neural
+  Information Processing Systems 20* (NIPS 2007). (Interpretación probabilística de la
+  factorización de matrices.) ⚠️ Corregido: antes decía «Salakhutdinov & Mnih (2008), NeurIPS»;
+  el volumen es NIPS 2007 (el nombre «NeurIPS» se adoptó en 2018) y la página de los proceedings
+  lista a los autores como «Andriy Mnih, Ruslan Salakhutdinov».
+- Rendle, S., Freudenthaler, C., Gantner, Z., & Schmidt-Thieme, L. (2009). BPR: Bayesian
+  personalized ranking from implicit feedback. En *Proceedings of the Twenty-Fifth Conference on
+  Uncertainty in Artificial Intelligence (UAI 2009)* (pp. 452–461). https://arxiv.org/abs/1205.2618
+- Ricci, F., Rokach, L., & Shapira, B. (Eds.). (2022). *Recommender systems handbook* (3.ª ed.).
+  Springer US. https://doi.org/10.1007/978-1-0716-2197-4 (Libro de referencia general.)
 
 ---
 

@@ -422,7 +422,7 @@ destinos; la factorización cubre más, pero porque el 71 % de su top-10 son des
   Supuestos explícitos en el informe.
 
 
-## Cacería de la alucinación — ✅ BORRADOR (8 hallazgos del módulo 3)
+## Cacería de la alucinación — ✅ BORRADOR (9 hallazgos del módulo 3)
 
 > ⚠️ **Definición correcta (enunciado, pp. 9–10):** errores que generó **una IA** durante el
 > trabajo, no errores de los datos. Cada hallazgo debe incluir: prompt literal, respuesta de la IA,
@@ -468,8 +468,12 @@ Redacción completa, con los prompts literales, en `informe/index.html`, secció
 
 - ✅ Verificaciones sin error: el 40 % esperado (recalculado: 40,1 %), Poisson como referencia,
   partición sin fugas.
-- ⏳ **Pendiente (Bibliografía):** verificar en la fuente primaria las referencias que propuso la
-  IA en `teoria/` (DOI, volumen, páginas). Si alguna falla, es un hallazgo de esa categoría.
+- ✅ **Bibliografía verificada (25-nov-2026)** en Crossref, arXiv, proceedings de NeurIPS y API de
+  Kaggle. Las del informe estaban bien (a Rendle et al. le faltaban las páginas, 452–461). En la
+  teoría, «Salakhutdinov & Mnih (2008), NeurIPS» era impreciso: es NIPS 2007 (vol. 20) y la página
+  oficial lista «Andriy Mnih, Ruslan Salakhutdinov». Es el hallazgo 9 (Bibliografía).
+- ⚠️ La licencia del dataset es contradictoria en Kaggle: metadatos «MIT», descripción «CC0» y
+  «uso no comercial». Mencionarlo en ética/datos.
 - 💡 Hasta ahora el módulo 3 cubre sobre todo la categoría «Datos» (y una de «Matemáticas», el hallazgo 5). Conviene buscar activamente
   errores de **Código** y **Matemáticas** cuando se programen los modelos y las métricas (por
   ejemplo, revisar a mano el cálculo de NDCG y la derivación de BPR o BCE).
