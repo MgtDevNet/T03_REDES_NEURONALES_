@@ -1,0 +1,42 @@
+# Demostración del módulo 3 (menos de 2 minutos), con un solo comando:
+#   python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/demo.yaml
+# Usa las configuraciones elegidas en el informe (sin búsqueda: «epocas» fijas) y pocas semillas.
+# Para que vuelva a buscar, quita «epocas» y pon varias opciones en «buscar» (ver completo.yaml).
+# Para cambiar algo en vivo, sin editar código, por ejemplo:
+#   ... --set modelos.red.fijos.lr=0.1
+#   ... --set modelos.red.buscar.d=[8] --set modelos.red.buscar.perdida=[bpr]
+#   ... --set semillas_finales=10
+
+nombre: demo
+salida: modulo3_recomendacion/results/experimentos/demo
+guardar_modelos: false
+
+semillas_ajuste: 1
+semillas_finales: 5
+K_id: [1, 3, 5, 10, 20]
+K_lugar: [1, 3]
+metrica_principal_lugar: 3
+
+modelos:
+  azar:
+    activo: true
+  popularidad:
+    activo: true
+  factorizacion:
+    activo: true
+    criterio: NDCG@10
+    buscar: {d: [8], lam: [1.0]}
+    epocas: 7                                 # fijas: sin búsqueda ni parada temprana
+    fijos: {lr: 0.01, lote: 256}
+    epocas_max: 200
+    paciencia: 10
+    mas_simple: {d: 8, lam: 1.0}
+  red:
+    activo: true
+    criterio: HitRate_lugar@3
+    buscar: {d: [2], perdida: [bce], negativos: [1], usuario: [preferencias]}
+    epocas: 8
+    fijos: {lr: 0.01, decaimiento: 0.0001, oculta: 16, lote: 256}
+    epocas_max: 200
+    paciencia: 10
+    mas_simple: {d: 2, perdida: bce, negativos: 1, usuario: preferencias}

@@ -1,0 +1,47 @@
+# Experimento completo del módulo 3: reproduce los resultados del informe (secciones 6 y 7).
+#   python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/completo.yaml
+# Tarda unos 3 minutos. Cualquier valor se puede cambiar aquí o con --set clave=valor.
+
+nombre: completo
+salida: modulo3_recomendacion/results/experimentos/completo   # no sobrescribe los resultados oficiales
+guardar_modelos: false        # true: reentrena con semilla 0 y reemplaza los modelos de models/ (los usa la app)
+
+semillas_ajuste: 3            # semillas por configuración en la búsqueda (validación)
+semillas_finales: 30          # semillas de la evaluación final (prueba)
+K_id: [1, 3, 5, 10, 20]       # cortes K para Precision, Recall, NDCG y cobertura (por ID, sobre 1000 destinos)
+K_lugar: [1, 3]               # cortes K por lugar (de 5 lugares); el cliente ve 3
+metrica_principal_lugar: 3    # K por lugar de la métrica principal (Lugar@3)
+
+modelos:
+  azar:
+    activo: true
+  popularidad:
+    activo: true
+  factorizacion:
+    activo: true
+    criterio: NDCG@10                         # métrica para elegir la configuración en validación
+    buscar:                                   # rejilla: se prueban todas las combinaciones
+      d: [8, 16, 32]                          # dimensión de los vectores
+      lam: [0.01, 0.1, 1.0]                   # regularización λ
+    fijos:
+      lr: 0.01                                # tasa de aprendizaje (Adam)
+      lote: 256
+    epocas_max: 200
+    paciencia: 10                             # parada temprana: épocas sin mejorar en validación
+    mas_simple: {d: 8, lam: 1.0}              # se usa si ninguna supera al azar en validación
+  red:
+    activo: true
+    criterio: HitRate_lugar@3
+    buscar:
+      d: [2, 4, 8]                            # dimensión de los vectores de usuario y destino
+      perdida: [bce, bpr]                     # entropía cruzada binaria o BPR
+      negativos: [1, 4]                       # negativos muestreados por cada interacción
+      usuario: [preferencias, completo]       # variables de la torre del usuario
+    fijos:
+      lr: 0.01
+      decaimiento: 0.0001                     # decaimiento de pesos (regularización L2 en Adam)
+      oculta: 16                              # neuronas de la capa oculta de cada torre
+      lote: 256
+    epocas_max: 200
+    paciencia: 10
+    mas_simple: {d: 2, perdida: bpr, negativos: 1, usuario: preferencias}

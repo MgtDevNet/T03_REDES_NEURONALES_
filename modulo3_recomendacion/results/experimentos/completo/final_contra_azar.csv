@@ -1,0 +1,5 @@
+modelo,HitRate@10: aciertos / esperados,HitRate@10: p-valor,Lugar@1: aciertos / esperados,Lugar@1: p-valor corregido (m = 2),Lugar@3: aciertos / esperados,Lugar@3: p-valor corregido (m = 2)
+Azar,6 / 6.1,0.567,117 / 121.2,1.0,362 / 363.6,1.0
+Popularidad,7 / 6.1,0.405,98 / 121.2,1.0,352 / 363.6,1.0
+Factorización (BPR),6 / 6.1,0.567,123 / 121.2,0.887,366 / 363.6,0.877
+Red de dos torres,7 / 6.1,0.405,134 / 121.2,0.214,375 / 363.6,0.366

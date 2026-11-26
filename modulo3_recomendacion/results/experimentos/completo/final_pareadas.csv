@@ -1,0 +1,4 @@
+comparación,métrica,diferencia (puntos),p-valor (pareada)
+Red de dos torres − Azar,Lugar@3,2.16,0.045
+Red de dos torres − Popularidad,Lugar@3,3.73,0.005
+Red de dos torres − Factorización (BPR),Lugar@3,1.39,0.2

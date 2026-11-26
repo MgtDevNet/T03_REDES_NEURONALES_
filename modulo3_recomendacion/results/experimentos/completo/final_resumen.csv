@@ -1,0 +1,29 @@
+modelo,métrica,media (%),desv. estándar,mínimo,máximo,parámetros
+Azar,HitRate@10,0.91,0.38,0.33,1.49,0
+Azar,Precision@10,0.09,0.04,0.03,0.15,0
+Azar,Recall@10,0.91,0.38,0.33,1.49,0
+Azar,NDCG@10,0.42,0.2,0.1,0.74,0
+Azar,Cobertura@10,99.7,0.19,99.1,100.0,0
+Azar,Lugar@1,19.32,1.68,14.19,21.62,0
+Azar,Lugar@3,59.68,1.95,56.11,63.7,0
+Popularidad,HitRate@10,1.16,0.22,0.5,1.65,0
+Popularidad,Precision@10,0.12,0.02,0.05,0.17,0
+Popularidad,Recall@10,1.16,0.22,0.5,1.65,0
+Popularidad,NDCG@10,0.46,0.09,0.19,0.62,0
+Popularidad,Cobertura@10,1.6,0.0,1.6,1.6,0
+Popularidad,Lugar@1,16.14,0.12,16.01,16.34,0
+Popularidad,Lugar@3,58.11,1.79,54.29,61.55,0
+Factorización (BPR),HitRate@10,0.94,0.31,0.17,1.49,15992
+Factorización (BPR),Precision@10,0.09,0.03,0.02,0.15,15992
+Factorización (BPR),Recall@10,0.94,0.31,0.17,1.49,15992
+Factorización (BPR),NDCG@10,0.43,0.16,0.05,0.73,15992
+Factorización (BPR),Cobertura@10,17.4,0.76,15.2,18.5,15992
+Factorización (BPR),Lugar@1,20.35,1.34,18.15,24.59,15992
+Factorización (BPR),Lugar@3,60.45,2.36,55.28,64.69,15992
+Red de dos torres,HitRate@10,1.11,0.27,0.66,1.82,238
+Red de dos torres,Precision@10,0.11,0.03,0.07,0.18,238
+Red de dos torres,Recall@10,1.11,0.27,0.66,1.82,238
+Red de dos torres,NDCG@10,0.52,0.17,0.29,0.86,238
+Red de dos torres,Cobertura@10,2.47,0.59,1.1,3.3,238
+Red de dos torres,Lugar@1,22.18,2.62,17.33,25.74,238
+Red de dos torres,Lugar@3,61.84,2.54,55.61,66.5,238

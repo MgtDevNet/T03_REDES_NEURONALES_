@@ -91,7 +91,7 @@ def ordenar(puntajes, aprendidos, rng):
     return np.lexsort((desempate, -p), axis=1)
 
 
-def evaluar(puntuar, aprende, evalua, semilla=0, ks=KS):
+def evaluar(puntuar, aprende, evalua, semilla=0, ks=KS, ks_lugar=KS_LUGAR):
     """Mide un modelo. `puntuar(user_ids)` debe devolver la matriz de puntajes (usuarios × 1000).
 
     Devuelve (resumen, por_usuario):
@@ -125,7 +125,7 @@ def evaluar(puntuar, aprende, evalua, semilla=0, ks=KS):
             "Cobertura": len(np.unique(orden[:, :k])) / N_DESTINOS,
         })
     for fila in filas:  # las métricas por lugar no dependen de K: se repiten en cada fila
-        for kl in KS_LUGAR:
+        for kl in ks_lugar:
             fila[f"HitRate_lugar@{kl}"] = (rango_lugar < kl).mean()
     por_usuario = pd.DataFrame({
         "UserID": usuarios, "DestinationID": objetivo + 1, "rango": rango, "rango_lugar": rango_lugar,

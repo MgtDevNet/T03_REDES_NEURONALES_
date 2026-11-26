@@ -1,0 +1,26 @@
+{
+  "factorizacion": {
+    "hiperparametros": {
+      "d": 8,
+      "lam": 1.0
+    },
+    "epocas": 7,
+    "motivo": "ninguna supera al azar en validación (la mejor acierta 6 de 326 frente a 3.3; p-valor = 0.112): se usa la más simple",
+    "configuraciones": 9,
+    "corridas": 27,
+    "segundos": 25.2
+  },
+  "red": {
+    "hiperparametros": {
+      "d": 2,
+      "perdida": "bce",
+      "negativos": 1,
+      "usuario": "preferencias"
+    },
+    "epocas": 8,
+    "motivo": "la mejor en validación supera al azar (213 de 326; p-valor = 0.027)",
+    "configuraciones": 24,
+    "corridas": 72,
+    "segundos": 61.9
+  }
+}

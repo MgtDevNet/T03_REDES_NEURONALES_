@@ -1,0 +1,26 @@
+{
+  "factorizacion": {
+    "hiperparametros": {
+      "d": 8,
+      "lam": 1.0
+    },
+    "epocas": 7,
+    "motivo": "fijada en el YAML (sin búsqueda)",
+    "configuraciones": 1,
+    "corridas": 0,
+    "segundos": 0.0
+  },
+  "red": {
+    "hiperparametros": {
+      "d": 2,
+      "perdida": "bce",
+      "negativos": 1,
+      "usuario": "preferencias"
+    },
+    "epocas": 8,
+    "motivo": "fijada en el YAML (sin búsqueda)",
+    "configuraciones": 1,
+    "corridas": 0,
+    "segundos": 0.0
+  }
+}

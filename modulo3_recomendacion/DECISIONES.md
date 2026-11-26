@@ -731,3 +731,21 @@ siempre acierta el lugar solo llega a ≈ 5 % de HitRate@10; T5-3).
   ln 2: los vectores se encogen casi a cero y todos los puntajes quedan ≈ 0 (moneda al aire).
   La de la red casi no baja de ln 2. Coherente con el hallazgo 8.
 - Los diagramas de caja de las 30 semillas ya estaban (Figura 8).
+
+---
+
+## Paso 12 — Un solo comando y archivo de configuración (`src/train.py`, `configs/`, 2026-11-26) ✅ hecho
+- Exigencia del enunciado (p. 9): cada experimento con un solo comando, parámetros cambiables sin
+  editar código y una demo de menos de 2 minutos. Convención del equipo: YAML + `python -m`.
+- `python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/<archivo>.yaml`
+  con cambios en vivo `--set clave=valor` (p. ej. `--set modelos.red.fijos.lr=0.1`).
+- `configs/completo.yaml`: búsqueda + 30 semillas. **Reproduce exactamente** el informe (mismas
+  configuraciones elegidas y mismas medias de las Tablas 16 y 19). Tarda 100 s.
+- `configs/demo.yaml`: configuraciones del informe con épocas fijas (sin búsqueda) y 5 semillas:
+  ≈ 5 s.
+- Cada corrida reporta además **mínimo y máximo** de cada métrica en las semillas (pendiente A1 del
+  enunciado), en `results/experimentos/<nombre>/final_resumen.csv`.
+- Se agrega `PyYAML==6.0.3` (versión del módulo 2). `evaluar()` acepta `ks_lugar` para cambiar el K
+  por lugar desde el YAML.
+- Corregido durante la prueba: al reconstruir la configuración elegida, pandas convertía `d = 8`
+  en `8.0` y PyTorch lo rechazaba; ahora cada valor vuelve al tipo original de la rejilla.

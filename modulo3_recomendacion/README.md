@@ -5,6 +5,33 @@ Aman Mehra, Kaggle: https://www.kaggle.com/datasets/amanmehra23/travel-recommend
 
 Ver el enunciado completo en `docs/instrucciones_trabajo_3.pdf` (páginas 5–7).
 
+## Correr el módulo con un solo comando
+
+Desde la raíz del repo `T03`, con el entorno activado:
+
+```bash
+# Demostración (≈ 5 s): las configuraciones del informe con 5 semillas
+python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/demo.yaml
+
+# Experimento completo (≈ 3 min): búsqueda de hiperparámetros + 30 semillas (reproduce el informe)
+python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/completo.yaml
+```
+
+Todos los parámetros están en `configs/*.yaml` (dimensión, pérdida, negativos, tasa de
+aprendizaje, regularización, épocas, parada temprana, semillas, K por ID y por lugar). Se cambian
+en el YAML o en la línea de comandos con `--set`, sin editar el código:
+
+```bash
+python -m modulo3_recomendacion.src.train --config modulo3_recomendacion/configs/demo.yaml \
+    --set modelos.red.fijos.lr=0.1 --set modelos.red.buscar.d=[8] --set semillas_finales=10
+```
+
+Cada corrida escribe en `results/experimentos/<nombre>/`: la configuración usada
+(`config_usada.yaml`), la búsqueda en validación, las decisiones, y en prueba la media,
+desviación estándar, mínimo y máximo de cada métrica, las pruebas contra el azar y la
+comparación pareada de la red con los demás modelos (`RESUMEN.md`). No sobrescribe los modelos
+de `models/` salvo con `guardar_modelos: true`.
+
 ## Datos
 
 Los 4 CSV originales (≈ 178 KB) están versionados en `data/raw/`, copiados sin cambios del zip
