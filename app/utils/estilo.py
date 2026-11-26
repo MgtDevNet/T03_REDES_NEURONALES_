@@ -31,6 +31,35 @@ IMAGENES = {
     "conductor": ("Buenos Aires - A 1955 Colectivo", "Jorge Royan", "CC BY-SA 3.0",
                   "https://commons.wikimedia.org/wiki/File:Buenos_Aires_-_A_1955_Colectivo_-_6126.jpg"),
 }
+MESES = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+MESES_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
+            "noviembre", "diciembre"]
+# Fichas de los 5 lugares del catálogo (tipo, estado y temporada salen de destinos.csv).
+DESTINOS = {
+    "Taj Mahal": {"img": "taj_mahal", "tipo": "Histórico", "estado": "Uttar Pradesh", "temporada": "Nov-Feb",
+                  "texto": "El mausoleo de mármol blanco más famoso del mundo, en la ciudad de Agra."},
+    "Goa Beaches": {"img": "goa", "tipo": "Playa", "estado": "Goa", "temporada": "Nov-Mar",
+                    "texto": "Playas de arena dorada y palmeras en la costa occidental de India."},
+    "Jaipur City": {"img": "jaipur", "tipo": "Ciudad", "estado": "Rajasthan", "temporada": "Oct-Mar",
+                    "texto": "La «ciudad rosa», con palacios como el Hawa Mahal y mercados llenos de color."},
+    "Kerala Backwaters": {"img": "kerala", "tipo": "Naturaleza", "estado": "Kerala", "temporada": "Sep-Mar",
+                          "texto": "Canales y lagunas entre palmeras que se recorren en casas flotantes."},
+    "Leh Ladakh": {"img": "leh_ladakh", "tipo": "Aventura", "estado": "Jammu and Kashmir", "temporada": "Apr-Jun",
+                   "texto": "Montañas del Himalaya y lagos de altura como el Pangong, para los más aventureros."},
+}
+
+
+def en_temporada(rango, mes):
+    """¿El mes (1–12) está dentro de la mejor época, por ejemplo «Nov-Feb»?"""
+    a, b = (MESES[x] for x in rango.split("-"))
+    return a <= mes <= b if a <= b else (mes >= a or mes <= b)
+
+
+def temporada_es(rango):
+    a, b = (MESES[x] for x in rango.split("-"))
+    return f"{MESES_ES[a - 1]} a {MESES_ES[b - 1]}"
+
+
 IMAGEN_DE_LUGAR = {"Taj Mahal": "taj_mahal", "Goa Beaches": "goa", "Jaipur City": "jaipur",
                    "Kerala Backwaters": "kerala", "Leh Ladakh": "leh_ladakh"}
 
@@ -59,6 +88,24 @@ CSS = """
 .rumbo-paso {background: #eef7f5; border-radius: 14px; padding: 1rem 1.1rem; height: 100%;}
 .rumbo-paso b {color: #0e7490;}
 .rumbo-credito {font-size: .78rem; color: #6b7a80;}
+.rumbo-cifras {display: flex; gap: 1rem; flex-wrap: wrap; margin: .2rem 0 1.4rem 0;}
+.rumbo-cifra {flex: 1 1 160px; background: #eef7f5; border-radius: 14px; padding: .8rem 1rem; text-align: center;}
+.rumbo-cifra b {display: block; font-size: 1.7rem; color: #0e7490; line-height: 1.1;}
+.rumbo-cifra span {font-size: .88rem; color: #4a5a61;}
+.rumbo-promo {display: flex; border-radius: 18px; overflow: hidden; background: #fff7f4; border: 1px solid #fbd9d2;
+              margin: .4rem 0 1.6rem 0;}
+.rumbo-promo img {width: 46%; object-fit: cover; min-height: 250px;}
+.rumbo-promo .cuerpo {padding: 1.4rem 1.6rem;}
+.rumbo-promo h2 {margin: .2rem 0 .5rem 0; font-size: 1.7rem;}
+.rumbo-promo p {color: #4a5a61; margin: 0 0 .5rem 0;}
+.rumbo-chip {display: inline-block; font-size: .8rem; padding: 3px 11px; border-radius: 999px; margin: 0 .3rem .3rem 0;
+             background: #fff; border: 1px solid #f3c7bd; color: #b8473a;}
+.rumbo-pie {background: #0f3d4a; color: #d9eef0; border-radius: 18px; padding: 1.6rem 1.8rem; margin-top: 2rem;}
+.rumbo-pie b {color: #fff;}
+.rumbo-pie a {color: #8fe3d6; text-decoration: none;}
+.rumbo-pie .col {display: inline-block; vertical-align: top; width: 32%; min-width: 200px; margin-bottom: .6rem;}
+@media (max-width: 700px) {.rumbo-promo {flex-direction: column;} .rumbo-promo img {width: 100%;}
+                           .rumbo-hero h1 {font-size: 2rem;}}
 </style>
 """
 

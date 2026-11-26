@@ -2,18 +2,83 @@
 
 Levantar localmente, desde la raíz del repositorio:
     streamlit run app/Inicio.py
+
+Los elementos «de página de viajes» (buscador, cifras, promoción del mes, destinos destacados) usan
+datos y resultados reales del proyecto: no hay precios, descuentos ni reseñas inventados.
 """
+
+from datetime import date
 
 import streamlit as st
 
-from utils.estilo import LEMA, NOMBRE, NOMBRE_HTML, configurar_pagina, creditos, portada, tarjeta
+from utils.estilo import (DESTINOS, LEMA, MESES_ES, NOMBRE, NOMBRE_HTML, configurar_pagina, creditos, en_temporada,
+                          imagen_base64, portada, tarjeta, temporada_es)
 from utils.modulos import ENLACES, estado_modulo
 
 configurar_pagina("Inicio")
+MES = date.today().month
+PAGINA_DESTINOS = "pages/3_Recomendacion_de_destinos.py"
 
 portada(NOMBRE_HTML, f"{LEMA}. Pronosticamos cuántos viajarán, cuidamos a quien conduce "
         "y te recomendamos tu próximo destino.", "kerala")
 
+# ----------------------------------------------------------------------- buscador
+st.markdown("### ¿A dónde quieres ir?")
+izq, der = st.columns([1, 2], gap="large")
+with izq:
+    elegido = st.selectbox("Destino", list(DESTINOS), index=None, placeholder="Elige un destino de India",
+                           label_visibility="collapsed")
+    st.page_link(PAGINA_DESTINOS, label="O deja que te recomendemos", icon="✨")
+with der:
+    if elegido:
+        d = DESTINOS[elegido]
+        etiqueta = "En temporada" if en_temporada(d["temporada"], MES) else "Fuera de temporada"
+        tarjeta(d["img"], elegido, f'{d["texto"]}<br><b>{d["tipo"]}</b> · {d["estado"]} · '
+                f'mejor época: {temporada_es(d["temporada"])}', etiqueta,
+                "lista" if etiqueta == "En temporada" else "obra")
+    else:
+        st.caption("Elige un destino para ver su ficha, o pasa a «Destinos para ti» para recibir recomendaciones "
+                   "según lo que te gusta.")
+
+# ----------------------------------------------------------------------- cifras
+st.markdown(
+    '<div class="rumbo-cifras">'
+    '<div class="rumbo-cifra"><b>5</b><span>destinos en India</span></div>'
+    '<div class="rumbo-cifra"><b>999</b><span>viajeros en nuestros datos</span></div>'
+    '<div class="rumbo-cifra"><b>1998</b><span>reseñas y visitas analizadas</span></div>'
+    '<div class="rumbo-cifra"><b>3</b><span>herramientas con inteligencia artificial</span></div>'
+    '</div>', unsafe_allow_html=True)
+
+# ----------------------------------------------------------------------- promoción del mes
+st.markdown(
+    f'<div class="rumbo-promo"><img src="data:image/jpeg;base64,{imagen_base64("kerala")}" alt="Kerala Backwaters">'
+    '<div class="cuerpo"><span class="rumbo-etiqueta vuelve">Destino del mes · noviembre</span>'
+    '<h2>Kerala Backwaters</h2>'
+    '<p>Navega entre palmeras en una casa flotante. Nuestro modelo la recomienda en primer lugar a los viajeros '
+    'de «naturaleza y aventura» y de «ciudad e historia»: en las pruebas, uno de cada cuatro de ellos eligió Kerala '
+    'para su siguiente viaje.</p>'
+    '<span class="rumbo-chip">Naturaleza</span><span class="rumbo-chip">Casas flotantes</span>'
+    f'<span class="rumbo-chip">Temporada: {temporada_es("Sep-Mar")}</span>'
+    '<p class="rumbo-credito" style="margin-top:.6rem">Elegido con la pregunta de negocio 3 del informe del '
+    'módulo 3 (datos sintéticos).</p></div></div>', unsafe_allow_html=True)
+
+# ----------------------------------------------------------------------- destinos destacados
+st.markdown(f"### Destinos destacados · {MESES_ES[MES - 1]}")
+tipos = ["Todos"] + sorted({d["tipo"] for d in DESTINOS.values()})
+for pestana, tipo in zip(st.tabs(tipos), tipos):
+    with pestana:
+        lista = [(n, d) for n, d in DESTINOS.items() if tipo == "Todos" or d["tipo"] == tipo]
+        lista.sort(key=lambda x: not en_temporada(x[1]["temporada"], MES))  # primero los que están en temporada
+        for fila in range(0, len(lista), 3):
+            cols = st.columns(3, gap="medium")
+            for col, (nombre, d) in zip(cols, lista[fila:fila + 3]):
+                with col:
+                    temporada = en_temporada(d["temporada"], MES)
+                    tarjeta(d["img"], nombre, f'{d["texto"]}<br><small>Mejor época: {temporada_es(d["temporada"])}'
+                            '</small>', "En temporada" if temporada else "Fuera de temporada",
+                            "lista" if temporada else "obra")
+
+# ----------------------------------------------------------------------- qué es y módulos
 st.markdown(f"### ¿Qué es {NOMBRE}?")
 st.write(
     f"{NOMBRE} es el sistema inteligente de una empresa de transporte intermunicipal de pasajeros. "
@@ -22,8 +87,6 @@ st.write(
     "detectar a tiempo cuándo un conductor maneja distraído, y ofrecer a cada cliente destinos de "
     "viaje que le gusten, empezando por una nueva línea de turismo en India."
 )
-
-st.markdown("### Explora los módulos")
 modulos = [
     (1, "terminal", "Demanda y operación",
      "Elige una ruta y mira cuántos pasajeros se esperan en los próximos 30 días, y cuántos buses y "
@@ -33,7 +96,7 @@ modulos = [
      "y en qué parte de la imagen se fijó.", "pages/2_Conduccion_distractiva.py"),
     (3, "taj_mahal", "Destinos para ti",
      "Elige un cliente o cuéntanos qué te gusta, y te recomendamos lugares de India para tu próximo viaje.",
-     "pages/3_Recomendacion_de_destinos.py"),
+     PAGINA_DESTINOS),
 ]
 columnas = st.columns(3, gap="medium")
 for col, (n, img, titulo, texto, pagina) in zip(columnas, modulos):
@@ -55,14 +118,18 @@ textos = [
 for col, (titulo, texto) in zip(pasos, textos):
     col.markdown(f'<div class="rumbo-paso"><b>{titulo}</b><br>{texto}</div>', unsafe_allow_html=True)
 
-st.markdown("### Sobre el proyecto")
-st.write(
-    f"{NOMBRE} es el Trabajo 3 del curso *Redes neuronales y algoritmos bioinspirados* de la Universidad Nacional "
-    "de Colombia, Facultad de Minas (semestre 2026-02). Todos los modelos están guardados en el repositorio: "
-    "la app los usa directamente, sin volver a entrenarlos."
-)
-for nombre, url in ENLACES.items():
-    st.markdown(f"- **{nombre}:** [{url}]({url})" if url else f"- **{nombre}:** próximamente")
-
-st.divider()
-creditos(["kerala", "terminal", "conductor", "taj_mahal"])
+# ----------------------------------------------------------------------- pie de página
+enlaces_html = "<br>".join(f'<a href="{u}" target="_blank">{n}</a>' if u else f"{n} (próximamente)"
+                           for n, u in ENLACES.items())
+st.markdown(
+    '<div class="rumbo-pie">'
+    f'<div class="col"><b style="font-size:1.25rem">{NOMBRE_HTML}</b><br>{LEMA}.<br><br>'
+    'Trabajo 3 · Redes neuronales y algoritmos bioinspirados<br>Universidad Nacional de Colombia · Facultad de Minas'
+    ' · 2026-02</div>'
+    '<div class="col"><b>Explora</b><br><a href="Demanda_y_operacion" target="_self">Demanda y operación</a><br>'
+    '<a href="Conduccion_distractiva" target="_self">Conducción segura</a><br>'
+    '<a href="Recomendacion_de_destinos" target="_self">Destinos para ti</a></div>'
+    f'<div class="col"><b>El proyecto</b><br>{enlaces_html}</div>'
+    '</div>', unsafe_allow_html=True)
+st.write("")
+creditos(["kerala", "taj_mahal", "goa", "jaipur", "leh_ladakh", "terminal", "conductor"])
