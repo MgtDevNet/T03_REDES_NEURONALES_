@@ -15,6 +15,7 @@ if str(RAIZ) not in sys.path:
 
 # Enlaces que pide el enunciado. Completar cuando existan.
 ENLACES = {
+    "Aplicación web": "https://travesia-t03.streamlit.app",
     "Repositorio": "https://github.com/MgtDevNet/T03_REDES_NEURONALES_",
     "Reporte técnico": None,
     "Video promocional": None,

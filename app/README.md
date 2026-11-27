@@ -21,6 +21,14 @@ La app solo importa las funciones de inferencia de cada módulo:
 Debe incluir enlaces al reporte técnico, al video promocional y a los videos de
 contribución individual.
 
+## Publicada
+
+**https://travesia-t03.streamlit.app** (Streamlit Community Cloud, rama `main`, archivo principal
+`app/Inicio.py`, **Python 3.12**). Se vuelve a publicar sola con cada push a `main`.
+Al crearla hay que elegir Python 3.12 en «Advanced settings»: con la versión por defecto (3.14)
+falla la instalación porque torch 2.8.0 no existe para 3.14, y la versión no se puede cambiar
+después (hay que borrar y volver a crear la app).
+
 ## Cómo levantarla (un solo comando)
 
 Desde la raíz del repositorio, con el entorno activado:
