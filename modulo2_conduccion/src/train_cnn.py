@@ -28,14 +28,16 @@ from sklearn.metrics import accuracy_score, f1_score
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-from torchvision import models as tvm
 from torchvision import transforms as T
 import yaml
 
-from .prepare import CLASSES, ROOT, write_csv
+from .modelos import (BACKBONES, CLASSES, MEAN, STD, ScratchCNN, build_model, cam_layer,  # noqa: F401
+                      head_of, test_transform, trainable)
+from .prepare import ROOT, write_csv
+from .prepare import CLASSES as _PREPARE_CLASSES
 from .train import select_rows
 
-MEAN, STD = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+assert CLASSES == _PREPARE_CLASSES, "El orden de clases debe coincidir con prepare.py"
 
 
 # ----------------------------------------------------------------------------
@@ -86,6 +88,44 @@ def cache_images(config, zip_path):
         for row in select_rows(rows, demo, config["seed"]):
             shutil.copy(cache / f"{row['sha256']}.jpg", target / f"{row['sha256']}.jpg")
         print(f"Muestra demo copiada en {target}")
+    if config.get("ejemplos_por_clase"):
+        export_examples(config, rows, zip_path)
+
+
+def export_examples(config, rows, zip_path):
+    """Imágenes de ejemplo para la app: N por clase, solo de PRUEBA y de grupos de
+    similitud distintos (para no mostrar dos variantes de la misma foto). Se
+    guardan con el lado largo ≤ 800 px para que pesen poco en el repositorio."""
+    from io import BytesIO
+    from zipfile import ZipFile
+    target = ROOT / "data/processed/ejemplos"
+    target.mkdir(parents=True, exist_ok=True)
+    rng = np.random.default_rng(config["seed"])
+    listed = []
+    with ZipFile(zip_path) as archive:
+        for label in CLASSES:
+            candidates = [r for r in rows if r["split"] == "test" and r["class"] == label]
+            chosen, groups = [], set()
+            for i in rng.permutation(len(candidates)):
+                if candidates[i]["group"] not in groups:
+                    chosen.append(candidates[i])
+                    groups.add(candidates[i]["group"])
+                if len(chosen) == config["ejemplos_por_clase"]:
+                    break
+            for k, row in enumerate(chosen, 1):
+                name = f"{label}_{k}.jpg"
+                with Image.open(BytesIO(archive.read(row["path"]))) as image:
+                    image = ImageOps.exif_transpose(image).convert("RGB")
+                    image.thumbnail((800, 800), Image.Resampling.LANCZOS)
+                    image.save(target / name, quality=90)
+                listed.append({"archivo": name, "clase": label, "original": row["path"]})
+    write_csv(target / "ejemplos.csv", listed)
+    (target / "LEEME.md").write_text(
+        "# Imágenes de ejemplo\n\nImágenes del conjunto de prueba (no vistas en entrenamiento), redimensionadas.\n"
+        "Fuente: Afridi, A. S., Kafy, A., Moon, N. N. y Shakil, M. S. (2024). Multi-Class Driver Behavior "
+        "Image Dataset. Mendeley Data, V1. https://doi.org/10.17632/mzb4b6dff3.1. Licencia CC BY 4.0 "
+        "(https://creativecommons.org/licenses/by/4.0/).\n", encoding="utf-8")
+    print(f"{len(listed)} ejemplos guardados en {target}")
 
 
 class CachedImages(Dataset):
@@ -105,8 +145,7 @@ class CachedImages(Dataset):
 def make_transforms(size, aug):
     """Aumento en línea. El espejo horizontal es coherente con el conjunto: los
     autores ya publicaron versiones espejadas de las fotos (ver punto 2)."""
-    test = T.Compose([T.Resize(round(size * 256 / 224)), T.CenterCrop(size),
-                      T.ToTensor(), T.Normalize(MEAN, STD)])
+    test = test_transform(size)
     if aug == "none":
         return test, test
     strong = aug == "strong"
@@ -136,74 +175,6 @@ def loaders(rows, config, size, aug, batch_size, seed):
         "val": DataLoader(CachedImages(split["val"], folder, test_tf), **kw),
         "test": DataLoader(CachedImages(split["test"], folder, test_tf), **kw),
     }, split
-
-
-# ----------------------------------------------------------------------------
-# Modelos
-# ----------------------------------------------------------------------------
-
-class ScratchCNN(nn.Module):
-    """VGG compacta: `depth` bloques [conv-BN-ReLU] × 2 + max-pool, luego GAP."""
-
-    def __init__(self, width=32, depth=4, dropout=0.3, n_classes=len(CLASSES)):
-        super().__init__()
-        layers, c_in = [], 3
-        for i in range(depth):
-            c_out = width * 2 ** i
-            layers += [nn.Conv2d(c_in, c_out, 3, padding=1, bias=False), nn.BatchNorm2d(c_out), nn.ReLU(),
-                       nn.Conv2d(c_out, c_out, 3, padding=1, bias=False), nn.BatchNorm2d(c_out), nn.ReLU(),
-                       nn.MaxPool2d(2)]
-            c_in = c_out
-        self.features = nn.Sequential(*layers)
-        self.head = nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Dropout(dropout),
-                                  nn.Linear(c_in, n_classes))
-
-    def forward(self, x):
-        return self.head(self.features(x))
-
-
-BACKBONES = {
-    "mobilenet_v3_small": (tvm.mobilenet_v3_small, tvm.MobileNet_V3_Small_Weights.IMAGENET1K_V1),
-    "mobilenet_v3_large": (tvm.mobilenet_v3_large, tvm.MobileNet_V3_Large_Weights.IMAGENET1K_V2),
-    "efficientnet_b0": (tvm.efficientnet_b0, tvm.EfficientNet_B0_Weights.IMAGENET1K_V1),
-    "resnet50": (tvm.resnet50, tvm.ResNet50_Weights.IMAGENET1K_V2),
-}
-
-
-def build_model(p, pretrained=True):
-    n = len(CLASSES)
-    if p["arch"] == "scratch":
-        return ScratchCNN(p["width"], p["depth"], p["dropout"])
-    fn, weights = BACKBONES[p["arch"]]
-    model = fn(weights=weights if pretrained else None)
-    if p["arch"].startswith("mobilenet"):        # classifier = [Linear, Hardswish, Dropout, Linear]
-        model.classifier[2].p = p["dropout"]
-        model.classifier[3] = nn.Linear(model.classifier[3].in_features, n)
-    elif p["arch"].startswith("efficientnet"):   # classifier = [Dropout, Linear]
-        model.classifier[0].p = p["dropout"]
-        model.classifier[1] = nn.Linear(model.classifier[1].in_features, n)
-    else:                                         # ResNet
-        model.fc = nn.Sequential(nn.Dropout(p["dropout"]), nn.Linear(model.fc.in_features, n))
-    return model
-
-
-def head_of(model):
-    if isinstance(model, ScratchCNN):
-        return model.head
-    return model.fc if isinstance(model, tvm.ResNet) else model.classifier
-
-
-def cam_layer(model):
-    """Última capa convolucional (con resolución espacial) para Grad-CAM."""
-    if isinstance(model, ScratchCNN):
-        return model.features[-2]                 # última ReLU antes del pooling final
-    if isinstance(model, tvm.ResNet):
-        return model.layer4[-1]
-    return model.features[-1]                     # MobileNetV3 / EfficientNet
-
-
-def trainable(model):
-    return sum(t.numel() for t in model.parameters() if t.requires_grad)
 
 
 # ----------------------------------------------------------------------------
@@ -273,11 +244,15 @@ def fit(p, data, split, device, trial=None, pretrained=True):
             scaler.update()
             schedule.step()
             total, seen = total + loss.item() * len(y), seen + len(y)
-        val = scores(*predict(model, data["val"], device))
-        row = {"epoch": epoch + 1, "train_loss": total / max(seen, 1), "val_accuracy": val["accuracy"],
-               "val_f1_macro": val["f1_macro"], "seconds": time.perf_counter() - started}
+        val_probs, val_labels = predict(model, data["val"], device)
+        val = scores(val_probs, val_labels)
+        # Entropía cruzada simple en validación (sin suavizado ni pesos) para las curvas de aprendizaje.
+        val_loss = float(-np.log(np.clip(val_probs[np.arange(len(val_labels)), val_labels], 1e-12, 1)).mean())
+        row = {"epoch": epoch + 1, "train_loss": total / max(seen, 1), "val_loss": val_loss,
+               "val_accuracy": val["accuracy"], "val_f1_macro": val["f1_macro"],
+               "seconds": time.perf_counter() - started}
         history.append(row)
-        print(f"  época {row['epoch']:2d}  pérdida {row['train_loss']:.3f}  "
+        print(f"  época {row['epoch']:2d}  pérdida {row['train_loss']:.3f} / val {row['val_loss']:.3f}  "
               f"F1 val {row['val_f1_macro']:.3f}  ({row['seconds']:.0f} s)", flush=True)
         if row["val_f1_macro"] > best:
             best, stale = row["val_f1_macro"], 0
@@ -377,13 +352,14 @@ def final(kind, config, rows, out):
     p0 = json.loads((out["results"] / f"mejor_{kind}.json").read_text())["params"]
     checkpoints = out["models"] / "checkpoints"
     checkpoints.mkdir(parents=True, exist_ok=True)
-    runs = []
+    runs, curves = [], []
     for seed in range(config["final_seeds"]):
         p = {**p0, "seed": seed}
         data, split = loaders(rows, config, p["size"], p["aug"], p["batch_size"], seed)
         print(f"[{kind}] semilla {seed + 1}/{config['final_seeds']}", flush=True)
         started = time.perf_counter()
         model, _, history = fit(p, data, split, device)
+        curves.extend({"seed": seed, **h} for h in history)
         val = scores(*predict(model, data["val"], device))
         test = scores(*predict(model, data["test"], device))
         torch.save({"params": p, "classes": CLASSES, "state_dict": model.state_dict()},
@@ -392,12 +368,15 @@ def final(kind, config, rows, out):
                      "test_accuracy": test["accuracy"], "test_f1_macro": test["f1_macro"],
                      "epocas": len(history), "segundos": round(time.perf_counter() - started, 1)})
     write_csv(out["results"] / f"{kind}_semillas.csv", runs)
+    write_csv(out["results"] / f"{kind}_curvas.csv", curves)       # curvas de aprendizaje por semilla
     f1 = np.array([r["val_f1_macro"] for r in runs])
     chosen = runs[int(np.argsort(f1)[len(f1) // 2])]["seed"]          # semilla mediana en validación
     shutil.copy(checkpoints / f"{kind}_seed{chosen}.pt", out["models"] / f"{kind}.pt")
     summary = {"modelo": kind, "params": p0, "semillas": len(runs), "semilla_guardada": chosen,
                "parametros_entrenables": trainable(build_model(p0, pretrained=False)),
-               "segundos_total": round(sum(r["segundos"] for r in runs), 1)}
+               "segundos_total": round(sum(r["segundos"] for r in runs), 1),
+               "mejor_semilla_test": max(runs, key=lambda r: r["test_f1_macro"])["seed"],
+               "peor_semilla_test": min(runs, key=lambda r: r["test_f1_macro"])["seed"]}
     for key in ["val_accuracy", "val_f1_macro", "test_accuracy", "test_f1_macro"]:
         values = np.array([r[key] for r in runs])
         summary[key] = {"media": values.mean(), "std": values.std(ddof=1) if len(values) > 1 else 0.0,
@@ -408,7 +387,7 @@ def final(kind, config, rows, out):
 
 
 def outputs(base):
-    out = {name: base / name for name in ("models", "results", "figures")}
+    out = {name: base / name for name in ("models", "results", "figures", "configs")}
     for path in out.values():
         path.mkdir(parents=True, exist_ok=True)
     return out
@@ -452,3 +431,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+    

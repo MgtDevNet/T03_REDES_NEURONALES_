@@ -37,6 +37,7 @@ final_seeds: 2
 
 alert:
   classes: [texting_phone, talking_phone, other_activities]
+  justificacion: Igual que en cnn.yaml (modo demo).
   cost_missed: 3
   cost_false_alarm: 1
   threshold_step: 0.05
