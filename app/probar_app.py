@@ -28,7 +28,9 @@ def main():
     assert not a.exception
     a.multiselect[0].set_value(["Playa", "Naturaleza"]).run()   # combinación nueva → aviso
     assert any("no aparece en nuestros datos" in w.value for w in a.warning)
-    a.slider[0].set_value(5).run()                  # K = 5
+    a.button_group[0].set_value(5).run()            # K = 5 con los botones del cliente existente
+    assert not a.exception
+    a.button_group[1].set_value(1).run()            # K = 1 en el cliente nuevo
     assert not a.exception
     a.multiselect[0].set_value([]).run()            # sin preferencias → aviso
     assert any("al menos un tipo" in w.value for w in a.warning)

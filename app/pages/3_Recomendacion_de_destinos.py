@@ -7,7 +7,12 @@ recomendar_usuario, recomendar_perfil_nuevo e historial.
 import json
 
 import pandas as pd
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # carpeta app/, para importar utils
 
 from utils.estilo import IMAGEN_DE_LUGAR, configurar_pagina, creditos, portada, tarjeta
 from utils.modulos import RAIZ, estado_modulo
@@ -58,7 +63,16 @@ st.write(
     "Elige un cliente que ya existe o crea un perfil nuevo con tus preferencias. La app te muestra "
     "los lugares que probablemente te interesen, calculados con el modelo guardado."
 )
-k = st.slider("¿Cuántos lugares quieres ver? (K)", min_value=1, max_value=5, value=3)
+
+
+def elegir_k(clave):
+    """Título de las recomendaciones con botones 1–5 para elegir cuántos lugares mostrar (K)."""
+    titulo, control = st.columns([1.2, 1], vertical_alignment="center")
+    titulo.markdown("#### Te recomendamos")
+    with control:
+        k = st.segmented_control("Lugares a mostrar", options=[1, 2, 3, 4, 5], default=3, key=clave,
+                                 format_func=lambda n: f"{n}", help="Cuántos lugares quieres ver (K)")
+    return k or 3  # si se desmarca el botón, vuelve a 3
 
 cliente, nuevo = st.tabs(["Cliente existente", "Cliente nuevo"])
 
@@ -80,7 +94,7 @@ with cliente:
                          .rename(columns={"lugar": "Lugar", "tipo": "Tipo", "fuente": "Fuente", "calificacion": "Calificación"}),
                          hide_index=True, width="stretch")
     with der:
-        st.markdown(f"**Te recomendamos estos {k} lugares**")
+        k = elegir_k("k_cliente")
         mostrar_recomendaciones(recomendar_usuario(int(user_id), k=k))
 
 with nuevo:
@@ -101,9 +115,9 @@ with nuevo:
                        "extrapolar y el resultado puede no tener sentido. Las combinaciones que sí conoce son: "
                        + "; ".join(" + ".join(TIPO_ES[ETIQUETA_A_TIPO[x.strip()]] for x in pp.split(","))
                                    for pp in o["perfiles_presentes_en_datos"]) + ".")
+        k = elegir_k("k_nuevo")
         recs = recomendar_perfil_nuevo({"preferencias": tipos, "genero": {v: k_ for k_, v in GENERO_ES.items()}[genero],
                                         "adultos": adultos, "ninos": ninos}, k=k)
-        st.markdown(f"**Te recomendamos estos {k} lugares**")
         mostrar_recomendaciones(recs)
 
 creditos(["leh_ladakh", "taj_mahal", "goa", "jaipur", "kerala"])

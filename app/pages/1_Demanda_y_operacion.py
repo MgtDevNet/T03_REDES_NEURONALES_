@@ -4,7 +4,12 @@ Se activa cuando exista modulo1_demanda/src/predict.py con la función `predecir
 (ver app/README.md y modulo1_demanda/README.md).
 """
 
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # carpeta app/, para importar utils
 
 from utils.estilo import configurar_pagina, creditos, portada
 from utils.modulos import estado_modulo
