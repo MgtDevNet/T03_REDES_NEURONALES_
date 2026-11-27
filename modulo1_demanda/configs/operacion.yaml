@@ -1,0 +1,41 @@
+# Configuracion operativa — Modulo 1 (Pronostico de demanda y planeacion de flota)
+# Todos los parametros normativos citan su fuente primaria en Colombia.
+
+vehiculos:
+  # Capacidades nominales tipicas de transporte intermunicipal por carretera en Colombia
+  # Fuente: Decreto 1079 de 2015 (Decreto Unico Reglamentario del Sector Transporte, Parte 2, Titulo 1, Cap. 4)
+  # y fichas tecnicas de homologacion del Ministerio de Transporte.
+  BUS:
+    capacidad_sillas: 40
+    costo_fijo_dia_cop: 480000
+  BUSETA:
+    capacidad_sillas: 28
+    costo_fijo_dia_cop: 340000
+  MICROBUS:
+    capacidad_sillas: 16
+    costo_fijo_dia_cop: 240000
+
+operacion:
+  clase_vehiculo_default: "BUS"
+  ocupacion_objetivo: 0.80           # 80% factor de ocupacion objetivo (estandar operativo intermunicipal)
+  cuantil_default: "p90"             # Cuantil de planeacion por defecto (p50, p75, p90, p95)
+  horas_operacion_dia: 16.0          # Ventana operativa diaria tipica de terminales (05:00 - 21:00)
+  velocidad_comercial_kmh: 55.0      # Velocidad comercial promedio en carretera andina/intermunicipal colombiana
+  factor_sinuosidad_vial: 1.35       # Relacion distancia vial real vs distancia geodesica (linea recta)
+  tiempo_terminal_horas: 1.0         # Tiempo de alistamiento, abordaje y despacho por extremo (horas)
+
+conductores:
+  # Jornada maxima laboral en Colombia:
+  # - Codigo Sustantivo del Trabajo (Art. 161), modificado por la Ley 2101 de 2021:
+  #   reduccion gradual hasta 42 horas semanales (44h desde jul-2025, 42h desde jul-2026) y maximo 8h-9h diarias ordinarias.
+  # - Resolucion 1223 de 2014 / Decreto 1079 de 2015 (MinTransporte) y politicas de seguridad vial (PESV, Res. 40595 de 2022):
+  #   limite recomendado de conduccion efectiva diaria de 8 horas (maximo 10h con relevo en rutas largas).
+  jornada_max_horas_dia: 8.0
+  dias_trabajo_semana: 6.0           # 1 dia de descanso obligatorio por cada 6 trabajados (CST Art. 172)
+  factor_ausentismo: 0.08            # 8% reserva por vacaciones, incapacidades y permisos (CST Art. 186 + margen operativo)
+  costo_conductor_dia_cop: 135000
+
+penalizaciones:
+  # Costos relativos para analisis de valor del pronostico (Pregunta de negocio 3)
+  costo_pasajero_no_atendido_cop: 45000   # Ingreso perdido + costo reputacional por pasajero dejado en terminal
+  costo_vehiculo_sobrante_dia_cop: 480000 # Costo fijo diario de un vehiculo ocioso
