@@ -1,0 +1,46 @@
+# Modo demo (< 2 min en CPU): 8 imágenes por clase y partición, ya versionadas.
+seed: 42
+device: cpu
+threads: 2
+workers: 0
+batch_size: 16
+patience: 2
+startup_trials: 2
+limit_per_class_split: 8
+cache_dir: data/processed/demo_img256
+
+scratch:
+  trials: 2
+  epochs: 2
+  size: 96
+  lr: [1.0e-4, 3.0e-3]
+  widths: [16]
+  depth: [3, 3]
+
+transfer:
+  trials: 2
+  epochs: 2
+  size: 96
+  lr: [1.0e-5, 3.0e-3]
+  archs: [mobilenet_v3_small]
+  backbone_mult: [0.01, 1.0]
+
+search_space:
+  weight_decay: [1.0e-6, 5.0e-2]
+  optimizers: [adamw, sgd]
+  dropout: [0.0, 0.5]
+  aug: [light, strong]
+  label_smoothing: [0.0, 0.15]
+  class_weights: [false, true]
+
+final_seeds: 2
+
+alert:
+  classes: [texting_phone, talking_phone, other_activities]
+  cost_missed: 3
+  cost_false_alarm: 1
+  threshold_step: 0.05
+
+gradcam_mean_per_class: 4
+sanity_images: 4
+boxes: data/processed/cajas_conductor.csv
